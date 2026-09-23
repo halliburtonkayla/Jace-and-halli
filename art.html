@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Jace & Halli Art Studio</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:#fff8df;font-family:Arial,sans-serif;color:#17335c;overscroll-behavior:none}
+header{padding:24px 12px;text-align:center;font-size:34px;font-weight:900;background:linear-gradient(110deg,#65d9ef,#ffe56d,#ff9db4)}
+.wrap{max-width:900px;margin:auto;padding:16px}
+.nav,.tools,.palette,.sizes,.pages{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}
+button,a{border:0;border-radius:20px;padding:14px 18px;font-size:20px;font-weight:800;background:#ffe36d;color:#17335c;box-shadow:0 6px 0 #d4d4d4;text-decoration:none}
+button:active,a:active{transform:translateY(3px);box-shadow:0 3px 0 #d4d4d4}
+.color{width:52px;height:52px;border-radius:50%;padding:0;border:4px solid white;box-shadow:0 0 0 2px #bbb,0 5px 0 #ccc}
+.color.active{outline:5px solid #17335c}
+label{font-weight:900;font-size:18px}
+input[type=color]{width:64px;height:54px;border:0;background:none}
+.canvasbox{background:white;border:7px solid #ddd;border-radius:30px;overflow:hidden;touch-action:none}
+canvas{display:block;width:100%;height:58vh;min-height:440px;touch-action:none;background:white}
+.small{font-size:16px;padding:11px 14px}
+.sheet{background:#e8ddff}
+#status{font-weight:800;min-height:24px}
+</style>
+</head>
+<body>
+<header>🎨 Jace & Halli's Art Studio</header>
+<div class="wrap">
+ <div class="nav"><a href="index.html">🏠 Home</a><button onclick="undo()">↩️ Undo</button><button onclick="clearCanvas()">🗑️ New Page</button><button onclick="savePic()">💾 Save Picture</button></div>
+
+ <label>Pick a tool:</label>
+ <div class="tools">
+  <button class="small" onclick="setTool('crayon')">🖍️ Crayon</button>
+  <button class="small" onclick="setTool('marker')">🖊️ Marker</button>
+  <button class="small" onclick="setTool('pencil')">✏️ Pencil</button>
+  <button class="small" onclick="setTool('eraser')">🧽 Eraser</button>
+ </div>
+
+ <label>Pick a color:</label>
+ <div class="palette" id="palette"></div>
+ <div class="palette"><label>🌈 Any color:</label><input id="custom" type="color" value="#7c3aed" oninput="pick(this.value)"></div>
+
+ <label>Brush size:</label>
+ <div class="sizes"><button class="small" onclick="size=5">● Small</button><button class="small" onclick="size=12">● Medium</button><button class="small" onclick="size=24">● Big</button><button class="small" onclick="size=40">● Huge</button></div>
+
+ <label>Coloring sheets:</label>
+ <div class="pages">
+  <button class="small sheet" onclick="sheet('truck')">🛻 Monster Truck</button>
+  <button class="small sheet" onclick="sheet('dino')">🦖 Dinosaur</button>
+  <button class="small sheet" onclick="sheet('doll')">🪆 Doll</button>
+  <button class="small sheet" onclick="sheet('blocks')">🧱 Blocks</button>
+  <button class="small sheet" onclick="sheet('balloons')">🎈 Balloons</button>
+  <button class="small sheet" onclick="clearCanvas()">📄 Blank</button>
+ </div>
+ <div id="status">Touch the white page and draw! ✨</div>
+ <div class="canvasbox"><canvas id="c"></canvas></div>
+</div>
+<script>
+const c=document.getElementById('c'),ctx=c.getContext('2d');
+let color='#e53935',size=12,tool='crayon',drawing=false,last=null,history=[];
+const colors=['#000000','#ffffff','#795548','#e53935','#ff7043','#ffca28','#ffee58','#7cb342','#00c853','#26c6da','#039be5','#1565c0','#5e35b1','#8e24aa','#ec407a','#ff80ab','#9e9e9e'];
+const pal=document.getElementById('palette');
+colors.forEach((x,i)=>{let b=document.createElement('button');b.className='color';b.style.background=x;b.title=x;b.onclick=()=>pick(x,b);pal.appendChild(b);if(i===3)b.classList.add('active')});
+function pick(x,b){color=x;tool=tool==='eraser'?'marker':tool;document.querySelectorAll('.color').forEach(e=>e.classList.remove('active'));if(b)b.classList.add('active')}
+function setTool(t){tool=t;document.getElementById('status').textContent=t==='eraser'?'Eraser is ready! 🧽':'Draw with the '+t+'! 🎨'}
+function resize(){
+ let old=document.createElement('canvas');old.width=c.width;old.height=c.height;old.getContext('2d').drawImage(c,0,0);
+ let r=c.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);c.width=r.width*d;c.height=r.height*d;ctx.setTransform(d,0,0,d,0,0);ctx.lineCap='round';ctx.lineJoin='round';
+ if(old.width) ctx.drawImage(old,0,0,old.width,old.height,0,0,r.width,r.height)
+}
+setTimeout(resize,50);addEventListener('resize',resize);
+function snapshot(){if(history.length>15)history.shift();history.push(c.toDataURL())}
+function pos(e){let r=c.getBoundingClientRect(),p=e.touches?e.touches[0]:e;return{x:p.clientX-r.left,y:p.clientY-r.top}}
+function start(e){e.preventDefault();snapshot();drawing=true;last=pos(e);dot(last)}
+function move(e){if(!drawing)return;e.preventDefault();let p=pos(e);draw(last,p);last=p}
+function end(){drawing=false;last=null}
+function style(){
+ ctx.globalAlpha=tool==='crayon'?.72:tool==='pencil'?.82:1;
+ ctx.strokeStyle=tool==='eraser'?'#ffffff':color;ctx.fillStyle=ctx.strokeStyle;
+ ctx.lineWidth=tool==='pencil'?Math.max(2,size*.45):tool==='marker'?size*1.25:tool==='eraser'?size*2:size;
+}
+function dot(p){style();ctx.beginPath();ctx.arc(p.x,p.y,ctx.lineWidth/2,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1}
+function draw(a,b){style();ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.globalAlpha=1}
+['pointerdown'].forEach(n=>c.addEventListener(n,start));c.addEventListener('pointermove',move);addEventListener('pointerup',end);c.addEventListener('pointercancel',end);
+function clearCanvas(){snapshot();ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,c.width,c.height);ctx.restore()}
+function undo(){let src=history.pop();if(!src)return;let im=new Image();im.onload=()=>{clearCanvasNoHistory();ctx.drawImage(im,0,0,c.getBoundingClientRect().width,c.getBoundingClientRect().height)};im.src=src}
+function clearCanvasNoHistory(){ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,c.width,c.height);ctx.restore()}
+function savePic(){let a=document.createElement('a');a.download='Jace-Halli-Art.png';a.href=c.toDataURL('image/png');a.click();document.getElementById('status').textContent='Picture saved! ⭐'}
+function outline(){ctx.strokeStyle='#333';ctx.fillStyle='white';ctx.lineWidth=6;ctx.globalAlpha=1}
+function sheet(type){
+ clearCanvas(); let w=c.getBoundingClientRect().width,h=c.getBoundingClientRect().height;outline();
+ if(type==='truck'){
+  ctx.strokeRect(w*.18,h*.42,w*.58,h*.2);ctx.strokeRect(w*.46,h*.3,w*.25,h*.13);
+  [w*.3,w*.66].forEach(x=>{ctx.beginPath();ctx.arc(x,h*.65,45,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(x,h*.65,20,0,Math.PI*2);ctx.stroke()});
+  ctx.font='bold 34px Arial';ctx.fillStyle='#333';ctx.fillText('MONSTER TRUCK',w*.2,h*.2)
+ } else if(type==='dino'){
+  ctx.beginPath();ctx.ellipse(w*.48,h*.48,w*.25,h*.17,0,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(w*.7,h*.34,60,0,Math.PI*2);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(w*.25,h*.48);ctx.lineTo(w*.08,h*.35);ctx.lineTo(w*.22,h*.55);ctx.stroke();
+  [[.38,.62],[.56,.62]].forEach(q=>{ctx.beginPath();ctx.moveTo(w*q[0],h*q[1]);ctx.lineTo(w*(q[0]-.03),h*.78);ctx.lineTo(w*(q[0]+.04),h*.78);ctx.stroke()});
+  ctx.beginPath();ctx.arc(w*.72,h*.32,6,0,7);ctx.fillStyle='#333';ctx.fill()
+ } else if(type==='doll'){
+  ctx.beginPath();ctx.arc(w*.5,h*.27,70,0,7);ctx.stroke();ctx.beginPath();ctx.moveTo(w*.5,h*.36);ctx.lineTo(w*.35,h*.65);ctx.lineTo(w*.65,h*.65);ctx.closePath();ctx.stroke();
+  ctx.beginPath();ctx.moveTo(w*.42,h*.43);ctx.lineTo(w*.25,h*.53);ctx.moveTo(w*.58,h*.43);ctx.lineTo(w*.75,h*.53);ctx.moveTo(w*.43,h*.65);ctx.lineTo(w*.38,h*.82);ctx.moveTo(w*.57,h*.65);ctx.lineTo(w*.62,h*.82);ctx.stroke()
+ } else if(type==='blocks'){
+  for(let i=0;i<3;i++)ctx.strokeRect(w*(.2+i*.2),h*.58,w*.18,h*.16);for(let i=0;i<2;i++)ctx.strokeRect(w*(.3+i*.2),h*.41,w*.18,h*.16);ctx.strokeRect(w*.4,h*.24,w*.18,h*.16)
+ } else {
+  [[.25,.3],[.5,.24],[.72,.34],[.36,.5],[.62,.53]].forEach((q,i)=>{ctx.beginPath();ctx.ellipse(w*q[0],h*q[1],55,70,0,0,7);ctx.stroke();ctx.beginPath();ctx.moveTo(w*q[0],h*q[1]+70);ctx.quadraticCurveTo(w*(q[0]+.08),h*.75,w*.5,h*.88);ctx.stroke()})
+ }
+ history=[];
+}
+</script>
+</body></html>
