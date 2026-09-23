@@ -1,0 +1,14 @@
+JACE & HALLI BIG FIX — upload all 9 HTML files in this folder to the ROOT of GitHub and replace old versions.
+
+Includes:
+- dinosaurs.html — 25 dinos, Read to Me, Talk to Dino, Dino Hunt
+- monster-trucks.html — corrected truck + easier jumping
+- little-chef.html — interactive cooking
+- learning.html — A-Z finger tracing + counting 1–20 (1–13 practice) + animals/trucks/colors
+- halli-music.html — working music sounds
+- halli-baby.html — baby doll dress-up/care
+- watch.html — YouTube Kids choices
+- storytime.html — illustrated talking books, automatic read-aloud + automatic page turns
+- jace.html and halli.html — updated child menus
+
+NOTE: There are 10 HTML files after adding Storytime. Upload every .html file in the folder.

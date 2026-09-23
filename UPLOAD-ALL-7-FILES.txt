@@ -1,0 +1,11 @@
+BIG FIX — upload all 7 HTML files to the ROOT of your GitHub repository and replace the old versions:
+dinosaurs.html
+monster-trucks.html
+halli-music.html
+halli-baby.html
+little-chef.html
+watch.html
+jace.html
+halli.html
+
+NOTE: There are actually 8 HTML files above. Upload all 8. Keep every other file already in GitHub.
