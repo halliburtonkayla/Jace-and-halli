@@ -1,0 +1,25 @@
+Upload ALL of these HTML files to the root of the Jace-and-halli GitHub repository.
+Choose Replace/overwrite for files that already exist. Keep GitHub Pages settings unchanged.
+
+art.html
+blocks.html
+bubbles.html
+dinosaurs.html
+driving.html
+halli-animals.html
+halli-baby.html
+halli-balloons.html
+halli-bubbles.html
+halli-colors.html
+halli-music.html
+halli-peekaboo.html
+halli-stars.html
+halli.html
+index.html
+jace.html
+learning-tent.html
+learning.html
+little-chef.html
+monster-trucks.html
+storytime.html
+watch.html

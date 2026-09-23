@@ -1,0 +1,30 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Learn & Trace</title><style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:Arial,sans-serif;background:#fff8df;color:#17335c}
+header{text-align:center;padding:24px 12px;font-size:clamp(30px,7vw,48px);font-weight:900;background:linear-gradient(110deg,#65d9ef,#ffe56d,#ff9db4)}
+.wrap{max-width:950px;margin:auto;padding:16px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.card,a.card{background:white;border-radius:28px;min-height:150px;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;text-decoration:none;color:#17335c;font-size:22px;font-weight:900;box-shadow:0 7px 0 #ddd;border:0}
+.card span{font-size:58px;margin-bottom:8px}.home{display:inline-block;background:#ffe36d;border-radius:20px;padding:13px 18px;text-decoration:none;color:#17335c;font-weight:900;margin-bottom:16px}
+@media(max-width:480px){.grid{grid-template-columns:1fr 1fr}.card,a.card{font-size:18px;min-height:140px}}
+
+.choices{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}button{border:0}.choice{padding:15px 8px;border-radius:18px;background:white;font-size:18px;font-weight:900;box-shadow:0 5px 0 #ccc}
+.lesson{background:white;border-radius:30px;padding:16px;text-align:center}#prompt{font-size:27px;font-weight:900}#options{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:15px}#options button{font-size:65px;min-width:115px;min-height:115px;border-radius:24px;background:#eefaff}
+.tracebox{position:relative;max-width:600px;height:390px;margin:15px auto;border:6px solid #ddd;border-radius:28px;overflow:hidden;background:#fff;touch-action:none}#guide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:300px;font-weight:900;color:#e4e4e4;pointer-events:none}canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}.letters{display:flex;gap:7px;overflow-x:auto;padding:10px 0}.letters button{min-width:55px;height:55px;border-radius:16px;background:#ffe36d;font-size:25px;font-weight:900}#say{font-size:23px;font-weight:900;min-height:35px}
+@media(max-width:520px){.choices{grid-template-columns:1fr 1fr}#guide{font-size:240px}}
+</style></head><body><header>✏️ Jace's Learn & Trace</header><div class="wrap"><a class="home" href="jace.html">⬅️ Jace's World</a>
+<div class="choices"><button class="choice" data-mode="animals">🐶 Animals</button><button class="choice" data-mode="trucks">🛻 Trucks</button><button class="choice" data-mode="colors">🌈 Colors</button><button class="choice" data-mode="letters">🔤 Letters</button></div>
+<div class="lesson"><div id="prompt">Choose what you want to learn!</div><div id="options"></div><div id="say"></div>
+<h2>☝️ Finger Trace the Alphabet</h2><div class="letters" id="letters"></div><div class="tracebox"><div id="guide">A</div><canvas id="trace"></canvas></div>
+<button class="choice" id="clear">🧽 Clear Tracing</button><button class="choice" id="read">🔊 Read Letter</button></div></div>
+<script>
+const sets={animals:[['🐶','Dog'],['🐱','Cat'],['🐮','Cow'],['🦁','Lion'],['🐘','Elephant'],['🐵','Monkey']],trucks:[['🚒','Fire Truck'],['🚚','Truck'],['🚜','Tractor'],['🏎️','Race Car'],['🚓','Police Car'],['🚑','Ambulance']],colors:[['🔴','Red'],['🔵','Blue'],['🟢','Green'],['🟡','Yellow'],['🟣','Purple'],['🟠','Orange']]};
+const prompt=document.querySelector('#prompt'),opts=document.querySelector('#options'),say=document.querySelector('#say');
+function speak(t){say.textContent=t;if('speechSynthesis'in window){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(t))}}
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{let m=b.dataset.mode;if(m==='letters'){prompt.textContent='Pick a letter below and trace it with your finger!';opts.innerHTML='';return}prompt.textContent='Tap one!';opts.innerHTML='';sets[m].forEach(x=>{let z=document.createElement('button');z.textContent=x[0];z.setAttribute('aria-label',x[1]);z.onclick=()=>speak(x[1]);opts.appendChild(z)})})
+let current='A',letters=document.querySelector('#letters'),guide=document.querySelector('#guide');
+'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(L=>{let b=document.createElement('button');b.textContent=L;b.onclick=()=>{current=L;guide.textContent=L;clearTrace();speak(L+'!')};letters.appendChild(b)})
+const c=document.querySelector('#trace'),ctx=c.getContext('2d');let down=false,last=null;
+function fit(){let r=c.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);c.width=r.width*d;c.height=r.height*d;ctx.setTransform(d,0,0,d,0,0);ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#2563eb';ctx.lineWidth=20}setTimeout(fit,50);
+function p(e){let r=c.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}c.onpointerdown=e=>{e.preventDefault();down=true;last=p(e)};c.onpointermove=e=>{if(!down)return;e.preventDefault();let q=p(e);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(q.x,q.y);ctx.stroke();last=q};addEventListener('pointerup',()=>down=false);
+function clearTrace(){ctx.clearRect(0,0,c.width,c.height)}document.querySelector('#clear').onclick=clearTrace;document.querySelector('#read').onclick=()=>speak(current+'! '+current+' is a letter. Trace '+current+' with your finger.');
+</script></body></html>

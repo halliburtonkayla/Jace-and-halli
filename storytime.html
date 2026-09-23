@@ -1,0 +1,26 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Storytime</title><style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:Arial,sans-serif;background:#fff8df;color:#17335c}
+header{text-align:center;padding:24px 12px;font-size:clamp(30px,7vw,48px);font-weight:900;background:linear-gradient(110deg,#65d9ef,#ffe56d,#ff9db4)}
+.wrap{max-width:950px;margin:auto;padding:16px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.card,a.card{background:white;border-radius:28px;min-height:150px;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;text-decoration:none;color:#17335c;font-size:22px;font-weight:900;box-shadow:0 7px 0 #ddd;border:0}
+.card span{font-size:58px;margin-bottom:8px}.home{display:inline-block;background:#ffe36d;border-radius:20px;padding:13px 18px;text-decoration:none;color:#17335c;font-weight:900;margin-bottom:16px}
+@media(max-width:480px){.grid{grid-template-columns:1fr 1fr}.card,a.card{font-size:18px;min-height:140px}}
+
+.story{background:white;border-radius:30px;padding:22px;text-align:center}#text{font-size:23px;line-height:1.5;min-height:160px}.stories,.decisions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:14px 0}button{border:0;border-radius:20px;padding:14px;font-size:18px;font-weight:900;background:#ffe36d}
+</style></head><body><header>📖 Family Storytime</header><div class="wrap"><a class="home" href="index.html">🏠 Family Home</a><div class="story"><h2>Choose a Story</h2><div class="stories">
+<button data-s="park">🌳 The Park</button><button data-s="walmart">🛒 Walmart Adventure</button><button data-s="dinner">🍽️ Jace & Dinner</button><button data-s="dentist">🦷 Dentist Day</button><button data-s="color">🎨 Halli's Color Surprise</button><button data-s="baseball">⚾ Baseball Day</button></div>
+<div id="text">Pick a story and we'll read it together.</div><div class="decisions" id="choices"></div><button id="read">🔊 Read to Me</button></div></div>
+<script>
+const stories={
+park:["One sunny day, Jace, Halli, Mama, and Daddy went to the park. Jace spotted the biggest slide and Halli saw bubbles floating nearby.","Should Jace race to the slide or help Halli chase bubbles?"],
+walmart:["Mama took Jace and Halli on a Walmart adventure. Jace helped push the cart while Halli pointed at every bright color she saw.","Should they look for fruit first or find the toy aisle?"],
+dinner:["Dinner smelled good, but Jace wasn't sure he wanted a bite. Mama said, 'You don't have to love it. Let's explore it together.'","Should Jace smell the food first or try one tiny bite?"],
+dentist:["It was dentist day. Jace climbed into the big chair and saw a tiny mirror and a bright light.","Should Jace ask what the mirror does or show the dentist his biggest smile?"],
+color:["Halli found a color and got very creative—so creative that some color ended up on her! Mama looked over and couldn't believe her eyes.","Should Mama grab a washcloth or take a silly picture first?"],
+baseball:["Jace grabbed his baseball and headed outside. He imagined the backyard was a giant stadium and everyone was cheering.","Should Jace practice throwing or practice hitting first?"]};
+let current=null,step=0,text=document.querySelector('#text'),choices=document.querySelector('#choices');
+function speak(t){if('speechSynthesis'in window){speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.rate=.88;speechSynthesis.speak(u)}}
+document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{current=b.dataset.s;step=0;text.textContent=stories[current][0]+' '+stories[current][1];choices.innerHTML='<button id="a">Choice One</button><button id="b">Choice Two</button>';document.querySelector('#a').onclick=()=>finish('That sounds fun! They tried the first choice, laughed together, and made a happy memory.');document.querySelector('#b').onclick=()=>finish('Great choice! They picked the second adventure and had a wonderful time together.');speak(text.textContent)})
+function finish(t){text.textContent=t+' And that was another Jace and Halli adventure. The end!';choices.innerHTML='<button onclick="location.reload()">📖 Another Story</button>';speak(text.textContent)}document.querySelector('#read').onclick=()=>speak(text.textContent);
+</script></body></html>

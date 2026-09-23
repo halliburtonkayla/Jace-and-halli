@@ -1,0 +1,30 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Watch & Learn</title><style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;font-family:Arial,sans-serif;background:#fff8df;color:#17335c}
+header{text-align:center;padding:22px 12px;font-size:36px;font-weight:900;background:linear-gradient(110deg,#65d9ef,#ffe56d,#ff9db4)}
+.wrap{max-width:900px;margin:auto;padding:16px}.home,.card,button{border:0;border-radius:22px;font-weight:900;text-decoration:none;color:#17335c;box-shadow:0 6px 0 #ccc}
+.home{display:inline-block;background:#ffe36d;padding:14px 18px;font-size:20px}.kids{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+.panel{background:white;border-radius:28px;padding:18px}.panel h2{text-align:center;font-size:30px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:#eefaff;min-height:135px;padding:14px;font-size:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.card span{font-size:50px}
+.halli .card{background:#fff0f7}.note{text-align:center;font-weight:700;margin:18px}
+#modal{display:none;position:fixed;inset:0;background:#0009;padding:22px;align-items:center;justify-content:center;z-index:5}
+.box{max-width:500px;background:white;border-radius:30px;padding:25px;text-align:center}.box h2{font-size:29px}.box p{font-size:19px}.actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.actions button,.actions a{padding:15px 18px;font-size:19px}.go{background:#72e08b}.cancel{background:#eee}
+@media(max-width:650px){.kids{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}}
+</style></head><body><header>📺 Watch & Learn</header><div class="wrap"><a class="home" href="index.html">🏠 Home</a>
+<p class="note">Pick something fun to watch and learn! ❤️</p><div class="kids">
+<section class="panel halli"><h2>🫧 Halli's Videos</h2><div class="grid">
+<a class="card yt" data-q="Blippi"><span>🧡</span>Blippi</a><a class="card yt" data-q="toddler animal sounds"><span>🐮</span>Animals</a>
+<a class="card yt" data-q="toddler colors learning"><span>🌈</span>Colors</a><a class="card yt" data-q="ABC songs toddlers"><span>🔤</span>ABCs</a>
+<a class="card yt" data-q="counting songs toddlers"><span>🔢</span>Counting</a><a class="card yt" data-q="nursery rhymes toddlers"><span>🎵</span>Songs</a>
+</div></section>
+<section class="panel"><h2>🛻 Jace's Videos</h2><div class="grid">
+<a class="card yt" data-q="PAW Patrol"><span>🐾</span>PAW Patrol</a><a class="card yt" data-q="monster trucks kids"><span>🏁</span>Monster Trucks</a>
+<a class="card yt" data-q="dinosaurs for kids educational"><span>🦖</span>Dinosaurs</a><a class="card yt" data-q="construction vehicles for kids"><span>🚜</span>Construction</a>
+<a class="card yt" data-q="science for preschool kids"><span>🔬</span>Science</a><a class="card yt" data-q="ABC numbers preschool"><span>🔤</span>Learn</a>
+</div></section></div></div>
+<div id="modal"><div class="box"><div style="font-size:65px">📺</div><h2>Open YouTube Kids?</h2><p id="what">This will leave Jace & Halli's website.</p><div class="actions"><button class="cancel" id="no">⬅️ Stay Here</button><a class="go" id="yes" target="_blank" rel="noopener">▶️ Open YouTube Kids</a></div></div></div>
+<script>
+const m=document.querySelector('#modal'),yes=document.querySelector('#yes'),what=document.querySelector('#what');
+document.querySelectorAll('.yt').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();let q=a.dataset.q;what.textContent='Look for “'+q+'” in YouTube Kids. This will leave Jace & Halli’s website.';yes.href='https://www.youtubekids.com/search?q='+encodeURIComponent(q);m.style.display='flex'}));
+document.querySelector('#no').onclick=()=>m.style.display='none';m.addEventListener('click',e=>{if(e.target===m)m.style.display='none'});
+</script></body></html>
