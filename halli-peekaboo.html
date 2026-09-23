@@ -1,0 +1,20 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Peek-a-Boo</title><style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:Arial,sans-serif;background:#fff8df;color:#17335c;overscroll-behavior:none}
+header{padding:20px 12px;text-align:center;font-size:clamp(28px,7vw,44px);font-weight:900;background:linear-gradient(110deg,#65d9ef,#ffe56d,#ff9db4)}
+.wrap{max-width:900px;margin:auto;padding:16px}
+nav{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+a,button{border:0;border-radius:22px;padding:15px 18px;font-size:clamp(18px,4vw,25px);font-weight:900;background:#ffe36d;color:#17335c;text-decoration:none;box-shadow:0 6px 0 #d3d3d3;touch-action:manipulation}
+button:active,a:active{transform:translateY(3px);box-shadow:0 3px 0 #ccc}
+.game{position:relative;min-height:520px;border-radius:30px;overflow:hidden;background:white;border:5px solid #eee}
+.msg{text-align:center;font-size:24px;font-weight:900;padding:10px}
+.big{font-size:70px}
+
+.peek{display:flex;align-items:center;justify-content:center;background:linear-gradient(#ffdff0,#fff7b8)}
+#friend{font-size:150px;background:none;box-shadow:none;padding:30px}
+#spark{position:absolute;font-size:55px;pointer-events:none}
+</style></head>
+<body><header>🙈 Peek-a-Boo</header><div class="wrap"><nav><a href="halli.html">⬅️ Halli's Games</a></nav><div class="msg" id="msg">Where did the friend go?</div><div class="game peek"><button id="friend" aria-label="Play peek a boo">🙈</button><div id="spark"></div></div></div><script>
+const b=document.querySelector('#friend'),m=document.querySelector('#msg'),sp=document.querySelector('#spark');let hide=true,faces=['🐵','🐻','🐰','🦁','🐶'];
+b.addEventListener('pointerdown',()=>{if(hide){b.textContent=faces[Math.floor(Math.random()*faces.length)];m.textContent='PEEK-A-BOO! 🎉';sp.textContent='✨⭐✨';hide=false}else{b.textContent='🙈';m.textContent='Where did the friend go?';sp.textContent='';hide=true}})
+</script></body></html>

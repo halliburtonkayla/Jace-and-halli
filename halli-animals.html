@@ -1,0 +1,15 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Animal Sounds</title><style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:Arial,sans-serif;background:#fff8df;color:#17335c;overscroll-behavior:none}
+header{padding:20px 12px;text-align:center;font-size:clamp(28px,7vw,44px);font-weight:900;background:linear-gradient(110deg,#65d9ef,#ffe56d,#ff9db4)}
+.wrap{max-width:900px;margin:auto;padding:16px}
+nav{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+a,button{border:0;border-radius:22px;padding:15px 18px;font-size:clamp(18px,4vw,25px);font-weight:900;background:#ffe36d;color:#17335c;text-decoration:none;box-shadow:0 6px 0 #d3d3d3;touch-action:manipulation}
+button:active,a:active{transform:translateY(3px);box-shadow:0 3px 0 #ccc}
+.game{position:relative;min-height:520px;border-radius:30px;overflow:hidden;background:white;border:5px solid #eee}
+.msg{text-align:center;font-size:24px;font-weight:900;padding:10px}
+.big{font-size:70px}
+.animals{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.animal{background:white;min-height:145px}.animal span{display:block;font-size:70px}.animal.bounce{animation:b .35s}@keyframes b{50%{transform:scale(1.15)}}</style></head>
+<body><header>🐮 Animal Sounds</header><div class="wrap"><nav><a href="halli.html">⬅️ Halli's Games</a></nav><div class="msg" id="say">Tap an animal!</div><div class="animals"><button class="animal" data-name="Cow" data-sound="Moo!"><span>🐮</span>Cow</button><button class="animal" data-name="Dog" data-sound="Woof woof!"><span>🐶</span>Dog</button><button class="animal" data-name="Cat" data-sound="Meow!"><span>🐱</span>Cat</button><button class="animal" data-name="Pig" data-sound="Oink oink!"><span>🐷</span>Pig</button><button class="animal" data-name="Duck" data-sound="Quack quack!"><span>🦆</span>Duck</button><button class="animal" data-name="Horse" data-sound="Neigh!"><span>🐴</span>Horse</button><button class="animal" data-name="Sheep" data-sound="Baa!"><span>🐑</span>Sheep</button><button class="animal" data-name="Chicken" data-sound="Cluck cluck!"><span>🐔</span>Chicken</button></div></div><script>
+const say=document.querySelector('#say');document.querySelectorAll('.animal').forEach(b=>b.addEventListener('click',()=>{say.textContent=b.dataset.name+' says '+b.dataset.sound;b.classList.remove('bounce');void b.offsetWidth;b.classList.add('bounce');if('speechSynthesis'in window){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(b.dataset.sound))}}));
+</script></body></html>

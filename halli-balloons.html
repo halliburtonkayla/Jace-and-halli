@@ -1,0 +1,22 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Balloon Party</title><style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:Arial,sans-serif;background:#fff8df;color:#17335c;overscroll-behavior:none}
+header{padding:20px 12px;text-align:center;font-size:clamp(28px,7vw,44px);font-weight:900;background:linear-gradient(110deg,#65d9ef,#ffe56d,#ff9db4)}
+.wrap{max-width:900px;margin:auto;padding:16px}
+nav{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+a,button{border:0;border-radius:22px;padding:15px 18px;font-size:clamp(18px,4vw,25px);font-weight:900;background:#ffe36d;color:#17335c;text-decoration:none;box-shadow:0 6px 0 #d3d3d3;touch-action:manipulation}
+button:active,a:active{transform:translateY(3px);box-shadow:0 3px 0 #ccc}
+.game{position:relative;min-height:520px;border-radius:30px;overflow:hidden;background:white;border:5px solid #eee}
+.msg{text-align:center;font-size:24px;font-weight:900;padding:10px}
+.big{font-size:70px}
+
+#game{background:linear-gradient(#bfe9ff,#fff)}
+.balloon{position:absolute;width:78px;height:98px;border-radius:50% 50% 48% 48%;font-size:0;border:0;box-shadow:inset -12px -10px 0 #0002;animation:rise linear forwards}
+.balloon:after{content:"";position:absolute;width:2px;height:70px;background:#555;left:38px;top:92px}
+@keyframes rise{from{transform:translateY(580px)}to{transform:translateY(-180px)}}
+</style></head>
+<body><header>🎈 Balloon Party</header><div class="wrap"><nav><a href="halli.html">⬅️ Halli's Games</a></nav><div class="msg">Pop the balloons! 🎈 <b id="score">0</b></div><div class="game" id="game"></div></div><script>
+const g=document.querySelector('#game'),sc=document.querySelector('#score');let n=0,cs=['#ff5577','#4db8ff','#ffd84d','#9b72ff','#58d68d','#ff8f45'];
+function add(){let b=document.createElement('button');b.className='balloon';b.style.background=cs[Math.floor(Math.random()*cs.length)];b.style.left=Math.random()*Math.max(1,g.clientWidth-85)+'px';b.style.animationDuration=(5+Math.random()*3)+'s';b.setAttribute('aria-label','Pop balloon');b.onpointerdown=e=>{e.preventDefault();n++;sc.textContent=n;b.textContent='💥';b.style.fontSize='55px';b.style.background='transparent';b.style.boxShadow='none';setTimeout(()=>b.remove(),180)};g.appendChild(b);setTimeout(()=>b.remove(),8200)}
+setInterval(add,750);for(let i=0;i<5;i++)setTimeout(add,i*150);
+</script></body></html>

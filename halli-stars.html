@@ -1,0 +1,17 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Twinkle Stars</title><style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:Arial,sans-serif;background:#fff8df;color:#17335c;overscroll-behavior:none}
+header{padding:20px 12px;text-align:center;font-size:clamp(28px,7vw,44px);font-weight:900;background:linear-gradient(110deg,#65d9ef,#ffe56d,#ff9db4)}
+.wrap{max-width:900px;margin:auto;padding:16px}
+nav{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+a,button{border:0;border-radius:22px;padding:15px 18px;font-size:clamp(18px,4vw,25px);font-weight:900;background:#ffe36d;color:#17335c;text-decoration:none;box-shadow:0 6px 0 #d3d3d3;touch-action:manipulation}
+button:active,a:active{transform:translateY(3px);box-shadow:0 3px 0 #ccc}
+.game{position:relative;min-height:520px;border-radius:30px;overflow:hidden;background:white;border:5px solid #eee}
+.msg{text-align:center;font-size:24px;font-weight:900;padding:10px}
+.big{font-size:70px}
+
+.night{background:linear-gradient(#08184e,#243a84);touch-action:none}.moon{position:absolute;right:25px;top:25px;font-size:85px}.star{position:absolute;transform:translate(-50%,-50%);font-size:50px;animation:tw 1s infinite alternate}@keyframes tw{to{transform:translate(-50%,-50%) scale(1.4);filter:brightness(1.5)}}
+</style></head>
+<body><header>⭐ Twinkle Stars</header><div class="wrap"><nav><a href="halli.html">⬅️ Halli's Games</a></nav><div class="msg">Touch the night sky to make stars ✨</div><div class="game night" id="sky"><div class="moon">🌙</div></div></div><script>
+const sky=document.querySelector('#sky');sky.onpointerdown=e=>{let r=sky.getBoundingClientRect(),s=document.createElement('div');s.className='star';s.textContent=Math.random()>.5?'⭐':'✨';s.style.left=(e.clientX-r.left)+'px';s.style.top=(e.clientY-r.top)+'px';sky.appendChild(s)}
+</script></body></html>
