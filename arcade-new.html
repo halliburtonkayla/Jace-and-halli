@@ -1,0 +1,77 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Jace & Halli Arcade - New</title><style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{margin:0;background:radial-gradient(circle at 50% -20%,#5d3c84,#16182d 55%);color:#fff;font-family:Arial Rounded MT Bold,Arial,sans-serif}header{text-align:center;padding:18px;font-size:clamp(30px,6vw,44px);font-weight:900;background:linear-gradient(90deg,#33285f,#a74379,#d96a55);text-shadow:0 3px #0005}.wrap{max-width:1050px;margin:auto;padding:12px}.top,.tabs,.controls{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin:10px 0}a,button{border:0;border-radius:16px;padding:12px 15px;font-size:17px;font-weight:900;background:#fff;color:#252441;text-decoration:none;box-shadow:0 5px 0 #0004}.tabs button.on{background:#ffe46a}.panel{display:none}.panel.on{display:block}.cabinet{background:linear-gradient(#432b68,#221c38);border:10px solid #6f5b99;border-radius:34px;padding:14px;box-shadow:inset 0 0 45px #0009,0 14px 35px #0008}.marquee{text-align:center;font-size:24px;font-weight:900;letter-spacing:1px;color:#ffe36d;text-shadow:0 0 15px #ffe36d}.hud{text-align:center;font-size:20px;font-weight:900;padding:8px}.screen{background:#111;border:8px solid #17151d;border-radius:24px;overflow:hidden;box-shadow:inset 0 0 30px #000}.screen canvas{display:block;width:100%;height:auto;touch-action:none}.tip{text-align:center;padding:8px;color:#fff}.controls button{min-width:125px;min-height:62px}.gas{background:#86df8b}.brake{background:#ef9696}.circle{position:relative;max-width:520px;aspect-ratio:1;margin:12px auto;border-radius:50%;background:radial-gradient(circle,#292638,#111 66%);border:12px solid #625b71;box-shadow:inset 0 0 30px #000}.light{position:absolute;width:12%;height:12%;border-radius:50%;background:#3f3a49;transform:translate(-50%,-50%);border:3px solid #82798f}.light.hot{background:#fff06c;box-shadow:0 0 30px #fff06c}.light.win{background:#55e17d;box-shadow:0 0 20px #55e17d}.stop{display:block;margin:16px auto;background:#ed586c;color:white;font-size:25px;min-width:220px;min-height:76px}</style></head><body>
+<header>Jace & Halli's Arcade <small style="display:block;font-size:13px">NEW GAME BUILD</small></header><div class="wrap"><div class="top"><a href="index.html">Family Home</a><a href="together.html">Play Together</a></div><div class="tabs"><button class="on" data-tab="skee">Skee Ball</button><button data-tab="moto">Motorcycle</button><button data-tab="light">Stop the Light</button></div>
+<section id="skee" class="panel on"><div class="cabinet"><div class="marquee">SUPER SKEE</div><div class="hud">SCORE <b id="sScore">0</b> · BALLS <b id="sBalls">9</b></div><div class="tip" id="skeeTip">Touch the ball and swipe UP toward the hole you want. The ball follows your aim.</div><div class="screen"><canvas id="skeeCanvas" width="900" height="650"></canvas></div><div class="controls"><button id="newSkee">New Game</button></div></div></section>
+<section id="moto" class="panel"><div class="cabinet"><div class="marquee">TINY RIDER</div><div class="hud">SPEED <b id="mSpeed">0</b> · SCORE <b id="mScore">0</b></div><div class="tip">Hold GAS and lean with the curve. The rider and bike lean with you.</div><div class="screen"><canvas id="motoCanvas" width="900" height="600"></canvas></div><div class="controls"><button id="leanL">LEAN LEFT</button><button id="gas" class="gas">GAS</button><button id="leanR">LEAN RIGHT</button><button id="brake" class="brake">BRAKE</button></div></div></section>
+<section id="light" class="panel"><div class="cabinet"><div class="marquee">STOP THE LIGHT</div><div class="hud">TICKETS <b id="tickets">0</b></div><div class="circle" id="circle"></div><button class="stop" id="stopBtn">STOP!</button><div class="hud" id="lightMsg">Stop on the green jackpot light.</div></div></section>
+</div><script>
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab],.panel').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById(b.dataset.tab).classList.add('on')});
+// SKEE
+const sc=document.getElementById('skeeCanvas'),sx=sc.getContext('2d');let ball={x:450,y:584,vx:0,vy:0,moving:false,phase:'ready',target:null,t:0,startX:450,startY:584,endX:450,endY:100},aimStart=null,sScore=0,sBalls=9;
+const holes=[{x:450,y:112,r:38,p:100},{x:320,y:160,r:37,p:50},{x:580,y:160,r:37,p:50},{x:450,y:220,r:43,p:40},{x:450,y:305,r:47,p:30},{x:450,y:395,r:53,p:20},{x:450,y:475,r:57,p:10}];
+function drawSkee(){sx.clearRect(0,0,900,650);let bg=sx.createLinearGradient(0,0,0,650);bg.addColorStop(0,'#261424');bg.addColorStop(1,'#7a2d35');sx.fillStyle=bg;sx.fillRect(0,0,900,650);sx.fillStyle='#28131c';sx.fillRect(120,40,660,570);sx.fillStyle='#e0a564';sx.beginPath();sx.moveTo(315,485);sx.lineTo(352,80);sx.lineTo(548,80);sx.lineTo(585,485);sx.lineTo(725,650);sx.lineTo(175,650);sx.closePath();sx.fill();sx.strokeStyle='#754321';sx.lineWidth=14;sx.stroke();let shine=sx.createLinearGradient(260,0,640,0);shine.addColorStop(0,'#ffffff05');shine.addColorStop(.5,'#ffffff35');shine.addColorStop(1,'#00000008');sx.fillStyle=shine;sx.fill();holes.forEach(h=>{sx.fillStyle='#24161c';sx.beginPath();sx.ellipse(h.x,h.y,h.r,h.r*.52,0,0,Math.PI*2);sx.fill();sx.strokeStyle='#f3d174';sx.lineWidth=7;sx.stroke();sx.fillStyle='#fff';sx.font='bold 20px Arial';sx.textAlign='center';sx.fillText(h.p,h.x,h.y+7)});sx.strokeStyle='#8f5e32';sx.lineWidth=8;sx.beginPath();sx.arc(450,488,115,Math.PI,Math.PI*2);sx.stroke();let scale=ball.phase==='drop'?Math.max(.12,1-ball.t):1,rad=27*scale;sx.fillStyle='#0005';sx.beginPath();sx.ellipse(ball.x+7,ball.y+13,rad*.9,rad*.35,0,0,Math.PI*2);sx.fill();let grad=sx.createRadialGradient(ball.x-rad*.35,ball.y-rad*.4,2,ball.x,ball.y,Math.max(3,rad));grad.addColorStop(0,'#fff4f4');grad.addColorStop(.25,'#e75b5b');grad.addColorStop(1,'#7b1616');sx.fillStyle=grad;sx.beginPath();sx.arc(ball.x,ball.y,Math.max(3,rad),0,Math.PI*2);sx.fill();sx.strokeStyle='#4d0909';sx.lineWidth=Math.max(1,3*scale);sx.stroke()}
+function resetBall(){ball={x:450,y:584,vx:0,vy:0,moving:false,phase:'ready',target:null,t:0,startX:450,startY:584,endX:450,endY:100}}
+const sBallsEl=document.getElementById('sBalls'),skeeTip=document.getElementById('skeeTip');
+function canvasPoint(e){const r=sc.getBoundingClientRect();return{x:(e.clientX-r.left)*sc.width/r.width,y:(e.clientY-r.top)*sc.height/r.height}}
+function chooseTarget(dx,dy){
+ const aimX=450+dx*1.45;
+ let nearest=null,best=1e9;
+ for(const h of holes){const d=Math.abs(aimX-h.x)+Math.abs((Math.abs(dy)*.72+120)-h.y)*.20;if(d<best){best=d;nearest=h}}
+ const accuracy=Math.abs(aimX-nearest.x);
+ return accuracy<82?nearest:null;
+}
+function throwBall(dx,dy){
+ if(ball.moving||sBalls<=0)return;
+ if(dy>-25)dy=-160;
+ sBalls--;sBallsEl.textContent=sBalls;
+ const target=chooseTarget(dx,dy);
+ ball.moving=true;ball.phase='roll';ball.t=0;ball.startX=450;ball.startY=584;ball.target=target;
+ if(target){ball.endX=target.x;ball.endY=target.y}
+ else{ball.endX=Math.max(245,Math.min(655,450+dx*2.2));ball.endY=55}
+ skeeTip.textContent=target?'Watch the ball roll all the way to the hole!':'That throw may miss — watch the ball!';
+}
+function aimDown(e){if(ball.moving||sBalls<=0)return;e.preventDefault();aimStart=canvasPoint(e);try{sc.setPointerCapture(e.pointerId)}catch(_){}}
+function aimUp(e){if(!aimStart)return;e.preventDefault();const p=canvasPoint(e),dx=p.x-aimStart.x,dy=p.y-aimStart.y;aimStart=null;throwBall(dx,dy)}
+sc.addEventListener('pointerdown',aimDown,{passive:false});
+sc.addEventListener('pointerup',aimUp,{passive:false});
+sc.addEventListener('pointercancel',()=>aimStart=null);
+function easeOutCubic(t){return 1-Math.pow(1-t,3)}
+function skeeLoop(){
+ if(ball.moving){
+  if(ball.phase==='roll'){
+   ball.t+=.018;
+   const t=Math.min(1,ball.t),e=easeOutCubic(t);
+   ball.x=ball.startX+(ball.endX-ball.startX)*e;
+   ball.y=ball.startY+(ball.endY-ball.startY)*e;
+   // visible little hop as the ball climbs the ramp
+   ball.y-=Math.sin(Math.PI*t)*18;
+   if(t>=1){
+    if(ball.target){ball.phase='drop';ball.t=0;ball.x=ball.target.x;ball.y=ball.target.y}
+    else{ball.phase='miss';ball.t=0}
+   }
+  }else if(ball.phase==='drop'){
+   ball.t+=.045;
+   ball.x=ball.target.x;ball.y=ball.target.y+ball.t*13;
+   if(ball.t>=1){
+    sScore+=ball.target.p;document.getElementById('sScore').textContent=sScore;
+    skeeTip.textContent=ball.target.p+' points! You saw it go in! Swipe the next ball.';
+    resetBall();
+   }
+  }else if(ball.phase==='miss'){
+   ball.t+=.035;ball.y-=5;ball.x+=(ball.endX<450?-2.2:2.2);
+   if(ball.t>=1){skeeTip.textContent='Miss! Swipe the next ball and try again.';resetBall()}
+  }
+ }
+ drawSkee();requestAnimationFrame(skeeLoop)
+}
+document.getElementById('newSkee').onclick=()=>{sScore=0;sBalls=9;document.getElementById('sScore').textContent=0;sBallsEl.textContent=9;skeeTip.textContent='Touch the ball and swipe UP toward the hole you want. Watch it roll all the way in.';resetBall()};
+resetBall();requestAnimationFrame(skeeLoop);
+// MOTORCYCLE
+const mc=document.getElementById('motoCanvas'),mx=mc.getContext('2d');let road=0,bike={lean:0,speed:0},keys={l:0,r:0,g:0,b:0},score=0;
+function bindHold(id,k){let el=document.getElementById(id);['pointerdown','touchstart'].forEach(n=>el.addEventListener(n,e=>{e.preventDefault();keys[k]=1},{passive:false}));['pointerup','pointerleave','pointercancel','touchend'].forEach(n=>el.addEventListener(n,e=>{e.preventDefault();keys[k]=0},{passive:false}))}bindHold('leanL','l');bindHold('leanR','r');bindHold('gas','g');bindHold('brake','b');
+function drawBike(cx,cy,lean){mx.save();mx.translate(cx,cy);mx.rotate(lean*.55);mx.fillStyle='#111';mx.beginPath();mx.ellipse(0,62,26,49,0,0,Math.PI*2);mx.fill();mx.fillStyle='#d93232';mx.beginPath();mx.moveTo(-38,40);mx.lineTo(-25,-50);mx.quadraticCurveTo(0,-78,25,-50);mx.lineTo(38,40);mx.closePath();mx.fill();mx.fillStyle='#f4c52d';mx.fillRect(-19,-22,38,24);mx.strokeStyle='#1a1a1a';mx.lineWidth=9;mx.beginPath();mx.moveTo(-58,-15);mx.lineTo(58,-15);mx.stroke();mx.fillStyle='#294d81';mx.fillRect(-27,-105,54,74);mx.fillStyle='#efb17e';mx.beginPath();mx.arc(0,-123,27,0,Math.PI*2);mx.fill();mx.fillStyle='#232323';mx.beginPath();mx.arc(0,-130,29,Math.PI,Math.PI*2);mx.fill();mx.fillStyle='#111';mx.fillRect(-42,15,84,15);mx.restore()}
+function drawMoto(){mx.clearRect(0,0,900,600);let sky=mx.createLinearGradient(0,0,0,250);sky.addColorStop(0,'#6dc8f0');sky.addColorStop(1,'#d7f2ff');mx.fillStyle=sky;mx.fillRect(0,0,900,250);mx.fillStyle='#5c9344';mx.fillRect(0,250,900,350);mx.fillStyle='#778f9e';mx.beginPath();mx.moveTo(0,240);mx.lineTo(150,130);mx.lineTo(280,235);mx.lineTo(430,105);mx.lineTo(590,235);mx.lineTo(760,145);mx.lineTo(900,245);mx.closePath();mx.fill();let curve=Math.sin(road/120)*185,far=450+curve*.14,near=450+curve;mx.fillStyle='#4b4b4b';mx.beginPath();mx.moveTo(far-72,250);mx.lineTo(far+72,250);mx.lineTo(near+360,600);mx.lineTo(near-360,600);mx.closePath();mx.fill();mx.strokeStyle='#fff3c7';mx.lineWidth=8;mx.setLineDash([26,25]);mx.beginPath();mx.moveTo(far,250);mx.lineTo(near,600);mx.stroke();mx.setLineDash([]);for(let i=0;i<7;i++){let y=300+i*52,x=80+i*10;mx.fillStyle='#3b722f';mx.beginPath();mx.arc(x,y,25+i*2,0,Math.PI*2);mx.fill();mx.beginPath();mx.arc(900-x,y+15,25+i*2,0,Math.PI*2);mx.fill()}drawBike(450,505,bike.lean)}
+function motoLoop(){if(keys.g)bike.speed=Math.min(10,bike.speed+.095);else bike.speed=Math.max(0,bike.speed-.032);if(keys.b)bike.speed=Math.max(0,bike.speed-.2);let target=(keys.r?1:0)-(keys.l?1:0);bike.lean+=(target-bike.lean)*.14;road+=bike.speed;let need=Math.sin(road/120);if(bike.speed>4&&Math.abs(need)>.35&&Math.sign(need)!==Math.sign(bike.lean)&&Math.abs(bike.lean)<.22)bike.speed*=.984;else score+=bike.speed*.025;document.getElementById('mSpeed').textContent=Math.floor(bike.speed*10);document.getElementById('mScore').textContent=Math.floor(score);drawMoto();requestAnimationFrame(motoLoop)}requestAnimationFrame(motoLoop);
+// LIGHT
+const circle=document.getElementById('circle');let lights=[],hot=0,tickets=0,running=true,lastTick=0,jackpot=4;for(let i=0;i<16;i++){let q=document.createElement('div');q.className='light';let a=i/16*Math.PI*2-Math.PI/2;q.style.left=(50+41*Math.cos(a))+'%';q.style.top=(50+41*Math.sin(a))+'%';circle.appendChild(q);lights.push(q)}lights[jackpot].classList.add('win');function lightLoop(t){if(running&&t-lastTick>85){lights[hot].classList.remove('hot');hot=(hot+1)%16;lights[hot].classList.add('hot');lastTick=t}requestAnimationFrame(lightLoop)}requestAnimationFrame(lightLoop);const stopButton=document.getElementById('stopBtn'),lightMessage=document.getElementById('lightMsg');stopButton.onclick=()=>{if(!running){running=true;stopButton.textContent='STOP!';lightMessage.textContent='Stop on the green jackpot light.';return}running=false;let win=hot===jackpot;tickets+=win?100:10;document.getElementById('tickets').textContent=tickets;lightMessage.textContent=win?'JACKPOT! 100 tickets!':'10 tickets! Tap PLAY AGAIN.';stopButton.textContent='PLAY AGAIN'};
+</script></body></html>
