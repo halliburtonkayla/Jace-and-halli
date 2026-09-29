@@ -3,110 +3,92 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Jace & Halli Art Studio</title>
+<title>Jace & Halli Coloring Book</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:#fff8df;font-family:Arial,sans-serif;color:#17335c;overscroll-behavior:none}
-header{padding:24px 12px;text-align:center;font-size:34px;font-weight:900;background:linear-gradient(110deg,#65d9ef,#ffe56d,#ff9db4)}
-.wrap{max-width:900px;margin:auto;padding:16px}
-.nav,.tools,.palette,.sizes,.pages{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}
-button,a{border:0;border-radius:20px;padding:14px 18px;font-size:20px;font-weight:800;background:#ffe36d;color:#17335c;box-shadow:0 6px 0 #d4d4d4;text-decoration:none}
-button:active,a:active{transform:translateY(3px);box-shadow:0 3px 0 #d4d4d4}
-.color{width:52px;height:52px;border-radius:50%;padding:0;border:4px solid white;box-shadow:0 0 0 2px #bbb,0 5px 0 #ccc}
-.color.active{outline:5px solid #17335c}
-label{font-weight:900;font-size:18px}
-input[type=color]{width:64px;height:54px;border:0;background:none}
-.canvasbox{background:white;border:7px solid #ddd;border-radius:30px;overflow:hidden;touch-action:none}
-canvas{display:block;width:100%;height:58vh;min-height:440px;touch-action:none;background:white}
-.small{font-size:16px;padding:11px 14px}
-.sheet{background:#e8ddff}
-#status{font-weight:800;min-height:24px}
+body{margin:0;background:#fff8df;font-family:Arial Rounded MT Bold,Arial,sans-serif;color:#17335c}
+header{padding:22px 10px;text-align:center;font-size:32px;font-weight:900;background:linear-gradient(110deg,#65d9ef,#ffe56d,#ff9db4)}
+.wrap{max-width:950px;margin:auto;padding:14px}
+.nav,.palette,.pages{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;margin:12px 0}
+button,a{border:0;border-radius:20px;padding:13px 16px;font-size:18px;font-weight:900;background:#ffe36d;color:#17335c;box-shadow:0 5px #ccc;text-decoration:none}
+.pagebtn{background:#eadfff}.pagebtn.active{outline:5px solid #17335c}
+.swatch{width:48px;height:48px;border-radius:50%;padding:0;border:4px solid white;box-shadow:0 0 0 2px #aaa}
+.swatch.active{outline:5px solid #17335c}
+.book{background:white;border:7px solid #ddd;border-radius:28px;padding:10px;overflow:hidden;box-shadow:0 10px 28px #0002}
+svg{display:block;width:100%;height:auto;max-height:68vh;touch-action:manipulation;background:white}
+.paint{fill:#fff;stroke:#202020;stroke-width:5;stroke-linejoin:round;stroke-linecap:round;cursor:pointer}
+.detail{fill:none;stroke:#202020;stroke-width:5;stroke-linejoin:round;stroke-linecap:round;pointer-events:none}
+#status{text-align:center;font-weight:900;font-size:18px;padding:8px}
 </style>
 </head>
 <body>
-<header>🎨 Jace & Halli's Art Studio</header>
+<header>Jace & Halli's Stay-In-The-Lines Coloring Book</header>
 <div class="wrap">
- <div class="nav"><a href="index.html">🏠 Home</a><button onclick="undo()">↩️ Undo</button><button onclick="clearCanvas()">🗑️ New Page</button><button onclick="savePic()">💾 Save Picture</button></div>
-
- <label>Pick a tool:</label>
- <div class="tools">
-  <button class="small" onclick="setTool('crayon')">🖍️ Crayon</button>
-  <button class="small" onclick="setTool('marker')">🖊️ Marker</button>
-  <button class="small" onclick="setTool('pencil')">✏️ Pencil</button>
-  <button class="small" onclick="setTool('eraser')">🧽 Eraser</button>
- </div>
-
- <label>Pick a color:</label>
- <div class="palette" id="palette"></div>
- <div class="palette"><label>🌈 Any color:</label><input id="custom" type="color" value="#7c3aed" oninput="pick(this.value)"></div>
-
- <label>Brush size:</label>
- <div class="sizes"><button class="small" onclick="size=5">● Small</button><button class="small" onclick="size=12">● Medium</button><button class="small" onclick="size=24">● Big</button><button class="small" onclick="size=40">● Huge</button></div>
-
- <label>Coloring sheets:</label>
+ <div class="nav"><a href="index.html">Home</a><button onclick="resetPage()">New Copy</button></div>
  <div class="pages">
-  <button class="small sheet" onclick="sheet('truck')">🛻 Monster Truck</button>
-  <button class="small sheet" onclick="sheet('dino')">🦖 Dinosaur</button>
-  <button class="small sheet" onclick="sheet('doll')">🪆 Doll</button>
-  <button class="small sheet" onclick="sheet('blocks')">🧱 Blocks</button>
-  <button class="small sheet" onclick="sheet('balloons')">🎈 Balloons</button>
-  <button class="small sheet" onclick="clearCanvas()">📄 Blank</button>
+  <button class="pagebtn active" data-page="truck">Monster Truck</button>
+  <button class="pagebtn" data-page="dino">Dinosaur</button>
+  <button class="pagebtn" data-page="doll">Baby Doll</button>
+  <button class="pagebtn" data-page="balloons">Balloons</button>
+  <button class="pagebtn" data-page="blocks">Toy Blocks</button>
  </div>
- <div id="status">Touch the white page and draw! ✨</div>
- <div class="canvasbox"><canvas id="c"></canvas></div>
+ <div class="palette" id="palette"></div>
+ <div id="status">Pick a color, then tap a section. The color stays inside the lines.</div>
+ <div class="book" id="book"></div>
 </div>
 <script>
-const c=document.getElementById('c'),ctx=c.getContext('2d');
-let color='#e53935',size=12,tool='crayon',drawing=false,last=null,history=[];
-const colors=['#000000','#ffffff','#795548','#e53935','#ff7043','#ffca28','#ffee58','#7cb342','#00c853','#26c6da','#039be5','#1565c0','#5e35b1','#8e24aa','#ec407a','#ff80ab','#9e9e9e'];
+const colors=['#ef4444','#f97316','#facc15','#84cc16','#22c55e','#06b6d4','#3b82f6','#6366f1','#a855f7','#ec4899','#8b5e3c','#111827','#ffffff'];
+let color=colors[0],current='truck';
 const pal=document.getElementById('palette');
-colors.forEach((x,i)=>{let b=document.createElement('button');b.className='color';b.style.background=x;b.title=x;b.onclick=()=>pick(x,b);pal.appendChild(b);if(i===3)b.classList.add('active')});
-function pick(x,b){color=x;tool=tool==='eraser'?'marker':tool;document.querySelectorAll('.color').forEach(e=>e.classList.remove('active'));if(b)b.classList.add('active')}
-function setTool(t){tool=t;document.getElementById('status').textContent=t==='eraser'?'Eraser is ready! 🧽':'Draw with the '+t+'! 🎨'}
-function resize(){
- let old=document.createElement('canvas');old.width=c.width;old.height=c.height;old.getContext('2d').drawImage(c,0,0);
- let r=c.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);c.width=r.width*d;c.height=r.height*d;ctx.setTransform(d,0,0,d,0,0);ctx.lineCap='round';ctx.lineJoin='round';
- if(old.width) ctx.drawImage(old,0,0,old.width,old.height,0,0,r.width,r.height)
+colors.forEach((c,i)=>{const b=document.createElement('button');b.className='swatch'+(i===0?' active':'');b.style.background=c;b.onclick=()=>{color=c;document.querySelectorAll('.swatch').forEach(x=>x.classList.remove('active'));b.classList.add('active')};pal.appendChild(b)});
+
+const sheets={
+truck:`<svg viewBox="0 0 800 600" aria-label="Monster truck coloring sheet">
+<rect class="paint" x="0" y="0" width="800" height="600"/>
+<path class="paint" d="M155 325 L255 325 L315 235 L515 235 L590 325 L675 325 L700 410 L120 410 Z"/>
+<path class="paint" d="M330 255 L405 255 L405 320 L285 320 Z"/><path class="paint" d="M425 255 L500 255 L560 320 L425 320 Z"/>
+<circle class="paint" cx="235" cy="430" r="82"/><circle class="paint" cx="585" cy="430" r="82"/>
+<circle class="paint" cx="235" cy="430" r="34"/><circle class="paint" cx="585" cy="430" r="34"/>
+<path class="detail" d="M150 365 H675 M115 410 H705 M350 350 h120 M170 330 l-35-45 h-55"/>
+</svg>`,
+dino:`<svg viewBox="0 0 800 600" aria-label="Dinosaur coloring sheet">
+<rect class="paint" x="0" y="0" width="800" height="600"/>
+<path class="paint" d="M105 375 C155 245 300 220 420 280 C470 305 515 280 535 220 C552 170 625 145 680 185 C735 225 710 305 640 315 C590 323 555 350 555 395 L540 470 L470 470 L455 395 C405 430 345 442 275 425 L250 495 L180 495 L185 405 C145 405 115 395 105 375 Z"/>
+<path class="paint" d="M205 300 L170 245 L240 275 Z"/><path class="paint" d="M285 267 L265 205 L330 260 Z"/><path class="paint" d="M370 272 L375 205 L420 285 Z"/>
+<circle class="paint" cx="650" cy="220" r="13"/><path class="detail" d="M630 265 q35 20 62 -5 M105 375 C65 350 50 320 60 285"/>
+</svg>`,
+doll:`<svg viewBox="0 0 800 600" aria-label="Baby doll coloring sheet">
+<rect class="paint" x="0" y="0" width="800" height="600"/>
+<circle class="paint" cx="400" cy="175" r="105"/>
+<path class="paint" d="M300 315 Q400 265 500 315 L540 470 Q400 520 260 470 Z"/>
+<path class="paint" d="M305 330 Q220 340 175 410 L225 445 Q280 405 330 390 Z"/>
+<path class="paint" d="M495 330 Q580 340 625 410 L575 445 Q520 405 470 390 Z"/>
+<path class="paint" d="M330 475 L310 555 L370 555 L400 485 Z"/><path class="paint" d="M470 475 L490 555 L430 555 L400 485 Z"/>
+<path class="paint" d="M315 115 Q400 45 485 115 Q470 70 400 65 Q330 70 315 115 Z"/>
+<circle class="detail" cx="360" cy="170" r="8"/><circle class="detail" cx="440" cy="170" r="8"/><path class="detail" d="M365 215 Q400 240 435 215"/>
+</svg>`,
+balloons:`<svg viewBox="0 0 800 600" aria-label="Balloons coloring sheet">
+<rect class="paint" x="0" y="0" width="800" height="600"/>
+<ellipse class="paint" cx="200" cy="190" rx="90" ry="115"/><ellipse class="paint" cx="395" cy="145" rx="95" ry="120"/><ellipse class="paint" cx="595" cy="205" rx="92" ry="118"/>
+<ellipse class="paint" cx="300" cy="340" rx="86" ry="110"/><ellipse class="paint" cx="505" cy="350" rx="86" ry="110"/>
+<path class="detail" d="M200 305 C230 400 335 435 400 550 M395 265 C390 360 420 455 400 550 M595 323 C555 405 470 455 400 550 M300 450 C330 495 365 520 400 550 M505 460 C475 500 445 525 400 550"/>
+</svg>`,
+blocks:`<svg viewBox="0 0 800 600" aria-label="Toy blocks coloring sheet">
+<rect class="paint" x="0" y="0" width="800" height="600"/>
+<rect class="paint" x="115" y="370" width="180" height="150" rx="12"/><rect class="paint" x="310" y="370" width="180" height="150" rx="12"/><rect class="paint" x="505" y="370" width="180" height="150" rx="12"/>
+<rect class="paint" x="210" y="205" width="180" height="150" rx="12"/><rect class="paint" x="405" y="205" width="180" height="150" rx="12"/>
+<rect class="paint" x="310" y="40" width="180" height="150" rx="12"/>
+<path class="detail" d="M180 470 Q205 405 230 470 Z M365 410 h70 l-35 70 Z M570 420 q35-40 70 0 q-35 60-70 0 M275 250 h50 v60 h-50 Z M455 250 q40-50 80 0 q-40 65-80 0 M360 95 h80 M400 55 v80"/>
+</svg>`
+};
+
+function render(){
+ const book=document.getElementById('book');book.innerHTML=sheets[current];
+ book.querySelectorAll('.paint').forEach(el=>el.addEventListener('pointerdown',e=>{e.preventDefault();el.style.fill=color}));
 }
-setTimeout(resize,50);addEventListener('resize',resize);
-function snapshot(){if(history.length>15)history.shift();history.push(c.toDataURL())}
-function pos(e){let r=c.getBoundingClientRect(),p=e.touches?e.touches[0]:e;return{x:p.clientX-r.left,y:p.clientY-r.top}}
-function start(e){e.preventDefault();snapshot();drawing=true;last=pos(e);dot(last)}
-function move(e){if(!drawing)return;e.preventDefault();let p=pos(e);draw(last,p);last=p}
-function end(){drawing=false;last=null}
-function style(){
- ctx.globalAlpha=tool==='crayon'?.72:tool==='pencil'?.82:1;
- ctx.strokeStyle=tool==='eraser'?'#ffffff':color;ctx.fillStyle=ctx.strokeStyle;
- ctx.lineWidth=tool==='pencil'?Math.max(2,size*.45):tool==='marker'?size*1.25:tool==='eraser'?size*2:size;
-}
-function dot(p){style();ctx.beginPath();ctx.arc(p.x,p.y,ctx.lineWidth/2,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1}
-function draw(a,b){style();ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.globalAlpha=1}
-['pointerdown'].forEach(n=>c.addEventListener(n,start));c.addEventListener('pointermove',move);addEventListener('pointerup',end);c.addEventListener('pointercancel',end);
-function clearCanvas(){snapshot();ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,c.width,c.height);ctx.restore()}
-function undo(){let src=history.pop();if(!src)return;let im=new Image();im.onload=()=>{clearCanvasNoHistory();ctx.drawImage(im,0,0,c.getBoundingClientRect().width,c.getBoundingClientRect().height)};im.src=src}
-function clearCanvasNoHistory(){ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,c.width,c.height);ctx.restore()}
-function savePic(){let a=document.createElement('a');a.download='Jace-Halli-Art.png';a.href=c.toDataURL('image/png');a.click();document.getElementById('status').textContent='Picture saved! ⭐'}
-function outline(){ctx.strokeStyle='#333';ctx.fillStyle='white';ctx.lineWidth=6;ctx.globalAlpha=1}
-function sheet(type){
- clearCanvas(); let w=c.getBoundingClientRect().width,h=c.getBoundingClientRect().height;outline();
- if(type==='truck'){
-  ctx.strokeRect(w*.18,h*.42,w*.58,h*.2);ctx.strokeRect(w*.46,h*.3,w*.25,h*.13);
-  [w*.3,w*.66].forEach(x=>{ctx.beginPath();ctx.arc(x,h*.65,45,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(x,h*.65,20,0,Math.PI*2);ctx.stroke()});
-  ctx.font='bold 34px Arial';ctx.fillStyle='#333';ctx.fillText('MONSTER TRUCK',w*.2,h*.2)
- } else if(type==='dino'){
-  ctx.beginPath();ctx.ellipse(w*.48,h*.48,w*.25,h*.17,0,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(w*.7,h*.34,60,0,Math.PI*2);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(w*.25,h*.48);ctx.lineTo(w*.08,h*.35);ctx.lineTo(w*.22,h*.55);ctx.stroke();
-  [[.38,.62],[.56,.62]].forEach(q=>{ctx.beginPath();ctx.moveTo(w*q[0],h*q[1]);ctx.lineTo(w*(q[0]-.03),h*.78);ctx.lineTo(w*(q[0]+.04),h*.78);ctx.stroke()});
-  ctx.beginPath();ctx.arc(w*.72,h*.32,6,0,7);ctx.fillStyle='#333';ctx.fill()
- } else if(type==='doll'){
-  ctx.beginPath();ctx.arc(w*.5,h*.27,70,0,7);ctx.stroke();ctx.beginPath();ctx.moveTo(w*.5,h*.36);ctx.lineTo(w*.35,h*.65);ctx.lineTo(w*.65,h*.65);ctx.closePath();ctx.stroke();
-  ctx.beginPath();ctx.moveTo(w*.42,h*.43);ctx.lineTo(w*.25,h*.53);ctx.moveTo(w*.58,h*.43);ctx.lineTo(w*.75,h*.53);ctx.moveTo(w*.43,h*.65);ctx.lineTo(w*.38,h*.82);ctx.moveTo(w*.57,h*.65);ctx.lineTo(w*.62,h*.82);ctx.stroke()
- } else if(type==='blocks'){
-  for(let i=0;i<3;i++)ctx.strokeRect(w*(.2+i*.2),h*.58,w*.18,h*.16);for(let i=0;i<2;i++)ctx.strokeRect(w*(.3+i*.2),h*.41,w*.18,h*.16);ctx.strokeRect(w*.4,h*.24,w*.18,h*.16)
- } else {
-  [[.25,.3],[.5,.24],[.72,.34],[.36,.5],[.62,.53]].forEach((q,i)=>{ctx.beginPath();ctx.ellipse(w*q[0],h*q[1],55,70,0,0,7);ctx.stroke();ctx.beginPath();ctx.moveTo(w*q[0],h*q[1]+70);ctx.quadraticCurveTo(w*(q[0]+.08),h*.75,w*.5,h*.88);ctx.stroke()})
- }
- history=[];
-}
+function resetPage(){render();document.getElementById('status').textContent='Fresh page ready. Tap inside a shape to color it.'}
+document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{current=b.dataset.page;document.querySelectorAll('[data-page]').forEach(x=>x.classList.remove('active'));b.classList.add('active');render()});
+render();
 </script>
-</body></html>
+</body>
+</html>
