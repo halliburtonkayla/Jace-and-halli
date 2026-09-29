@@ -1,1 +1,83 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>MAGIC PLAYROOM</title><style>*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;touch-action:none;font-family:Arial Rounded MT Bold,Arial;background:linear-gradient(#ffe99b,#ffa9cc)}.home{position:fixed;z-index:9;left:12px;top:12px;width:62px;height:62px;border-radius:50%;border:4px solid white;background:#ff70aa;color:#fff;font-size:28px}.room{position:absolute;inset:0;padding:95px 20px 20px;display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.toy{border:7px solid #fff;border-radius:35px;background:linear-gradient(145deg,#fff9,#ffffff33);position:relative;overflow:hidden;box-shadow:0 8px 18px #0002}.toy:before{content:"";position:absolute;left:20%;top:18%;width:60%;height:60%;border-radius:35%;background:var(--c);box-shadow:inset 0 0 25px #fff9,0 10px 15px #0002}.toy:active{transform:scale(.92)}.baby{position:absolute;left:36%;top:26%;width:28%;height:42%;border-radius:45% 45% 35% 35%;background:#c98255;border:9px solid #fff5;z-index:3;pointer-events:none}.baby:before{content:"";position:absolute;left:18%;top:25%;width:14%;height:14%;border-radius:50%;background:#222;box-shadow:40px 0 #222}.baby:after{content:"";position:absolute;left:35%;top:55%;width:30%;height:12%;border-radius:0 0 20px 20px;background:#fff}</style></head><body><button class="home" onclick="location.href='halli.html'">⌂</button><div class="room" id="room"></div><script>const data=["Lamp","Ceiling fan","Toy car","Ball","Teddy bear","Blocks","Television","Music toy","Window butterfly","Toy box","Bubbles"];const AC=window.AudioContext||window.webkitAudioContext;function sound(i){let a=new AC,o=a.createOscillator(),g=a.createGain();o.frequency.value=180+i*55;g.gain.value=.08;o.connect(g).connect(a.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.18);o.stop(a.currentTime+.2)}data.forEach((v,i)=>{let b=document.createElement('button');b.className='toy';b.style.setProperty('--c','hsl('+(i*51)+',80%,65%)');b.setAttribute('aria-label',v);b.onclick=()=>{sound(i);b.animate([{transform:'scale(1) rotate(0)'},{transform:'scale(1.18) rotate(8deg)'},{transform:'scale(1) rotate(0)'}],{duration:450});if(window.baby)baby.animate([{transform:'rotate(0)'},{transform:'rotate(-8deg) scale(1.05)'},{transform:'rotate(8deg)'},{transform:'rotate(0)'}],{duration:700});let u=new SpeechSynthesisUtterance(v);u.rate=.8;speechSynthesis.cancel();speechSynthesis.speak(u)};room.append(b)});</script></body></html>
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Halli's Magic Playroom</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:"Arial Rounded MT Bold",Arial,sans-serif;background:linear-gradient(#ffe7a3 0 28%,#ffd3e2 28% 100%);color:#633b50}
+body{overflow-x:hidden}
+.top{padding:14px 16px 10px;display:flex;align-items:center;gap:12px}
+.home{width:58px;height:58px;border-radius:50%;border:4px solid #fff;background:#ff70aa;color:#fff;font-size:29px;box-shadow:0 5px 12px #0002}
+.title{font-size:clamp(24px,5vw,42px);margin:0}.sub{margin:3px 0 0;font-size:16px}
+.room{max-width:980px;margin:auto;padding:8px 16px 30px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.toy{min-height:185px;border:5px solid #fff;border-radius:30px;background:#fff8;position:relative;overflow:hidden;box-shadow:0 7px 14px #8b526522;touch-action:manipulation}
+.toy:active{transform:scale(.97)}
+.pic{height:135px;position:relative;overflow:hidden}
+.name{display:block;background:#fff;padding:10px 6px;font-size:20px;color:#633b50}
+.lamp .pic{background:linear-gradient(#b8e8ff 0 64%,#efc89f 64%)}.lampShade{position:absolute;width:88px;height:58px;border-radius:50% 50% 20% 20%;background:#ffd84a;left:50%;top:24px;transform:translateX(-50%);box-shadow:0 0 25px 8px #fff6a8}.lampStem{position:absolute;width:12px;height:48px;background:#9b6b48;left:calc(50% - 6px);top:77px}.lampBase{position:absolute;width:70px;height:14px;border-radius:50%;background:#9b6b48;left:calc(50% - 35px);top:116px}
+.fan .pic{background:#d8f5ff}.fanHub{position:absolute;width:28px;height:28px;border-radius:50%;background:#fff;left:calc(50% - 14px);top:54px;z-index:2}.blade{position:absolute;width:82px;height:25px;border-radius:80% 20%;background:#7ec9db;left:50%;top:55px;transform-origin:0 12px}.blade:nth-child(2){transform:rotate(120deg)}.blade:nth-child(3){transform:rotate(240deg)}
+.car .pic{background:linear-gradient(#aee9ff 0 68%,#8fd27d 68%)}.carBody{position:absolute;width:150px;height:55px;border-radius:40px 50px 20px 20px;background:#ff6f91;left:calc(50% - 75px);top:58px}.carTop{position:absolute;width:80px;height:42px;border-radius:45px 45px 5px 5px;background:#ff9db5;left:calc(50% - 40px);top:32px}.wheel{position:absolute;width:32px;height:32px;border:7px solid #444;border-radius:50%;background:#ddd;top:92px}.w1{left:calc(50% - 58px)}.w2{left:calc(50% + 27px)}
+.ball .pic{background:#c7f0ce}.ballShape{position:absolute;width:94px;height:94px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#fff7 0 8%,#7d5cff 9% 42%,#ff7eb5 43% 67%,#ffd54d 68%);left:calc(50% - 47px);top:20px;box-shadow:0 10px 8px #0002}
+.bear .pic{background:#fff0c8}.head{position:absolute;width:90px;height:82px;border-radius:48%;background:#bd7d4e;left:calc(50% - 45px);top:31px}.ear{position:absolute;width:35px;height:35px;border-radius:50%;background:#a96b40;top:18px}.e1{left:calc(50% - 54px)}.e2{left:calc(50% + 19px)}.eye{position:absolute;width:9px;height:12px;border-radius:50%;background:#29201b;top:58px}.eye1{left:calc(50% - 21px)}.eye2{left:calc(50% + 12px)}.snout{position:absolute;width:38px;height:28px;border-radius:50%;background:#e9b78d;left:calc(50% - 19px);top:73px}
+.blocks .pic{background:#e8dcff}.block{position:absolute;width:55px;height:55px;border-radius:8px;bottom:12px;box-shadow:inset 0 0 0 5px #fff5}.b1{left:22%;background:#ff6f91}.b2{left:42%;bottom:62px;background:#ffd54d}.b3{left:61%;background:#55d6a8}
+.tv .pic{background:#cce8ff}.screen{position:absolute;width:155px;height:98px;border:12px solid #6d5b72;border-radius:18px;background:linear-gradient(135deg,#76ddff,#ff9fc5,#ffe477);left:calc(50% - 78px);top:17px}.screen:after{content:"★";font-size:50px;color:#fff;position:absolute;left:47px;top:10px}
+.music .pic{background:#ffe8f3}.note{position:absolute;font-size:72px;left:calc(50% - 25px);top:20px;color:#8c5bd8}.key{position:absolute;width:38px;height:75px;background:#fff;border:3px solid #725b70;bottom:8px}.k1{left:24%}.k2{left:39%}.k3{left:54%}.k4{left:69%}
+.window .pic{background:#c9efff}.windowBox{position:absolute;width:145px;height:105px;border:10px solid #fff;background:linear-gradient(#75cfff,#d9f7ff 62%,#7dcd78 63%);left:calc(50% - 72px);top:14px}.butterfly{position:absolute;font-size:56px;left:calc(50% - 30px);top:40px}
+.box .pic{background:#fff0b8}.chest{position:absolute;width:160px;height:76px;border-radius:10px;background:#8bcf9a;left:calc(50% - 80px);top:54px;border:7px solid #fff}.toybits{position:absolute;font-size:50px;left:calc(50% - 55px);top:16px}
+.bubbles .pic{background:linear-gradient(#bceeff,#e8fbff)}.bubble{position:absolute;border:4px solid #fff9;border-radius:50%;background:#9eeeff66;box-shadow:inset 4px 4px 8px #fff}.bu1{width:65px;height:65px;left:18%;top:48px}.bu2{width:88px;height:88px;left:48%;top:18px}.bu3{width:45px;height:45px;left:72%;top:77px}
+.duck .pic{background:#c7f1ff}.duckBody{position:absolute;width:120px;height:70px;border-radius:55% 55% 45% 45%;background:#ffd94f;left:calc(50% - 60px);top:55px}.duckHead{position:absolute;width:67px;height:67px;border-radius:50%;background:#ffd94f;left:calc(50% - 5px);top:24px}.duckEye{position:absolute;width:9px;height:11px;border-radius:50%;background:#222;left:calc(50% + 24px);top:45px}.beak{position:absolute;width:38px;height:18px;border-radius:50%;background:#ff9b42;left:calc(50% + 48px);top:61px}
+.spark{position:fixed;pointer-events:none;font-size:36px;z-index:20;animation:pop .7s ease-out forwards}@keyframes pop{to{transform:translateY(-70px) scale(1.6);opacity:0}}
+@media(max-width:520px){.room{gap:10px;padding:6px 10px 22px}.toy{min-height:155px;border-radius:24px}.pic{height:110px}.name{font-size:17px}.top{padding-left:10px}.home{width:52px;height:52px}.carBody{top:50px}.carTop{top:25px}.wheel{top:82px}}
+@media(min-width:760px){.room{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header class="top"><button class="home" aria-label="Back to Halli's page">⌂</button><div><h1 class="title">Halli's Magic Playroom</h1><p class="sub">Tap a picture and watch it play!</p></div></header>
+<main class="room" id="room">
+<button class="toy lamp" data-word="Light"><div class="pic"><i class="lampShade"></i><i class="lampStem"></i><i class="lampBase"></i></div><span class="name">Light</span></button>
+<button class="toy fan" data-word="Fan"><div class="pic fanPic"><i class="blade"></i><i class="blade"></i><i class="blade"></i><i class="fanHub"></i></div><span class="name">Fan</span></button>
+<button class="toy car" data-word="Car"><div class="pic"><i class="carTop"></i><i class="carBody"></i><i class="wheel w1"></i><i class="wheel w2"></i></div><span class="name">Toy Car</span></button>
+<button class="toy ball" data-word="Ball"><div class="pic"><i class="ballShape"></i></div><span class="name">Ball</span></button>
+<button class="toy bear" data-word="Teddy bear"><div class="pic"><i class="ear e1"></i><i class="ear e2"></i><i class="head"></i><i class="eye eye1"></i><i class="eye eye2"></i><i class="snout"></i></div><span class="name">Teddy Bear</span></button>
+<button class="toy blocks" data-word="Blocks"><div class="pic"><i class="block b1"></i><i class="block b2"></i><i class="block b3"></i></div><span class="name">Blocks</span></button>
+<button class="toy tv" data-word="Television"><div class="pic"><i class="screen"></i></div><span class="name">TV</span></button>
+<button class="toy music" data-word="Music"><div class="pic"><i class="note">♪</i><i class="key k1"></i><i class="key k2"></i><i class="key k3"></i><i class="key k4"></i></div><span class="name">Music</span></button>
+<button class="toy window" data-word="Butterfly"><div class="pic"><i class="windowBox"></i><span class="butterfly">🦋</span></div><span class="name">Butterfly</span></button>
+<button class="toy box" data-word="Toy box"><div class="pic"><span class="toybits">● ★ ▲</span><i class="chest"></i></div><span class="name">Toy Box</span></button>
+<button class="toy bubbles" data-word="Bubbles"><div class="pic"><i class="bubble bu1"></i><i class="bubble bu2"></i><i class="bubble bu3"></i></div><span class="name">Bubbles</span></button>
+<button class="toy duck" data-word="Duck"><div class="pic"><i class="duckBody"></i><i class="duckHead"></i><i class="duckEye"></i><i class="beak"></i></div><span class="name">Duck</span></button>
+</main>
+<script>
+const root=document.getElementById('room');
+document.querySelector('.home').addEventListener('click',()=>location.href='halli.html');
+let ctx=null;
+function tone(n){
+ try{
+  const AC=window.AudioContext||window.webkitAudioContext;
+  if(!AC)return;
+  if(!ctx)ctx=new AC();
+  const o=ctx.createOscillator(),g=ctx.createGain();
+  o.type=n%2?'sine':'triangle';o.frequency.value=220+n*32;g.gain.value=.055;
+  o.connect(g).connect(ctx.destination);o.start();
+  g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.24);o.stop(ctx.currentTime+.25);
+ }catch(e){}
+}
+function say(word){if(!('speechSynthesis'in window))return;const u=new SpeechSynthesisUtterance(word);u.rate=.78;u.pitch=1.25;speechSynthesis.cancel();speechSynthesis.speak(u)}
+root.querySelectorAll('.toy').forEach((b,i)=>{
+ b.addEventListener('click',e=>{
+  tone(i);say(b.dataset.word);
+  b.animate([{transform:'scale(1)'},{transform:'scale(.94)'},{transform:'scale(1.04)'},{transform:'scale(1)'}],{duration:450});
+  const pic=b.querySelector('.pic');
+  if(b.classList.contains('fan')) pic.animate([{transform:'rotate(0deg)'},{transform:'rotate(360deg)'}],{duration:650,iterations:2});
+  if(b.classList.contains('car')) pic.animate([{transform:'translateX(-8px)'},{transform:'translateX(10px)'},{transform:'translateX(0)'}],{duration:550});
+  if(b.classList.contains('ball')) b.querySelector('.ballShape').animate([{transform:'translateY(0)'},{transform:'translateY(-35px)'},{transform:'translateY(0)'}],{duration:500});
+  if(b.classList.contains('bubbles')) b.querySelectorAll('.bubble').forEach((x,j)=>x.animate([{transform:'translateY(0) scale(1)',opacity:1},{transform:'translateY(-45px) scale(1.2)',opacity:.2},{transform:'translateY(0)',opacity:1}],{duration:700+j*120}));
+  if(b.classList.contains('window')) b.querySelector('.butterfly').animate([{transform:'translate(0,0)'},{transform:'translate(-45px,-20px) rotate(-12deg)'},{transform:'translate(45px,-35px) rotate(12deg)'},{transform:'translate(0,0)'}],{duration:1000});
+  if(b.classList.contains('lamp')) b.querySelector('.lampShade').animate([{filter:'brightness(1)'},{filter:'brightness(1.5)',boxShadow:'0 0 45px 18px #fff39b'},{filter:'brightness(1)'}],{duration:700});
+  const s=document.createElement('span');s.className='spark';s.textContent=['★','♥','✦','●'][i%4];s.style.left=(e.clientX||innerWidth/2)+'px';s.style.top=(e.clientY||innerHeight/2)+'px';document.body.appendChild(s);setTimeout(()=>s.remove(),750);
+ });
+});
+</script>
+</body></html>
