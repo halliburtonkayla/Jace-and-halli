@@ -1,3 +1,45 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Watch & Learn</title><style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial Rounded MT Bold,Arial;background:linear-gradient(#9fe9ff,#fff0a4,#ffb6d1);color:#17355e}header{text-align:center;padding:20px;font-size:38px;font-weight:900}.wrap{max-width:900px;margin:auto;padding:14px}.back{background:#fff;padding:12px 16px;border-radius:18px;text-decoration:none;color:#17355e;font-weight:900}.kids{display:grid;grid-template-columns:1fr 1fr;gap:16px}.panel{background:#fff9;border-radius:30px;padding:14px}.panel h2{text-align:center}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.v{border:0;border-radius:22px;min-height:125px;background:#fff;font-size:18px;font-weight:900;color:#17355e}.v span{display:block;font-size:48px}.pink .v{background:#ffe1ed}.modal{display:none;position:fixed;inset:0;background:#0009;align-items:center;justify-content:center;padding:20px}.box{background:#fff;border-radius:30px;padding:25px;max-width:500px;text-align:center}.box a,.box button{display:inline-block;border:0;border-radius:18px;padding:14px;margin:5px;font-size:18px;font-weight:900;text-decoration:none;background:#ffe05b;color:#17355e}@media(max-width:600px){.kids{grid-template-columns:1fr}}</style></head><body><header>📺 Watch & Learn</header><div class="wrap"><a class="back" href="index.html">🏠 Family Home</a><div class="kids"><section class="panel"><h2>🛻 Jace</h2><div class="grid"><button class="v" data-q="PAW Patrol official"><span>🐾</span>PAW Patrol</button><button class="v" data-q="monster trucks for kids learning"><span>🛻</span>Monster Trucks</button><button class="v" data-q="dinosaurs for kids educational"><span>🦖</span>Dinosaurs</button><button class="v" data-q="construction vehicles for kids"><span>🚜</span>Construction</button><button class="v" data-q="preschool science for kids"><span>🔬</span>Science</button><button class="v" data-q="ABC numbers preschool"><span>🔤</span>Learning</button></div></section><section class="panel pink"><h2>🎀 Halli</h2><div class="grid"><button class="v" data-q="Blippi official"><span>🧡</span>Blippi</button><button class="v" data-q="toddler animal sounds"><span>🐮</span>Animals</button><button class="v" data-q="colors for toddlers"><span>🌈</span>Colors</button><button class="v" data-q="ABC songs toddlers"><span>🔤</span>ABCs</button><button class="v" data-q="counting songs toddlers"><span>🔢</span>Counting</button><button class="v" data-q="nursery rhymes toddlers"><span>🎵</span>Songs</button></div></section></div></div><div class="modal" id="m"><div class="box"><h2>📺 Open YouTube Kids?</h2><p id="label"></p><button id="stay">⬅️ Stay Here</button><a id="open" target="_blank" rel="noopener">▶️ Open YouTube Kids</a></div></div><script>
-let m=document.querySelector('#m'),o=document.querySelector('#open');document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{let q=b.dataset.q;document.querySelector('#label').textContent='Look for “'+q+'” in YouTube Kids.';o.href='https://www.youtubekids.com/search?q='+encodeURIComponent(q);m.style.display='flex'});document.querySelector('#stay').onclick=()=>m.style.display='none';</script></body></html>
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Watch & Learn</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial Rounded MT Bold,Arial;background:linear-gradient(#9fe9ff,#fff0a4,#ffb6d1);color:#17355e}header{text-align:center;padding:20px;font-size:38px;font-weight:900}.wrap{max-width:900px;margin:auto;padding:14px}.back{background:#fff;padding:12px 16px;border-radius:18px;text-decoration:none;color:#17355e;font-weight:900}.kids{display:grid;grid-template-columns:1fr 1fr;gap:16px}.panel{background:#fff9;border-radius:30px;padding:14px}.panel h2{text-align:center}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.v{border:0;border-radius:22px;min-height:125px;background:#fff;font-size:18px;font-weight:900;color:#17355e}.v span{display:block;font-size:48px}.pink .v{background:#ffe1ed}.note{background:#fff;border-radius:18px;padding:10px;margin:12px 0;font-weight:800;text-align:center}.modal{display:none;position:fixed;inset:0;background:#0009;align-items:center;justify-content:center;padding:20px}.box{background:#fff;border-radius:30px;padding:25px;max-width:520px;text-align:center}.box button{display:inline-block;border:0;border-radius:18px;padding:14px;margin:5px;font-size:18px;font-weight:900;background:#ffe05b;color:#17355e}@media(max-width:600px){.kids{grid-template-columns:1fr}}</style>
+</head><body>
+<header>Watch & Learn</header>
+<div class="wrap">
+<a class="back" href="index.html">Family Home</a>
+<div class="note">Video buttons try to open the YouTube Kids app first. They never send Jace or Halli to regular YouTube.</div>
+<div class="kids">
+<section class="panel"><h2>Jace</h2><div class="grid">
+<button class="v" data-q="PAW Patrol official"><span>🐾</span>PAW Patrol</button>
+<button class="v" data-q="monster trucks for kids learning"><span>🛻</span>Monster Trucks</button>
+<button class="v" data-q="dinosaurs for kids educational"><span>🦖</span>Dinosaurs</button>
+<button class="v" data-q="construction vehicles for kids"><span>🚜</span>Construction</button>
+<button class="v" data-q="preschool science for kids"><span>🔬</span>Science</button>
+<button class="v" data-q="ABC numbers preschool"><span>🔤</span>Learning</button>
+</div></section>
+<section class="panel pink"><h2>Halli</h2><div class="grid">
+<button class="v" data-q="Blippi official"><span>🧡</span>Blippi</button>
+<button class="v" data-q="toddler animal sounds"><span>🐮</span>Animals</button>
+<button class="v" data-q="colors for toddlers"><span>🌈</span>Colors</button>
+<button class="v" data-q="ABC songs toddlers"><span>🔤</span>ABCs</button>
+<button class="v" data-q="counting songs toddlers"><span>🔢</span>Counting</button>
+<button class="v" data-q="nursery rhymes toddlers"><span>🎵</span>Songs</button>
+</div></section></div></div>
+<div class="modal" id="m"><div class="box"><h2>Open YouTube Kids</h2><p id="label"></p><button id="stay">Stay Here</button><button id="open">Open YouTube Kids App</button></div></div>
+<script>
+const modal=document.getElementById('m'),label=document.getElementById('label'),openBtn=document.getElementById('open');
+let query='';
+function openKids(q){
+ const enc=encodeURIComponent(q);
+ // Try the installed YouTube Kids app first. If iPadOS does not accept the app scheme,
+ // fall back only to the YouTube Kids site — never regular YouTube.
+ const fallback='https://www.youtubekids.com/search?q='+enc;
+ const started=Date.now();
+ window.location.href='youtubekids://search?q='+enc;
+ setTimeout(()=>{if(Date.now()-started<2200)window.location.href=fallback},1100);
+}
+document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{query=b.dataset.q;label.textContent='Search YouTube Kids for “'+query+'”.';modal.style.display='flex'});
+document.getElementById('stay').onclick=()=>modal.style.display='none';
+openBtn.onclick=()=>{modal.style.display='none';openKids(query)};
+</script>
+</body></html>
