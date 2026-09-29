@@ -7,58 +7,64 @@
 </div><script>
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab],.panel').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById(b.dataset.tab).classList.add('on')});
 // SKEE
-const sc=document.getElementById('skeeCanvas'),sx=sc.getContext('2d');let ball={x:450,y:584,vx:0,vy:0,moving:false},aimStart=null,sScore=0,sBalls=9;
+const sc=document.getElementById('skeeCanvas'),sx=sc.getContext('2d');let ball={x:450,y:584,vx:0,vy:0,moving:false,phase:'ready',target:null,t:0,startX:450,startY:584,endX:450,endY:100},aimStart=null,sScore=0,sBalls=9;
 const holes=[{x:450,y:112,r:38,p:100},{x:320,y:160,r:37,p:50},{x:580,y:160,r:37,p:50},{x:450,y:220,r:43,p:40},{x:450,y:305,r:47,p:30},{x:450,y:395,r:53,p:20},{x:450,y:475,r:57,p:10}];
-function drawSkee(){sx.clearRect(0,0,900,650);let bg=sx.createLinearGradient(0,0,0,650);bg.addColorStop(0,'#261424');bg.addColorStop(1,'#7a2d35');sx.fillStyle=bg;sx.fillRect(0,0,900,650);sx.fillStyle='#28131c';sx.fillRect(120,40,660,570);sx.fillStyle='#e0a564';sx.beginPath();sx.moveTo(315,485);sx.lineTo(352,80);sx.lineTo(548,80);sx.lineTo(585,485);sx.lineTo(725,650);sx.lineTo(175,650);sx.closePath();sx.fill();sx.strokeStyle='#754321';sx.lineWidth=14;sx.stroke();let shine=sx.createLinearGradient(260,0,640,0);shine.addColorStop(0,'#ffffff05');shine.addColorStop(.5,'#ffffff35');shine.addColorStop(1,'#00000008');sx.fillStyle=shine;sx.fill();holes.forEach(h=>{sx.fillStyle='#24161c';sx.beginPath();sx.ellipse(h.x,h.y,h.r,h.r*.52,0,0,Math.PI*2);sx.fill();sx.strokeStyle='#f3d174';sx.lineWidth=7;sx.stroke();sx.fillStyle='#fff';sx.font='bold 20px Arial';sx.textAlign='center';sx.fillText(h.p,h.x,h.y+7)});sx.strokeStyle='#8f5e32';sx.lineWidth=8;sx.beginPath();sx.arc(450,488,115,Math.PI,Math.PI*2);sx.stroke();let grad=sx.createRadialGradient(ball.x-10,ball.y-12,4,ball.x,ball.y,28);grad.addColorStop(0,'#fff4f4');grad.addColorStop(.25,'#e75b5b');grad.addColorStop(1,'#7b1616');sx.fillStyle=grad;sx.beginPath();sx.arc(ball.x,ball.y,27,0,Math.PI*2);sx.fill();sx.strokeStyle='#4d0909';sx.lineWidth=3;sx.stroke()}
-function resetBall(){ball={x:450,y:584,vx:0,vy:0,moving:false}}
+function drawSkee(){sx.clearRect(0,0,900,650);let bg=sx.createLinearGradient(0,0,0,650);bg.addColorStop(0,'#261424');bg.addColorStop(1,'#7a2d35');sx.fillStyle=bg;sx.fillRect(0,0,900,650);sx.fillStyle='#28131c';sx.fillRect(120,40,660,570);sx.fillStyle='#e0a564';sx.beginPath();sx.moveTo(315,485);sx.lineTo(352,80);sx.lineTo(548,80);sx.lineTo(585,485);sx.lineTo(725,650);sx.lineTo(175,650);sx.closePath();sx.fill();sx.strokeStyle='#754321';sx.lineWidth=14;sx.stroke();let shine=sx.createLinearGradient(260,0,640,0);shine.addColorStop(0,'#ffffff05');shine.addColorStop(.5,'#ffffff35');shine.addColorStop(1,'#00000008');sx.fillStyle=shine;sx.fill();holes.forEach(h=>{sx.fillStyle='#24161c';sx.beginPath();sx.ellipse(h.x,h.y,h.r,h.r*.52,0,0,Math.PI*2);sx.fill();sx.strokeStyle='#f3d174';sx.lineWidth=7;sx.stroke();sx.fillStyle='#fff';sx.font='bold 20px Arial';sx.textAlign='center';sx.fillText(h.p,h.x,h.y+7)});sx.strokeStyle='#8f5e32';sx.lineWidth=8;sx.beginPath();sx.arc(450,488,115,Math.PI,Math.PI*2);sx.stroke();let scale=ball.phase==='drop'?Math.max(.12,1-ball.t):1,rad=27*scale;sx.fillStyle='#0005';sx.beginPath();sx.ellipse(ball.x+7,ball.y+13,rad*.9,rad*.35,0,0,Math.PI*2);sx.fill();let grad=sx.createRadialGradient(ball.x-rad*.35,ball.y-rad*.4,2,ball.x,ball.y,Math.max(3,rad));grad.addColorStop(0,'#fff4f4');grad.addColorStop(.25,'#e75b5b');grad.addColorStop(1,'#7b1616');sx.fillStyle=grad;sx.beginPath();sx.arc(ball.x,ball.y,Math.max(3,rad),0,Math.PI*2);sx.fill();sx.strokeStyle='#4d0909';sx.lineWidth=Math.max(1,3*scale);sx.stroke()}
+function resetBall(){ball={x:450,y:584,vx:0,vy:0,moving:false,phase:'ready',target:null,t:0,startX:450,startY:584,endX:450,endY:100}}
+const sBallsEl=document.getElementById('sBalls'),skeeTip=document.getElementById('skeeTip');
 function canvasPoint(e){const r=sc.getBoundingClientRect();return{x:(e.clientX-r.left)*sc.width/r.width,y:(e.clientY-r.top)*sc.height/r.height}}
+function chooseTarget(dx,dy){
+ const aimX=450+dx*1.45;
+ let nearest=null,best=1e9;
+ for(const h of holes){const d=Math.abs(aimX-h.x)+Math.abs((Math.abs(dy)*.72+120)-h.y)*.20;if(d<best){best=d;nearest=h}}
+ const accuracy=Math.abs(aimX-nearest.x);
+ return accuracy<82?nearest:null;
+}
 function throwBall(dx,dy){
  if(ball.moving||sBalls<=0)return;
- if(dy>-20)dy=-120;
- const len=Math.hypot(dx,dy)||1;
- const power=Math.max(11,Math.min(20,len*.075));
- ball.moving=true;
- ball.vx=(dx/len)*power;
- ball.vy=(dy/len)*power;
- if(ball.vy>-5)ball.vy=-Math.abs(ball.vy)-7;
+ if(dy>-25)dy=-160;
  sBalls--;sBallsEl.textContent=sBalls;
- document.getElementById('skeeTip').textContent='Rolling! Aim the next ball anywhere up the lane.';
+ const target=chooseTarget(dx,dy);
+ ball.moving=true;ball.phase='roll';ball.t=0;ball.startX=450;ball.startY=584;ball.target=target;
+ if(target){ball.endX=target.x;ball.endY=target.y}
+ else{ball.endX=Math.max(245,Math.min(655,450+dx*2.2));ball.endY=55}
+ skeeTip.textContent=target?'Watch the ball roll all the way to the hole!':'That throw may miss — watch the ball!';
 }
-const sBallsEl=document.getElementById('sBalls');
-function aimDown(e){
- if(ball.moving||sBalls<=0)return;
- e.preventDefault();
- aimStart=canvasPoint(e);
- try{sc.setPointerCapture(e.pointerId)}catch(_){}
-}
-function aimUp(e){
- if(!aimStart)return;
- e.preventDefault();
- const p=canvasPoint(e),dx=p.x-aimStart.x,dy=p.y-aimStart.y;
- aimStart=null;throwBall(dx,dy);
-}
+function aimDown(e){if(ball.moving||sBalls<=0)return;e.preventDefault();aimStart=canvasPoint(e);try{sc.setPointerCapture(e.pointerId)}catch(_){}}
+function aimUp(e){if(!aimStart)return;e.preventDefault();const p=canvasPoint(e),dx=p.x-aimStart.x,dy=p.y-aimStart.y;aimStart=null;throwBall(dx,dy)}
 sc.addEventListener('pointerdown',aimDown,{passive:false});
 sc.addEventListener('pointerup',aimUp,{passive:false});
 sc.addEventListener('pointercancel',()=>aimStart=null);
+function easeOutCubic(t){return 1-Math.pow(1-t,3)}
 function skeeLoop(){
  if(ball.moving){
-  ball.x+=ball.vx;ball.y+=ball.vy;
-  ball.vx*=.997;ball.vy*=.998;
-  for(const h of holes){
-   if(Math.hypot(ball.x-h.x,(ball.y-h.y)*1.55)<h.r*.8){
-    sScore+=h.p;document.getElementById('sScore').textContent=sScore;
-    document.getElementById('skeeTip').textContent=h.p+' points! Swipe the next ball.';
-    resetBall();break;
+  if(ball.phase==='roll'){
+   ball.t+=.018;
+   const t=Math.min(1,ball.t),e=easeOutCubic(t);
+   ball.x=ball.startX+(ball.endX-ball.startX)*e;
+   ball.y=ball.startY+(ball.endY-ball.startY)*e;
+   // visible little hop as the ball climbs the ramp
+   ball.y-=Math.sin(Math.PI*t)*18;
+   if(t>=1){
+    if(ball.target){ball.phase='drop';ball.t=0;ball.x=ball.target.x;ball.y=ball.target.y}
+    else{ball.phase='miss';ball.t=0}
    }
-  }
-  if(ball.y<35||ball.x<245||ball.x>655){
-   document.getElementById('skeeTip').textContent='Miss! That is okay — aim and swipe the next ball.';
-   resetBall();
+  }else if(ball.phase==='drop'){
+   ball.t+=.045;
+   ball.x=ball.target.x;ball.y=ball.target.y+ball.t*13;
+   if(ball.t>=1){
+    sScore+=ball.target.p;document.getElementById('sScore').textContent=sScore;
+    skeeTip.textContent=ball.target.p+' points! You saw it go in! Swipe the next ball.';
+    resetBall();
+   }
+  }else if(ball.phase==='miss'){
+   ball.t+=.035;ball.y-=5;ball.x+=(ball.endX<450?-2.2:2.2);
+   if(ball.t>=1){skeeTip.textContent='Miss! Swipe the next ball and try again.';resetBall()}
   }
  }
  drawSkee();requestAnimationFrame(skeeLoop)
 }
-document.getElementById('newSkee').onclick=()=>{sScore=0;sBalls=9;document.getElementById('sScore').textContent=0;sBallsEl.textContent=9;document.getElementById('skeeTip').textContent='Touch the ball and swipe UP toward the hole you want. The ball follows your aim.';resetBall()};
+document.getElementById('newSkee').onclick=()=>{sScore=0;sBalls=9;document.getElementById('sScore').textContent=0;sBallsEl.textContent=9;skeeTip.textContent='Touch the ball and swipe UP toward the hole you want. Watch it roll all the way in.';resetBall()};
 resetBall();requestAnimationFrame(skeeLoop);
 // MOTORCYCLE
 const mc=document.getElementById('motoCanvas'),mx=mc.getContext('2d');let road=0,bike={lean:0,speed:0},keys={l:0,r:0,g:0,b:0},score=0;
