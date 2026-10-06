@@ -1,0 +1,1 @@
+{"name":"jace-halli-world","private":true,"type":"module","scripts":{"start":"node server/index.mjs","init":"node server/init.mjs","test":"node --test tests/*.test.mjs"},"engines":{"node":">=22.13"}}
