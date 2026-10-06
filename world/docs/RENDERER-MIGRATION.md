@@ -48,3 +48,7 @@ Physics for jumping trucks, bowling or other later activities may need dedicated
 - Nine repository tests pass. A native geometry check produced 62 static scene groups, about 114k triangles including instanced lawn geometry, 340 lawn cells and reversible cut-cell visibility. A state integration check exercises walking, bubble hit coordinates/pop, car, camera and mower exit with GPU drawing stubbed. These are not frame-rate or GPU visual claims.
 - The live cloud browser loaded the preview but reports WebGL disabled, so rendered-scene appearance and Safari performance cannot be verified there. A real peer join attempt timed out before reaching approval; fake transport tests do not substitute for two-iPad testing. Do not mark either hardware rendering or cross-device multiplayer QA complete.
 - Documentation consulted: https://threejs.org/manual/pages/creating-a-scene.html and https://threejs.org/docs/pages/WebGLRenderer.html. WebGL 2 is required for this renderer.
+
+### Directional artwork integration
+
+Family walkers now use the separate approved character-derived atlases instead of name markers alone. The camera follows the walking player; four directional views change with camera bearing. This remains an interim sprite presentation, pending approved animated models. Route dots share the existing logical coordinates in both renderers, and assisted steering feeds the authoritative movement simulation only while the child holds a pedal. No destination selection teleports players. The optional 3D gate and hardware QA requirement remain.

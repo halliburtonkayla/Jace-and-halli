@@ -8,3 +8,5 @@
 #profiles{background:#edf4ec}
 #camera-view{background:#e4eee4}#leave-mower{background:#fff0c1}
 @media(max-height:500px){.actions{max-width:350px}.actions button{padding:9px 12px;font-size:12px}#hint{bottom:128px;max-width:58%;font-size:11px}.build-note{top:62px;max-width:65%;text-align:center;white-space:normal}}
+
+#family-welcome{display:block;width:min(100%,560px);height:auto}#create-room{width:100%;font-size:23px;min-height:66px}.profile{height:245px;gap:10px}.profile .portrait{width:118px;height:148px;border:0;border-radius:0;background:transparent}.profile:nth-child(n) .portrait{background:transparent}#destination-list{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}#destination-list button{min-height:80px;background:#fff0c1}#destinations>button{margin:8px} @media(max-height:500px){#family-welcome{max-height:165px;width:auto}.brand h1{font-size:34px}.brand small{display:none}#profiles .profile{height:160px;width:120px}#profiles .profile .portrait{width:88px;height:100px}#room-lobby{padding:4px 12px}.profile-heading h1{font-size:26px;margin:5px}.profile-heading p{margin:3px}.topbar button{padding:10px 8px}}

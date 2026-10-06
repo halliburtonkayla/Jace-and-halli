@@ -23,3 +23,7 @@ Authentic licensed sounds: engine idle/acceleration, mower idle/cutting, doors, 
 Future theater/studio/story manifest: `id`, `title`, `poster`, `source`, `captions`, `duration`, `approvedByParent`, `ageModes`, `reducedMotionAlternative`, `assetVersion`. Serve parent-approved local media only. No arbitrary video URL submission by children, open YouTube search, camera, or motion-scoring requirement. Load one location/media bundle at a time; dispose resources on exit.
 
 Never render a “play” control for a planned activity simply to show a message. Keep incomplete features in the parent checklist until real gameplay and assets are ready.
+
+## Derived family artwork — October 6 update
+
+`world/assets/characters/*-views-v1.webp` contains transparent, four-view artwork derived individually from each approved sheet. `manifest.json` records distinct identity, frame rectangles, dimensions and relative world height. The original sheets remain outside this public repository. Lossless WebP conversion was verified pixel-for-pixel. These images power the welcome, profiles and interim directional world sprites; they are not rigged, animated 3D models. Do not treat this step as completing the final character asset requirement.

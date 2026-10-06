@@ -1,5 +1,6 @@
 import { createNeighborhood, position3D, heading3D, WORLD_SCALE } from './neighborhood.mjs';
 import { LAWN } from './locations.mjs';
+import { CHARACTER_ART, characterURL, viewFrame } from './characters.mjs';
 
 // Lazy-loaded after profile selection; pinned independently of the peer transport.
 const THREE_URL = 'https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js';
@@ -9,7 +10,7 @@ export class Renderer {
   constructor(canvas) {
     this.c = canvas; this.bubbleHits = []; this.ready = null; this.engine = null; this.failed = false;
     this.lastScene = null; this.lastPlayer = null; this.lastTime = 0; this.orbit = 0; this.highView = false;
-    this.actors = new Map(); this.bubbleMeshes = new Map(); this.particles = [];
+    this.actors = new Map(); this.bubbleMeshes = new Map(); this.particles = []; this.characterTextures=new Map(); this.route=[];
     this.overlay = document.createElement('canvas'); this.overlay.className = 'world-effects'; this.overlay.setAttribute('aria-hidden','true');
     canvas.after(this.overlay); this.ctx = this.overlay.getContext('2d');
     this.notice = document.createElement('div'); this.notice.className = 'render-notice hidden'; this.notice.setAttribute('role','status'); canvas.after(this.notice);
@@ -54,6 +55,8 @@ export class Renderer {
         this.bubbleMaterials = ['#ed93c1','#81c2e8','#f2d578','#9ddab1'].map(color => new T.MeshPhysicalMaterial({color,roughness:.13,metalness:.08,transparent:true,opacity:.53,clearcoat:1,side:T.FrontSide,depthWrite:false}));
         this.highlightMaterial = new T.MeshBasicMaterial({color:'#ffffff',transparent:true,opacity:.78,depthWrite:false});
         this.markerGeometry = new T.TorusGeometry(.43,.035,8,28);
+        this.routeMesh=new T.InstancedMesh(new T.CylinderGeometry(.14,.14,.055,10),new T.MeshBasicMaterial({color:'#ffe099'}),80);
+        this.routeMesh.count=0;this.routeMesh.frustumCulled=false;this.scene.add(this.routeMesh);
         this.traffic = [this.vehicle('#eab856'),this.vehicle('#9d8cce')]; this.traffic.forEach(v => this.scene.add(v));
         this.resize(); this.notice.classList.add('hidden'); this.c.dataset.renderer = 'webgl-3d'; this.failed = false;
       } catch (error) {
@@ -76,6 +79,16 @@ export class Renderer {
     const end = () => { drag = null; }; this.c.addEventListener('pointerup',end); this.c.addEventListener('pointercancel',end);
   }
   toggleCamera() { if(this.compatibility)return false; this.highView = !this.highView; this.orbit = 0; return this.highView; }
+  setRoute(points) {this.route=points;this.compatibility?.setRoute?.(points);}
+  characterSprite(profile) {
+    const T=this.T, asset=CHARACTER_ART[profile]; if(!asset)return null;
+    if(!this.characterTextures.has(profile)){
+      const texture=new T.TextureLoader().load(characterURL(profile));texture.colorSpace=T.SRGBColorSpace;texture.generateMipmaps=false;texture.minFilter=T.LinearFilter;
+      this.characterTextures.set(profile,texture);
+    }
+    const sprite=new T.Sprite(new T.SpriteMaterial({map:this.characterTextures.get(profile),transparent:true,alphaTest:.12,depthWrite:true}));
+    sprite.center.set(.5,0);sprite.position.y=.11;sprite.userData.asset=asset;return sprite;
+  }
   vehicle(color, mower = false) {
     const T=this.T, g=new T.Group(), kit=this.town;
     const body=kit.box(g,mower?1.13:1.35,.48,mower?1.5:2.25,color,0,.66,0,.16);
@@ -107,11 +120,12 @@ export class Renderer {
   }
   actor(p) {
     const T=this.T, color=COLORS[p.profile]|| (p.npc?'#50877e':'#d4a84a'), g=new T.Group();
-    // First-person walking avoids inventing family likenesses. Other walkers use explicit presence markers until approved rigs exist.
+    // Exact family identities use derived directional artwork until approved animated rigs are ready.
     if (p.vehicle !== 'walk') g.add(this.vehicle(color,p.vehicle==='mower'));
     else {
       const marker=new T.Mesh(this.markerGeometry,this.town.material(color)); marker.rotation.x=Math.PI/2; marker.position.y=.13; g.add(marker);
       g.userData.marker=marker;
+      const sprite=this.characterSprite(p.profile);if(sprite){g.add(sprite);g.userData.character=sprite;}
     }
     g.userData.label=this.label(p.name,color); g.add(g.userData.label); g.userData.kind=p.vehicle;
     g.userData.tag=this.label('IT','#a95024'); g.userData.tag.position.y=2.95; g.userData.tag.scale.set(1,.35,1); g.add(g.userData.tag);
@@ -120,6 +134,7 @@ export class Renderer {
   removeActor(g) {
     this.scene.remove(g);
     for(const key of ['label','tag']) {const s=g.userData[key]; s?.material.dispose(); s?.userData.ownedTexture?.dispose();}
+    g.userData.character?.material.dispose();
   }
   draw(snapshot, me, bubbles, data, time) {
     if(this.compatibility){this.compatibility.draw(snapshot,me,bubbles,data,time);this.bubbleHits=this.compatibility.bubbleHits;return;}
@@ -138,12 +153,23 @@ export class Renderer {
       const target=position3D(p.x,p.y);
       g.position.lerp(new T.Vector3(target.x,target.y,target.z),1-Math.exp(-dt*16));
       g.rotation.y=heading3D(p.angle);
-      g.visible=!isBubbles && !(p.id===me.id && p.vehicle==='walk');
+      g.visible=!isBubbles;
+      if(g.userData.character){
+        const sprite=g.userData.character,asset=sprite.userData.asset;
+        const bearing=Math.atan2(this.camera.position.x-g.position.x,-(this.camera.position.z-g.position.z));
+        const frame=asset.frames[viewFrame(p.angle,bearing)], texture=sprite.material.map;
+        texture.repeat.set(frame[2]/asset.width,1);texture.offset.set(frame[0]/asset.width,0);
+        sprite.scale.set(asset.height3D*frame[2]/asset.height,asset.height3D,1);
+        sprite.position.y=.11+Math.sin(time*.012)*Math.min(.045,(p.speed||0)*.0006);
+        g.userData.label.position.y=asset.height3D+.48;g.userData.tag.position.y=asset.height3D+.94;
+      }
       g.userData.tag.visible=Boolean(snapshot.tag.active && snapshot.tag.it===p.id);
       visible.add(p.id);
     }
     for(const [id,g] of this.actors) if(!visible.has(id)){this.removeActor(g);this.actors.delete(id);}
     this.town.updateGrass(snapshot.cut);
+    const dot=new T.Object3D();this.routeMesh.count=isBubbles?0:this.route.length;
+    this.route.forEach((p,i)=>{dot.position.set(p.x*WORLD_SCALE,.20,p.y*WORLD_SCALE);dot.updateMatrix();this.routeMesh.setMatrixAt(i,dot.matrix);});this.routeMesh.instanceMatrix.needsUpdate=true;
     // Ambient traffic follows the same streets, pausing at the intersection.
     this.traffic.forEach((car,i)=>{
       const phase=((snapshot.clock||0)*.033+i*29)%62, x=phase<30?phase-30:phase<32?0:phase-32;
@@ -157,8 +183,8 @@ export class Renderer {
     if(isBubbles) {
       this.cameraPosition.set(14,2.8,-1.6);this.cameraTarget.set(14,2.8,-9);
     } else {
-      const a=this.cameraAngle+this.orbit, walking=me.vehicle==='walk', distance=this.highView?14:walking?.1:5.8;
-      const height=this.highView?11:walking?2:3.4;
+      const a=this.cameraAngle+this.orbit, walking=me.vehicle==='walk', distance=this.highView?14:walking?5.3:5.8;
+      const height=this.highView?11:3.4;
       this.cameraPosition.set(this.smoothedPlayer.x-Math.sin(a)*distance,height,this.smoothedPlayer.z+Math.cos(a)*distance);
       this.cameraTarget.set(this.smoothedPlayer.x+Math.sin(a)*5,this.highView?.6:walking?1.8:1.25,this.smoothedPlayer.z-Math.cos(a)*5);
     }
