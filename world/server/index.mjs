@@ -63,6 +63,7 @@ const server=createServer(async(req,res)=>{
  else fail(404,'Not found.');
  if(!path.startsWith('/classic/')&&file!==resolve(client,'index.html')&&!file.startsWith(client+'/'))fail(404,'Not found.');
  if(!(await stat(file)).isFile())fail(404,'Not found.');
+ if(path==='/classic/index.html')file=resolve(root,'classic-home.html');
  let content=await readFile(file);const ext=extname(file);
  if(path==='/classic/together.html'){let html=content.toString().replace('<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js"></script>','');html=html.replace("let peer=null", "document.getElementById('host').disabled=true;document.getElementById('join').disabled=true;document.getElementById('room').disabled=true;let peer=null");html=html.replace('For separate iPads/phones, one person taps Create Room and tells the others the 5-letter code.','Classic cooperative games currently support one-device play here. Private shared-world play uses approved family sessions.');content=Buffer.from(html);}
  if(path.startsWith('/classic/')&&ext==='.html'){content=Buffer.from(content.toString().replace('</body>','<a href="/" style="position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:99999;background:white;color:#17335c;padding:10px 16px;border-radius:18px;font:bold 15px Arial;text-decoration:none">Return to Our World</a></body>'));}

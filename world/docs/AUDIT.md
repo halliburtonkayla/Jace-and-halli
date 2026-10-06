@@ -77,3 +77,9 @@ Canvas/event counts are source indicators, not a claim of gameplay quality.
 - Playwright browser QA was attempted, but no browser executable was installed and Chromium download returned an invalid archive. No successful browser/iOS test is claimed. Real iPad/iPhone Safari testing, rotation/audio behavior, and all Classic activities still require manual/browser QA before release.
 - The root homepage is unchanged while private hosting remains unavailable. The new authenticated server uses the new world as its root homepage. The new world has not been deployed publicly or privately.
 - Input/model/world art are functional development foundations, not final 3D assets. Full home and all additional attractions remain planned in the checklist.
+
+## Free room-code adaptation — October 6, 2026
+
+At the user’s request, mandatory paid/private server hosting was replaced with free GitHub Pages room-code play. The root index is now the world entry point. The baseline index is preserved byte-for-byte as `classic-home.html`; other 43 original HTML pages/assets remain untouched. PeerJS connects approved devices, with the hosting browser owning the authoritative movement/progress state. Generated codes identify a room; they are not secure website authentication. Public source/assets remain accessible.
+
+New automated tests use fake data connections to verify withholding snapshots before approval, restricting remote profile selection, shared movement/state, removal, generated codes, bubble hit validation, bounded population and persistence. Real browser/WebRTC and iPad QA remain pending. The Game House iframe keeps the host page alive while legacy activities run and rewrites their home links in the served frame only.

@@ -1,25 +1,25 @@
 # Development checklist
 
-COMPLETE means the stated foundation implementation exists and its listed checks pass. It does not mean the final requested world is finished or deployed.
+COMPLETE means the stated foundation implementation exists and its listed checks pass. It does not mean the final requested world is finished. Free GitHub Pages room-code play supersedes mandatory paid server hosting at the user’s request.
 
 | System | Status | Evidence / next step |
 |---|---|---|
-| Existing project audit and preservation | COMPLETE | All 44 original HTML pages unchanged; source inventory in AUDIT.md |
-| Secure parent authentication foundation | COMPLETE | Server scrypt hash, opaque HttpOnly cookie, same-origin write checks, login rate limit; no browser secrets |
-| Parent device approvals and guests | COMPLETE | One-use expiring invitations, profile restriction, revocation, server tests |
-| Profile selection / saved state schema | COMPLETE | Four family profiles; toddler/preschool assistance; SQLite progress/preferences; inventory/model reference schema |
+| Existing project audit and preservation | COMPLETE | Original homepage preserved as classic-home.html; 43 other HTML pages and all assets unchanged |
+| Optional secure server authentication | COMPLETE | Retained for future use; not required or claimed for free code-based play |
+| Free family room approvals and guests | COMPLETE | Random room code, host approval per device/profile, removal; transport tests |
+| Profile selection / saved state schema | COMPLETE | Four family profiles + approved guests; host-browser progress/preferences; inventory/model schema |
 | Real approved shared sessions | COMPLETE | Authoritative movement + SSE; independent approved session cookies tested; single household/server process |
 | Consistent world navigation | COMPLETE | Shared location coordinates, doorway proximity, connected walking/driving, Classic return path |
 | Connected world shell and driving | IN PROGRESS | Functional Canvas 2.5D movement/controls; final environment/character assets and richer toddler route assistance needed |
 | Classic Games / Game House | COMPLETE | All original games preserved; private served copy disables open PeerJS rooms |
-| Lawn mowing foundation | COMPLETE | Running mower, unique grass removal, durable shared lawn/profile count; simulation tests |
+| Lawn mowing foundation | COMPLETE | Unique grass removal; shared lawn/profile count saved on hosting browser |
 | Bubble garden foundation | COMPLETE | Fixed large bubbles, pop hit detection, confetti, saved progression and spoken vocabulary; server persistence checks |
 | Bubble illustrated surprises / color challenges | IN PROGRESS | Prompt stages implemented; illustrated contents and targeted task progression needed |
 | Shared tag foundation | IN PROGRESS | Server contact and computer residents; browser gameplay/age-assistance polish needed |
 | Hide-and-seek / Find Mommy | PLANNED | Countdown/hide/search, shared visibility rules, toddler assistance |
 | Final family character models | NEEDS ASSET | Approved separate photo references + consistent animated models |
 | Final world scenery / authentic sounds | NEEDS ASSET | See ASSETS.md; development art/audio explicitly identified |
-| Private HTTPS deployment | PLANNED | Choose server-capable hosting + durable disk; existing GitHub Pages cannot run server |
+| Free GitHub Pages play | IN PROGRESS | New root entry uses codes/peer connections; publishing and live confirmation underway |
 | iPad / iPhone Safari hardware QA | PLANNED | Real-device touch, audio, rotation, reconnect, memory/performance checks |
 | Interactive family home | PLANNED | All rooms, objects, bath/potty/bed routines, dressing, toy inventory; doorway is a development notice |
 | Shop + usable purchases | PLANNED | Physical pickup, basket, scanning, home inventory; inventory schema reserved |
@@ -36,5 +36,5 @@ COMPLETE means the stated foundation implementation exists and its listed checks
 | School / early learning center | PLANNED | Physical manipulatives; speech-first toddler mode; preschool progression |
 | Church / Sunday school library | PLANNED | Visual narrated Bible library; gentle short practice; movement/music |
 | Move & Groove studio | PLANNED | Mommy animation, original songs/video manifest, no camera requirement |
-| Parent password recovery / backup automation | PLANNED | Operator-only secure procedures before production |
+| Progress backup / restore | IN PROGRESS | Host can download progress JSON; restore interface planned |
 | Multi-instance scalability | PLANNED | Shared authoritative session service + centralized storage; do not scale current process horizontally |

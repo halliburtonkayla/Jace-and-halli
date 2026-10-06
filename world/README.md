@@ -1,54 +1,42 @@
-# Jace & Halli’s World — foundation build
+# Jace & Halli’s World — free family rooms
 
-This is an additive upgrade inside `halliburtonkayla/Jace-and-halli`, not a second repository or replacement site. All 44 original HTML pages and original assets remain byte-for-byte unchanged. The private server makes this new world the entry point and contains the original site under `/classic/`, reached through Game House.
+The live entry point is the existing repository’s `index.html`. This version runs on the existing GitHub Pages hosting with **no paid application server**. It uses family room codes and host-approved PeerJS data connections, following the existing cooperative-game approach. This supersedes the paid/private-server deployment plan at the user’s request on October 6, 2026.
 
-**Status:** implemented and locally tested foundations; not deployed; not a finished 3D family game. GitHub Pages still serves the original site. It cannot execute this server. Do not advertise the existing public URL as invitation-only.
+## Play
 
-## Run privately
+1. Open `https://halliburtonkayla.github.io/Jace-and-halli/` on the hosting iPad, phone or computer.
+2. Open **Mommy / grownup room setup**, then **Start family room**. Select Mommy or a family profile.
+3. Share the displayed 10-character code or use **Copy room link**.
+4. On another device, enter the same code, choose Jace, Halli, Unique, or a guest’s name, and tap **Join family room**.
+5. Approve the request on the host. The joining device then selects its approved profile and enters the same world.
+6. Keep the hosting page open **in the foreground**. All devices need internet access for initial connections. If the host closes, refreshes or leaves the page, it must open a new room and everyone rejoins. Progress remains on that hosting browser.
 
-Requires Node.js 22.13+ (tested on Node 24.19), with built-in SQLite. No npm dependencies or external signaling services are required.
+One device can play with computer residents even if signaling is unavailable. Each new room receives a fresh code; there is no hardcoded family password in the public source. Guests and joining family devices require the host’s approval, and guest connections cannot select Mommy or a different profile. This is **room access and connection control, not secure website authentication**: GitHub Pages/source/assets remain public. No public matchmaking, strangers list, public messages, camera or microphone is added.
 
-```sh
-cd world
-# Set WORLD_PARENT_PASSWORD through your local terminal/hosting secret manager.
-# Use a unique passphrase of at least 14 characters. Never commit it.
-npm run init
-# Remove WORLD_PARENT_PASSWORD from the environment after initialization.
-npm start
-```
+PeerJS’s free cloud handles signaling; data channels connect the devices. No paid TURN relay is configured. Some networks block WebRTC or require a relay, so separate-device connectivity is not guaranteed on every school/carrier network. Use normal home Wi-Fi when testing. If the library/signaling fails, the host still supports one-device play and shows a connection explanation rather than fake multiplayer success.
 
-Visit `http://localhost:8787` locally. Mommy signs in, selects Mommy, and creates a one-use invitation for Jace, Halli, Unique, or an approved named guest. Open that link on the approved device, accept it, then select its profile. No child email accounts. Invitations expire in one hour; approved device sessions expire after seven days and can be revoked by Mommy. Each device invitation is restricted to one profile. Selecting a child from a parent login locks that session to the selected child; returning to parent controls requires Mommy’s passphrase again.
+## First playable foundation
 
-For actual separate-device use, deploy **this repository’s `world/` server** behind HTTPS with a persistent disk; set `HOST=0.0.0.0`, `PORT` to the platform port, `NODE_ENV=production`, `WORLD_ORIGIN=https://your-approved-host`, and `WORLD_DATA_DIR` to a persistent private directory outside the static web root. Do not use ephemeral/serverless workers for this single-process implementation. Back up the SQLite database securely, including WAL state via a SQLite-aware backup. HTTPS must terminate at a trusted reverse proxy. SSE must not be buffered; idle timeout should allow the 10Hz stream. Start only one application instance, because live game state is in memory.
+- One connected Canvas 2.5D neighborhood shared by all approved profiles.
+- Actual walking/driving: large touch steering wheel, GO/GAS, BRAKE, START; keyboard arrows/WASD. Halli gets larger controls, lower vehicle speed and basic steering assistance.
+- Host-authoritative movement and collision checks; bounded numeric input only. Remote players submit controls, never authoritative positions/progress.
+- Mower cuts unique grass patches with visible removal. Cutting the same patch repeatedly does not award more progress.
+- Bubble garden has a fixed population, tap hit detection, confetti, saved progression, color/vocabulary prompts and spoken pauses. No speech recognition requirement.
+- Shared tag transfers IT after contact and cooldown, with computer residents when playing alone.
+- Game House contains Classic Games in an iframe; the hosting world remains open. Existing books, whiteboards and games are preserved. The original homepage is preserved exactly as `classic-home.html`, and the other 43 original HTML activity pages/assets are untouched.
 
-Account initialization is an operator action. There is no public registration or browser bootstrap route. Hosting secrets are never bundled in client code. Password recovery and automated backups need an operator workflow before production family use; do not expose an open reset endpoint. Public photographs already committed to the old public repository remain public: this change cannot retroactively make GitHub history private.
+The full interactive home and remaining attractions are planned, not falsely presented as finished games. Final family characters/scenery/audio still need approved assets. Ambient traffic is illustrated scenery, not a finished traffic simulation. The current characters are clearly identified as development artwork.
 
-## Playable foundations
+## State and limitations
 
-- Same connected neighborhood for every profile, with touch steering wheel, gas, brake, start/stop, walking, collision against buildings, follow camera, and large assisted toddler controls. Keyboard arrows/WASD also work.
-- Server-verified positions at 20Hz and cookie-authenticated shared updates at 10Hz. Family players see one another and computer residents. Short input timeouts stop movement when a device disconnects.
-- Actual mowing: only unique grass patches beneath a running, moving mower count. Cut grass visibly changes; shared lawn and each profile’s cut count persist in SQLite.
-- Bubble garden: fixed population of large bubbles, pointer hit testing, confetti, saved pop count, three speech-prompt stages (pop, colors, first-word surprises), deliberate pauses, no speech recognition. Stages two and three are initial vocabulary prompts; richer illustrated surprise contents and targeted color tasks remain in progress.
-- Optional shared tag: server contact transfers IT with a cooldown, feedback, and explicitly labeled computer residents. Hide-and-seek is planned.
-- Game House serves all existing activities, with a return-to-world link. Old PeerJS room creation is disabled only in the private served copy; original files remain unchanged. Classic Connect Four/matching/drawing retain one-device cooperative play until migrated to approved shared sessions.
+`world/client/family-game.mjs` owns authoritative simulation and state on the hosting browser. `room.mjs` owns codes, join approvals, per-device profile permissions, shared updates and remote request timeouts. `free-app.mjs` integrates these with the existing world renderer/audio/controls. Browser `localStorage` saves household progress, preferences, guests and shared grass on the host; it **does not implement multiplayer**. PeerJS data channels implement cross-device play. Clearing browser storage or switching hosting devices does not carry progress automatically. **Save progress backup** downloads a JSON checkpoint; an import/restore interface is planned.
 
-The home doorway displays an honest development notice. Unimplemented locations do not appear as fake playable attractions. Ambient car visuals are illustrative scenery; synchronized traffic, railroad crossings, and collision avoidance remain planned. The connected world is Canvas 2.5D development scenery; photo-based animated family models and final 3D environments are needed before this can meet the final visual brief.
+Room codes are created with Web Crypto. Incoming messages have size/rate limits; unapproved peers receive no world snapshots. One approved connection per profile prevents duplicate Jace/Halli sessions. Approvals are session-scoped. Host controls can remove a device or regrow the lawn. This code-based setup cannot authenticate who a person is; the host must recognize whom it is approving.
 
-## Architecture
+The optional secure Node/SQLite implementation is retained under `world/server/` for future use, but it is not required for the current free play path. Its previous hosting instructions are archived in `docs/OPTIONAL-PRIVATE-SERVER.md`. Do not follow that paid-hosting path for this release.
 
-`server/store.mjs`: password hashing, SQLite schema, local-only bootstrap. `server/index.mjs`: authenticated API, invitation lifecycle, static access boundary, parent controls, SSE, authoritative simulation loop. `server/simulation.mjs`: movement/collisions/mowing/proximity. `client/locations.mjs`: shared world coordinates. `client/render.mjs`: camera, procedural development scenery, bubble effects. `client/app.mjs`: profile flow, pointer controls, scene lifecycle, signed-in networking. `client/audio.mjs`: bounded shared audio context and optional browser narration.
+## Validation
 
-Local device state is controls, renderer interpolation, audio context, and effects only. Server profile records own preferences, inventory schema, character asset reference, and progress. Sessions, invitations and family profiles live in private SQLite. No localStorage multiplayer, chat, microphone, camera, public player discovery, matchmaking, or stranger invites.
+Run `cd world && npm test`. Eight test cases pass: original server/security tests, simulation controls/mowing/proximity, generated codes, fixed bubble population and saved progression, fake-transport host approvals/profile locking/shared snapshots/device removal, and rejecting remote-position authority. The transport tests use a deterministic test double; they are not a claim that real WebRTC/iPad connections were tested. Native Canvas renderer checks also pass. Full real-browser/iOS Safari QA remains required; Chromium installation was unavailable in the execution environment.
 
-## Verification
-
-```sh
-cd world
-npm test
-```
-
-See [architecture audit](docs/AUDIT.md), [development checklist](docs/CHECKLIST.md), and [asset contract](docs/ASSETS.md). Current browser coverage and limitations are recorded in the audit. iOS Safari hardware testing remains required before calling this an iPad-ready release.
-
-## Deployment packaging
-
-`world/Dockerfile` packages the **existing repository** into a Node server container. Build with repository root as context: `docker build -f world/Dockerfile .`. The Dockerfile-specific `world/Dockerfile.dockerignore` excludes git metadata, data, environment files and node_modules from the build context. Keep all other private credentials outside the repository. The `/data` volume must be owned/writable by the container’s `node` user (uid 1000). Set an HTTPS `WORLD_ORIGIN`, attach durable `/data`, and run the one-time `world/server/init.mjs` initialization with a temporary secret only through the operator’s environment. Do not put the secret into an image/build argument. Container deployment and restart persistence require host validation before release.
+See `docs/CHECKLIST.md`, `docs/AUDIT.md`, and `docs/ASSETS.md` for complete development status.
