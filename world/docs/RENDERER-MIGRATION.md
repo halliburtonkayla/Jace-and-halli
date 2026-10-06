@@ -1,6 +1,6 @@
 # Preserve gameplay while replacing the world renderer
 
-Status: PLANNED implementation. Architecture reviewed against `world/client/render.mjs`, `free-app.mjs`, `room.mjs`, `family-game.mjs` and `locations.mjs` on October 6, 2026. This document does not claim that a 3D world has already been built.
+Status: IN PROGRESS — optional neighborhood preview implemented behind `?view=3d`; final visual acceptance is pending. Architecture reviewed against `world/client/render.mjs`, `free-app.mjs`, `room.mjs`, `family-game.mjs` and `locations.mjs` on October 6, 2026. The new `render-3d.mjs` / `neighborhood.mjs` implement a first 3D environment while the existing renderer remains the default pending visual and hardware verification.
 
 ## What must change
 
@@ -37,3 +37,14 @@ Preserve the current presentation entry points (`resize`, `draw`, `pop` and bubb
 7. Promote the new renderer only after the small neighborhood is functional and visually meets `VISUAL-DIRECTION.md`. Keep the existing renderer solely as a temporary rollback/development option; it is not the accepted final art style. Do not claim untested device support or multiplayer completion.
 
 Physics for jumping trucks, bowling or other later activities may need dedicated modules. Add those when building the actual activity; do not rebuild working planar movement merely to replace its visual layer.
+
+## October 6 implementation checkpoint
+
+- `render-3d.mjs` lazily imports Three.js 0.169.0 from its pinned CDN module after profile selection. It supplies a perspective rider/first-person camera, touch look-around, a town overview, 3D vehicles, instanced lawn blades, screen-aligned interactive 3D bubbles and a shared-state presentation adapter.
+- `neighborhood.mjs` builds connected streets, crossings, curbs, sidewalks, four destination exteriors, window/roof/door details, signs, landscaping and dimensional trees. Static geometry is batched by material. Original simulation coordinates, collision behavior, door IDs and progress schemas are retained.
+- First-person walking does not invent a family body/face. Other walking players and computer residents currently use named presence markers. This is an explicit development limitation, not delivery of approved animated family models.
+- Unsupported graphics offer the existing playable renderer inside the same room. Switching compatibility view does not reset room membership or saved state. Controls send braking input while the new scene is unavailable.
+- A missing Leave mower control was restored through the existing exit action.
+- Nine repository tests pass. A native geometry check produced 62 static scene groups, about 114k triangles including instanced lawn geometry, 340 lawn cells and reversible cut-cell visibility. A state integration check exercises walking, bubble hit coordinates/pop, car, camera and mower exit with GPU drawing stubbed. These are not frame-rate or GPU visual claims.
+- The live cloud browser loaded the preview but reports WebGL disabled, so rendered-scene appearance and Safari performance cannot be verified there. A real peer join attempt timed out before reaching approval; fake transport tests do not substitute for two-iPad testing. Do not mark either hardware rendering or cross-device multiplayer QA complete.
+- Documentation consulted: https://threejs.org/manual/pages/creating-a-scene.html and https://threejs.org/docs/pages/WebGLRenderer.html. WebGL 2 is required for this renderer.

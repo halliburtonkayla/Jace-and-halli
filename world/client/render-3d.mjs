@@ -19,7 +19,18 @@ export class Renderer {
   }
   message(text, retry = false) {
     this.notice.replaceChildren(document.createTextNode(text)); this.notice.classList.remove('hidden');
-    if (retry) { const b = document.createElement('button'); b.textContent = 'Retry 3D view'; b.onclick = () => { this.failed = false; this.ready = null; this.prepare(); }; this.notice.append(b); }
+    if (retry) {
+      const b = document.createElement('button'); b.textContent = 'Retry 3D view'; b.onclick = () => { this.failed = false; this.ready = null; this.prepare(); }; this.notice.append(b);
+      const fallback = document.createElement('button'); fallback.textContent = 'Use the current playable view'; fallback.onclick = () => this.useCompatibility(); this.notice.append(fallback);
+    }
+  }
+  get playable() { return Boolean(this.compatibility || this.engine && !this.contextLost); }
+  async useCompatibility() {
+    const { Renderer: CanvasRenderer } = await import('./render.mjs');
+    if (!this.compatCanvas) { this.compatCanvas=document.createElement('canvas'); this.compatCanvas.className='world-effects'; this.c.after(this.compatCanvas); }
+    this.compatibility=new CanvasRenderer(this.compatCanvas); this.notice.classList.add('hidden'); this.overlay.classList.add('hidden');
+    this.c.dataset.renderer='canvas-compatibility'; this.c.dataset.viewReason='WebGL preview unavailable';
+    const note=document.querySelector('.build-note'); if(note)note.textContent='Compatibility view · 3D preview unavailable on this device';
   }
   async prepare() {
     if (this.ready || this.failed) return this.ready;
@@ -47,7 +58,7 @@ export class Renderer {
         this.resize(); this.notice.classList.add('hidden'); this.c.dataset.renderer = 'webgl-3d'; this.failed = false;
       } catch (error) {
         console.error('Neighborhood renderer:', error); this.engine?.dispose(); this.engine = null; this.failed = true;
-        this.message('The 3D view could not open on this connection or device. Your family room and saved progress are safe.', true);
+        this.message('The 3D preview needs WebGL 2 graphics. This device or connection could not open it. You can keep playing in the current view without leaving your room.', true);
       }
     })();
     return this.ready;
@@ -56,6 +67,7 @@ export class Renderer {
     this.w = innerWidth; this.h = innerHeight; const d = Math.min(devicePixelRatio || 1, 1.5);
     this.overlay.width = this.w * d; this.overlay.height = this.h * d; this.ctx.setTransform(d,0,0,d,0,0);
     if (this.engine) { this.engine.setPixelRatio(d); this.engine.setSize(this.w,this.h,false); this.camera.aspect = this.w/this.h; this.camera.updateProjectionMatrix(); }
+    this.compatibility?.resize();
   }
   bindLook() {
     let drag = null;
@@ -63,7 +75,7 @@ export class Renderer {
     this.c.addEventListener('pointermove', e => { if (!drag || e.pointerId !== drag.id) return; this.orbit -= (e.clientX-drag.x)*.007; drag.x = e.clientX; });
     const end = () => { drag = null; }; this.c.addEventListener('pointerup',end); this.c.addEventListener('pointercancel',end);
   }
-  toggleCamera() { this.highView = !this.highView; this.orbit = 0; return this.highView; }
+  toggleCamera() { if(this.compatibility)return false; this.highView = !this.highView; this.orbit = 0; return this.highView; }
   vehicle(color, mower = false) {
     const T=this.T, g=new T.Group(), kit=this.town;
     const body=kit.box(g,mower?1.13:1.35,.48,mower?1.5:2.25,color,0,.66,0,.16);
@@ -110,6 +122,7 @@ export class Renderer {
     for(const key of ['label','tag']) {const s=g.userData[key]; s?.material.dispose(); s?.userData.ownedTexture?.dispose();}
   }
   draw(snapshot, me, bubbles, data, time) {
+    if(this.compatibility){this.compatibility.draw(snapshot,me,bubbles,data,time);this.bubbleHits=this.compatibility.bubbleHits;return;}
     this.ctx.clearRect(0,0,this.w,this.h);
     if (!me) return;
     this.lastScene=me.scene;
@@ -180,7 +193,7 @@ export class Renderer {
     const c=this.ctx;c.font=`800 ${size}px system-ui`;const w=c.measureText(text).width+26;
     c.fillStyle='#fff8eaeF';c.beginPath();c.roundRect(x-w/2,y-size,w,size+20,12);c.fill();c.textAlign='center';c.fillStyle='#274b59';c.fillText(text,x,y+4);
   }
-  pop(x,y) {for(let i=0;i<20;i++)this.particles.push({x,y,vx:(Math.random()-.5)*210,vy:(Math.random()-.7)*230,born:performance.now(),color:['#f3ba51','#f197bf','#66bda2','#faf1d4'][i%4]});}
+  pop(x,y) {if(this.compatibility){this.compatibility.pop(x,y);return;}for(let i=0;i<20;i++)this.particles.push({x,y,vx:(Math.random()-.5)*210,vy:(Math.random()-.7)*230,born:performance.now(),color:['#f3ba51','#f197bf','#66bda2','#faf1d4'][i%4]});}
   drawEffects(time) {
     const c=this.ctx;this.particles=this.particles.filter(p=>time-p.born<900);
     for(const p of this.particles){const t=(time-p.born)/1000;c.globalAlpha=1-t/.9;c.fillStyle=p.color;c.beginPath();c.arc(p.x+p.vx*t,p.y+p.vy*t+110*t*t,4,0,Math.PI*2);c.fill();}c.globalAlpha=1;

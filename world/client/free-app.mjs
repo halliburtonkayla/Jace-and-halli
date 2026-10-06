@@ -1,5 +1,5 @@
 const use3D = new URLSearchParams(location.search).get('view') === '3d';
-const { Renderer } = await import(use3D ? './render-3d.mjs' : './render.mjs');
+const { Renderer } = await import(use3D ? './render-3d.mjs?v=2' : './render.mjs');
 import { Sound } from './audio.mjs';
 import { LOCATIONS } from './locations.mjs';
 import { FamilyRoom } from './room.mjs';
@@ -41,7 +41,7 @@ wheel.onpointerdown=e=>{e.preventDefault();steering=true;wheel.setPointerCapture
 const keySet=new Set();function keys(){input.gas=keySet.has('ArrowUp')||keySet.has('w')?1:0;input.brake=keySet.has('ArrowDown')||keySet.has('s')?1:0;input.steer=(keySet.has('ArrowRight')||keySet.has('d')?1:0)-(keySet.has('ArrowLeft')||keySet.has('a')?1:0);}
 addEventListener('keydown',e=>{if(!me||e.target.matches('input,textarea,select'))return;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d'].includes(e.key)){e.preventDefault();keySet.add(e.key);keys();}});addEventListener('keyup',e=>{keySet.delete(e.key);keys();});
 function release(){keySet.clear();input={gas:0,brake:1,steer:0};sound.motor(null);}addEventListener('blur',release);document.addEventListener('visibilitychange',()=>{if(document.hidden)release();});
-setInterval(async()=>{if(!me||!online||inputBusy)return;inputBusy=true;try{await api('input',document.hidden?{gas:0,brake:1,steer:0}:input);}catch{online=false;}finally{inputBusy=false;}},100);
+setInterval(async()=>{if(!me||!online||inputBusy)return;inputBusy=true;try{await api('input',document.hidden||renderer.playable===false?{gas:0,brake:1,steer:0}:input);}catch{online=false;}finally{inputBusy=false;}},100);
 $('world').onpointerdown=async e=>{if(me?.scene!=='bubbles'||busy)return;const r=$('world').getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;const b=renderer.bubbleHits.find(b=>Math.hypot(x-b.x,y-b.y)<b.r);if(!b)return;const count=data.pops;await action('pop',{id:b.id});if(data.pops===count)return;renderer.pop(x,y);sound.tone(500+Math.random()*300);navigator.vibrate?.(15);if(data.pops<15)sound.prompt();else if(data.pops<30)sound.say(['Pink.','Blue.','Yellow.','Green.'][b.color]);else sound.say(['Ball. Roll a ball.','Car. Vroom, vroom!','Baby. Say baby.','More. Say more.'][b.color]);};
 function renderRequests(){
  $('join-requests').replaceChildren();for(const request of room.pendingList()){const row=document.createElement('div'),name=document.createElement('b');name.textContent=request.name+' wants to join';const approve=document.createElement('button'),decline=document.createElement('button');approve.textContent='Approve';decline.textContent='Decline';approve.onclick=()=>{room.approve(request.id);devices();};decline.onclick=()=>room.deny(request.id);row.append(name,approve,decline);$('join-requests').append(row);}if(!room.pending.size)$('join-requests').textContent='No one is waiting to join.';

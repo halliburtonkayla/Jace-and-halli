@@ -8,21 +8,21 @@ COMPLETE means the stated foundation implementation exists and its listed checks
 | Optional secure server authentication | COMPLETE | Retained for future use; not required or claimed for free code-based play |
 | Free family room approvals and guests | COMPLETE | Random room code, host approval per device/profile, removal; transport tests |
 | Profile selection / saved state schema | COMPLETE | Four family profiles + approved guests; host-browser progress/preferences; inventory/model schema |
-| Real approved shared sessions | COMPLETE | Authoritative movement + SSE; independent approved session cookies tested; single household/server process |
+| Real approved shared sessions | IN PROGRESS | Free host-authoritative PeerJS rooms implemented and fake-transport tests pass; live two-client attempt timed out before approval in cloud browser; separate-iPad QA still required |
 | Consistent world navigation | COMPLETE | Shared location coordinates, doorway proximity, connected walking/driving, Classic return path |
 | Connected world shell and driving | IN PROGRESS | Functional movement/controls retained; Canvas world presentation must be replaced under the approved visual direction; richer toddler route assistance needed |
-| Classic Games / Game House | COMPLETE | All original games preserved; private served copy disables open PeerJS rooms |
+| Classic Games / Game House | COMPLETE | All original games preserved in hosted iframe; optional private-server copy disables legacy open PeerJS rooms |
 | Lawn mowing foundation | COMPLETE | Unique grass removal; shared lawn/profile count saved on hosting browser |
 | Bubble garden foundation | COMPLETE | Fixed large bubbles, pop hit detection, confetti, saved progression and spoken vocabulary; server persistence checks |
 | Bubble illustrated surprises / color challenges | IN PROGRESS | Prompt stages implemented; illustrated contents and targeted task progression needed |
-| Shared tag foundation | IN PROGRESS | Server contact and computer residents; browser gameplay/age-assistance polish needed |
+| Shared tag foundation | IN PROGRESS | Host-authoritative contact and computer residents; browser gameplay/age-assistance polish needed |
 | Hide-and-seek / Find Mommy | PLANNED | Countdown/hide/search, shared visibility rules, toddler assistance |
 | Approved individual character references / visual prompt | COMPLETE | Four unchanged approved sheets mapped in VISUAL-DIRECTION.md; older combined sheet superseded |
 | 3D renderer migration contract | COMPLETE | Preserve gameplay/state while replacing Canvas world presentation; see RENDERER-MIGRATION.md |
-| 3D renderer implementation / corrected neighborhood | PLANNED | Dimensional scene, perspective camera, optimized scenery and approved character animation; current flat appearance rejected |
+| 3D renderer implementation / corrected neighborhood | IN PROGRESS | Optional ?view=3d preview: real scene/camera, roads, four destination exteriors, vehicle meshes, shared cut grass and 3D bubbles. Cloud test browser disables WebGL; GPU visuals and Safari hardware remain unverified. Approved character rigs still needed |
 | Final family character models | NEEDS ASSET | Individual sheets received; rigging, animation and consistent game-ready models still required |
 | Final world scenery / authentic sounds | NEEDS ASSET | See ASSETS.md; development art/audio explicitly identified |
-| Free GitHub Pages play | IN PROGRESS | New root entry uses codes/peer connections; publishing and live confirmation underway |
+| Free GitHub Pages play | COMPLETE | Existing site published; welcome, room creation and profile selection confirmed in live browser; cross-device play has a separate QA gate |
 | iPad / iPhone Safari hardware QA | PLANNED | Real-device touch, audio, rotation, reconnect, memory/performance checks |
 | Interactive family home | PLANNED | All rooms, objects, bath/potty/bed routines, dressing, toy inventory; doorway is a development notice |
 | Shop + usable purchases | PLANNED | Physical pickup, basket, scanning, home inventory; inventory schema reserved |

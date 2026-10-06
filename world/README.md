@@ -4,7 +4,7 @@ The live entry point is the existing repository’s `index.html`. This version r
 
 ## Current visual instructions
 
-The owner has rejected the current abstract/flat prototype appearance. The four approved **individual** family character sheets now define the character identities and overall polished 3D animation style; older combined sheets are superseded. References are received, but animated game models and the corrected 3D neighborhood are still pending. Read the [master work prompt](prompts/Jace_and_Halli_World_Master_Work_Prompt.txt), [visual style bible](docs/VISUAL-DIRECTION.md), [asset contract](docs/ASSETS.md) and [renderer migration contract](docs/RENDERER-MIGRATION.md) before further visual work. Replace the environment renderer while preserving gameplay, saved state, free room codes and Classic Games.
+The owner has rejected the current abstract/flat prototype appearance. The four approved **individual** family character sheets now define the character identities and overall polished 3D animation style; older combined sheets are superseded. References are received; animated game models are still pending. A first connected 3D neighborhood is available as an optional preview, with GPU visual acceptance and iPad/iPhone checks outstanding. Read the [master work prompt](prompts/Jace_and_Halli_World_Master_Work_Prompt.txt), [visual style bible](docs/VISUAL-DIRECTION.md), [asset contract](docs/ASSETS.md) and [renderer migration contract](docs/RENDERER-MIGRATION.md) before further visual work. Replace the environment renderer while preserving gameplay, saved state, free room codes and Classic Games.
 
 ## Play
 
@@ -31,6 +31,14 @@ PeerJS’s free cloud handles signaling; data channels connect the devices. No p
 
 The full interactive home and remaining attractions are planned, not falsely presented as finished games. Final family characters/scenery/audio still need approved assets. Ambient traffic is illustrated scenery, not a finished traffic simulation. The current characters are clearly identified as development artwork.
 
+## 3D neighborhood preview
+
+Use the **Try the 3D neighborhood preview** link under grownup room setup, or open the existing site with `?view=3d`. Create a room and choose a profile normally. Drag the scenery to look around; **Town view** switches the camera; the same steering wheel and GO/GAS/BRAKE controls move through the scene. Use **Ride car**, then **Start** to drive. The mower has a **Leave mower** control.
+
+This is a real WebGL scene with connected streets, building exteriors, landscaping, 3D vehicles and bubbles, and grass visibility driven by the existing shared lawn state. It is a development preview. Walking is first-person; other walkers use named presence markers until the approved family/NPC rigs are ready. The full home interiors and later destinations remain planned. Three.js loads only on entering the preview; WebGL 2 is required. If graphics fail, **Use the current playable view** keeps the same room and progress.
+
+The default renderer remains available while graphics are validated. The cloud browser used for this task explicitly disables WebGL, so the new scene has not been visually verified on a GPU or real iPad. No final-art or mobile-frame-rate claim is made.
+
 ## State and limitations
 
 `world/client/family-game.mjs` owns authoritative simulation and state on the hosting browser. `room.mjs` owns codes, join approvals, per-device profile permissions, shared updates and remote request timeouts. `free-app.mjs` integrates these with the existing world renderer/audio/controls. Browser `localStorage` saves household progress, preferences, guests and shared grass on the host; it **does not implement multiplayer**. PeerJS data channels implement cross-device play. Clearing browser storage or switching hosting devices does not carry progress automatically. **Save progress backup** downloads a JSON checkpoint; an import/restore interface is planned.
@@ -41,6 +49,6 @@ The optional secure Node/SQLite implementation is retained under `world/server/`
 
 ## Validation
 
-Run `cd world && npm test`. Eight test cases pass: original server/security tests, simulation controls/mowing/proximity, generated codes, fixed bubble population and saved progression, fake-transport host approvals/profile locking/shared snapshots/device removal, and rejecting remote-position authority. The transport tests use a deterministic test double; they are not a claim that real WebRTC/iPad connections were tested. Native Canvas renderer checks also pass. Full real-browser/iOS Safari QA remains required; Chromium installation was unavailable in the execution environment.
+Run `cd world && npm test`. Nine test cases pass, including the 3D coordinate/heading adapter and the previous checks: original server/security tests, simulation controls/mowing/proximity, generated codes, fixed bubble population and saved progression, fake-transport host approvals/profile locking/shared snapshots/device removal, and rejecting remote-position authority. The transport tests use a deterministic test double; they are not a claim that real WebRTC/iPad connections were tested. Native Canvas renderer checks also pass. The live Chrome welcome, room creation and profile selection were checked. Its WebGL context is disabled; a live second-player join timed out before host approval. Full rendered-scene and separate-device iOS Safari QA remains required.
 
 See `docs/CHECKLIST.md`, `docs/AUDIT.md`, and `docs/ASSETS.md` for complete development status.
