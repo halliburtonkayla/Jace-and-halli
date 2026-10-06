@@ -10,14 +10,17 @@ COMPLETE means the stated foundation implementation exists and its listed checks
 | Profile selection / saved state schema | COMPLETE | Four family profiles + approved guests; host-browser progress/preferences; inventory/model schema |
 | Real approved shared sessions | COMPLETE | Authoritative movement + SSE; independent approved session cookies tested; single household/server process |
 | Consistent world navigation | COMPLETE | Shared location coordinates, doorway proximity, connected walking/driving, Classic return path |
-| Connected world shell and driving | IN PROGRESS | Functional Canvas 2.5D movement/controls; final environment/character assets and richer toddler route assistance needed |
+| Connected world shell and driving | IN PROGRESS | Functional movement/controls retained; Canvas world presentation must be replaced under the approved visual direction; richer toddler route assistance needed |
 | Classic Games / Game House | COMPLETE | All original games preserved; private served copy disables open PeerJS rooms |
 | Lawn mowing foundation | COMPLETE | Unique grass removal; shared lawn/profile count saved on hosting browser |
 | Bubble garden foundation | COMPLETE | Fixed large bubbles, pop hit detection, confetti, saved progression and spoken vocabulary; server persistence checks |
 | Bubble illustrated surprises / color challenges | IN PROGRESS | Prompt stages implemented; illustrated contents and targeted task progression needed |
 | Shared tag foundation | IN PROGRESS | Server contact and computer residents; browser gameplay/age-assistance polish needed |
 | Hide-and-seek / Find Mommy | PLANNED | Countdown/hide/search, shared visibility rules, toddler assistance |
-| Final family character models | NEEDS ASSET | Approved separate photo references + consistent animated models |
+| Approved individual character references / visual prompt | COMPLETE | Four unchanged approved sheets mapped in VISUAL-DIRECTION.md; older combined sheet superseded |
+| 3D renderer migration contract | COMPLETE | Preserve gameplay/state while replacing Canvas world presentation; see RENDERER-MIGRATION.md |
+| 3D renderer implementation / corrected neighborhood | PLANNED | Dimensional scene, perspective camera, optimized scenery and approved character animation; current flat appearance rejected |
+| Final family character models | NEEDS ASSET | Individual sheets received; rigging, animation and consistent game-ready models still required |
 | Final world scenery / authentic sounds | NEEDS ASSET | See ASSETS.md; development art/audio explicitly identified |
 | Free GitHub Pages play | IN PROGRESS | New root entry uses codes/peer connections; publishing and live confirmation underway |
 | iPad / iPhone Safari hardware QA | PLANNED | Real-device touch, audio, rotation, reconnect, memory/performance checks |

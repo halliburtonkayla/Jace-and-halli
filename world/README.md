@@ -2,6 +2,10 @@
 
 The live entry point is the existing repository’s `index.html`. This version runs on the existing GitHub Pages hosting with **no paid application server**. It uses family room codes and host-approved PeerJS data connections, following the existing cooperative-game approach. This supersedes the paid/private-server deployment plan at the user’s request on October 6, 2026.
 
+## Current visual instructions
+
+The owner has rejected the current abstract/flat prototype appearance. The four approved **individual** family character sheets now define the character identities and overall polished 3D animation style; older combined sheets are superseded. References are received, but animated game models and the corrected 3D neighborhood are still pending. Read the [master work prompt](prompts/Jace_and_Halli_World_Master_Work_Prompt.txt), [visual style bible](docs/VISUAL-DIRECTION.md), [asset contract](docs/ASSETS.md) and [renderer migration contract](docs/RENDERER-MIGRATION.md) before further visual work. Replace the environment renderer while preserving gameplay, saved state, free room codes and Classic Games.
+
 ## Play
 
 1. Open `https://halliburtonkayla.github.io/Jace-and-halli/` on the hosting iPad, phone or computer.

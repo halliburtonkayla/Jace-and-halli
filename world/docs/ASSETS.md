@@ -1,16 +1,18 @@
 # Asset contract
 
-Status: NEEDS ASSET. The visible family residents and landscape are explicitly development artwork, not finished photo-based character models. Do not label these as final family likenesses. Existing photo files are preserved but not used to construct models without the separately supplied approved references.
+Status: approved individual references COMPLETE; animated game models and final environment assets NEEDS ASSET. The owner supplied and approved Jace_Character_Sheet.png, Halli_Character_Sheet.png, Mommy_Character_Sheet.png and Unique_Character_Sheet.png. See [VISUAL-DIRECTION.md](VISUAL-DIRECTION.md) for authoritative mapping, hashes and the visual correction. These individual sheets supersede every older combined family/turnaround sheet. The current renderer is rejected as the final art direction; do not keep polishing its abstract/flat treatment. See [RENDERER-MIGRATION.md](RENDERER-MIGRATION.md) before implementation.
 
 ## Consistent family and NPC models
 
-For each family member: approved face/front and full-length reference; hairstyle, preferred outfit and footwear, glasses if applicable; neutral front/side/back model views; consistent relative heights and approved proportions. Store references privately, outside this public repository. Publish only approved derived game assets where appropriate.
+Use each supplied individual sheet as that character's style bible: face, age, skin tone, hairstyle, body type, proportions, silhouette and core appearance must remain consistent. Clothing can change for the activity while identity remains recognizable. Do not redesign the family or substitute generic/flat/blocky figures. Model and rig from the approved front/side/back and expression views; verify relative scale without assuming the independently cropped sheets establish exact heights. NPCs must share the same polished, rounded, colorful 3D style while having distinct identities. Store the unchanged references in the supplied work package, outside this public repository. Publish approved derived game assets where appropriate.
 
 Model manifest IDs: `family.jace`, `family.halli`, `family.mommy`, `family.unique`, `guest.default`, `npc.pip`, `npc.rosie`. Reuse the same model ID in all scenes. Per-profile `characterAsset` remains null until an approved asset exists; future cosmetic selections should be IDs from a parent-approved manifest.
 
 Prefer optimized GLB models with embedded textures, <=15k triangles per main character, <=2k for background NPCs, <=1024px textures and LOD where needed. These are initial budgets, not verified performance claims. Animation clips: idle, walk, run, wave, sit, drive, mow, pop, clap, dance and freeze. Mommy instructor clips: stand, sit, turn, clap, left/right step, march, reach, stretch and gentle squat. Model scale in meters with +Y up, forward axis documented consistently. Test skinning and material rendering on mobile Safari.
 
 ## Environment and sound
+
+Required style: polished dimensional children's animation, soft detailed materials, coherent lighting, depth and recognizable physical destinations. No CSS blobs, abstract gradients, emoji, generic cards or flat decorative image as the primary world. Transition Town supplies the connected-place principle, not an adult/teen aesthetic.
 
 Neighborhood kit: connected road geometry, sidewalks, family home exterior/interior, Game House, bubble garden, backyard, consistent trees/fences/signage; final road/world coordinate contract must preserve existing doorway IDs. Future locations have entries only when assets and actual gameplay exist.
 
