@@ -1,7 +1,6 @@
-import {TOWN_PLACES} from './town-destinations.mjs?v=drive-1';
+import {TOWN_PLACES} from './town-destinations.mjs?v=zoo-1';
 import {GAME_PAGES} from './game-catalog.mjs?v=all-games-1';
 export const PLACE_LINKS=[...TOWN_PLACES,
- {id:'zoo',name:'Zoo',icon:'heart',x:15,y:17},
  {id:'train',name:'Train station',icon:'car',x:83,y:77},
  {id:'circus',name:'Circus',icon:'game',x:94,y:20},
  {id:'candy',name:'Candy shop',icon:'heart',x:94,y:39},

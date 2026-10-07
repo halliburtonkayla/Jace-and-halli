@@ -1,6 +1,6 @@
-import {PLACE_LINKS,PLACE_NOTES,activitiesForPlace} from './place-activities.mjs?v=places-1';
+import {PLACE_LINKS,PLACE_NOTES,activitiesForPlace} from './place-activities.mjs?v=zoo-1';
 import {GAME_PAGES} from './game-catalog.mjs?v=all-games-1';
-import {TOWN_PLACES,SCENES} from './town-destinations.mjs?v=drive-1';
+import {TOWN_PLACES,SCENES} from './town-destinations.mjs?v=zoo-1';
 import {drawPortrait} from './characters.mjs';
 const paths={
  film:'M3 5h20v16H3ZM8 5v16M18 5v16M3 10h5M3 16h5M18 10h5M18 16h5',
@@ -58,6 +58,7 @@ export class TownView{
  launch(entry){if(entry.place){this.openPlace(entry.place);return;}this.say(entry.label);if(entry.visit)this.visit(entry.visit);else if(entry.art)this.art(entry.art);else this.classic(entry.file);}
  openPlace(id){
   const place=PLACE_LINKS.find(p=>p.id===id);this.say(place.name);
+  if(id==='zoo'){this.visit('zoo');return;}
   if(id==='theater'){this.visit('theater');this.classic('theater.html');return;}
   if(place.scene&&!['world','bubbles'].includes(place.scene))this.visit(id);
   const items=id==='classic'?this.gameEntries():activitiesForPlace(id);
@@ -88,9 +89,9 @@ export class TownView{
  markDock(){for(const b of this.dock.children){if(b.dataset.destination===this.destination)b.setAttribute('aria-current','location');else b.removeAttribute('aria-current');}}
  layout(){if(!this.ratio||!this.viewport.clientWidth)return;const w=this.viewport.clientWidth,h=this.viewport.clientHeight;const width=this.fitted?Math.min(w,h*this.ratio):Math.max(w,h*this.ratio);this.root.dataset.fitted=String(Boolean(this.fitted));this.picture.style.width=width+'px';this.picture.style.height=width/this.ratio+'px';this.picture.style.margin=this.fitted?'auto':'0 auto';this.fitButton.textContent=this.fitted?'Look closer':'See whole '+(this.key==='world'?'town':'room');if(this.recenter){this.viewport.scrollLeft=(width-w)/2;this.recenter=false;}}
  update(snapshot,me){
-  const shown=me&&['world','home','arcade','arena','school','garage','classic','theater'].includes(me.scene)&&me.vehicle!=='mower';this.root.hidden=!shown;if(!shown)return;this.watchMovie.hidden=me.scene!=='theater';this.arcadeActions.hidden=me.scene!=='arcade';
+  const shown=me&&['world','home','arcade','arena','school','garage','classic','theater','zoo'].includes(me.scene)&&me.vehicle!=='mower';this.root.hidden=!shown;if(!shown)return;this.watchMovie.hidden=me.scene!=='theater';this.arcadeActions.hidden=!['arcade','zoo'].includes(me.scene);
   this.destination=me.destination;this.markDock();const key=me.scene;if(this.key!==key){this.key=key;this.playersKey='';this.fitted=false;this.recenter=true;
-   const scene=SCENES[key];this.ratio=scene?.ratio||1672/941;this.img.src=key==='world'?new URL('../assets/town/approved-world-v1.webp',import.meta.url):new URL('../assets/scenes/'+(scene.asset||scene.image+'-v1.webp'),import.meta.url);this.img.alt=scene?.title||'Jace and Halli’s World: our connected town';this.tip.textContent='Choose a picture below';
+   const scene=SCENES[key];if(['arcade','zoo'].includes(key)){this.arcadeActions.replaceChildren();this.arcadeActions.setAttribute('aria-label',scene.title+' activities');for(const spot of scene.spots){const b=this.button(spot.label,spot.icon,()=>this.launch(spot));b.className='town-arcade-game';this.arcadeActions.append(b);}}this.ratio=scene?.ratio||1672/941;this.img.src=key==='world'?new URL('../assets/town/approved-world-v1.webp',import.meta.url):new URL('../assets/scenes/'+(scene.asset||scene.image+'-v1.webp'),import.meta.url);this.img.alt=scene?.title||'Jace and Halli’s World: our connected town';this.tip.textContent='Choose a picture below';
    this.layout();
 
   }
