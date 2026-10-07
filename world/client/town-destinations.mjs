@@ -36,7 +36,7 @@ export const SCENES = {
   {x:23,y:72,label:'Blocks',icon:'game',file:'blocks.html'},
   {x:73,y:75,label:'Learning games',icon:'book',file:'learning.html'},
  ]},
- garage:{title:'Driving games',image:'backyard',ratio:1.5,hint:'Choose a vehicle. Each opens an existing driving game.',spots:[
+ garage:{title:'Driving games',image:'backyard',ratio:1.5,hint:'Drive our town, work the tractor farm, or visit the construction site.',spots:[
   {x:22,y:70,label:'Town driving',icon:'car',file:'town-driving.html'},
   {x:51,y:76,label:'Tractor farm',icon:'leaf',file:'tractor-farm.html'},
   {x:80,y:70,label:'Construction drive',icon:'truck',file:'construction-drive.html'},
