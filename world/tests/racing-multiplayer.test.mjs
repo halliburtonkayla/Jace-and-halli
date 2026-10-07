@@ -8,7 +8,7 @@ test('approved profiles share one ready grid; only the leader selects track and 
  const {game,race,send}=room();assert.equal(race.members.size,2);assert.equal(race.members.get('b').assist,true);
  assert.throws(()=>send('stranger',{op:'join',car:'comet'}),/profile/);assert.throws(()=>send('b',{op:'track',track:'beach'}),/leader/);
  assert.throws(()=>send('a',{op:'start'}),/READY/);send('a',{op:'ready',ready:true});send('a',{op:'track',track:'beach'});assert.equal(race.members.get('a').ready,false);
- start(send);assert.equal(race.engine.racers.filter(r=>r.human).length,2);assert.equal(race.engine.racers.filter(r=>!r.human).length,6);assert.equal(race.engine.track.id,'beach');assert.equal(race.engine.racers[1].car.id,'monster');
+ assert.throws(()=>game.request('a','action',{action:'race-result'}),/saved by the host/);start(send);assert.equal(race.engine.racers.filter(r=>r.human).length,2);assert.equal(race.engine.racers.filter(r=>!r.human).length,6);assert.equal(race.engine.track.id,'beach');assert.equal(race.engine.racers[1].car.id,'monster');
  game.select('c','unique');assert.throws(()=>send('c',{op:'join',car:'comet'}),/underway/);assert.throws(()=>send('a',{op:'car',car:'spark'}),/unlock/);
 });
 test('independent controls move only the assigned car; stale packets cannot teleport or finish',()=>{

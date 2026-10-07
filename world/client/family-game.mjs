@@ -104,6 +104,7 @@ export class FamilyGame {
     else if(action==='creativity'&&p.scene!=='creativity'){if(p.scene==='bowling'){this.bowling.leave(id);p.artReturn='arcade';}else p.artReturn=p.scene;p.scene='creativity';p.speed=0;p.engine=false;p.input={gas:0,brake:0,steer:0};}
     else if(action==='art-exit'&&p.scene==='creativity'){p.scene=p.artReturn||'world';p.artReturn=null;p.speed=0;p.input={gas:0,brake:0,steer:0};}
     else if(action==='race-result'){
+      if(this.racing.members.has(id))throw Error('Family race records are saved by the host.');
       // These are personal arcade records, not a trusted competitive leaderboard.
       if(!['neon','dino','speedway','beach','country'].includes(body.track)||!['comet','spark','thunder','monster'].includes(body.car)||typeof body.id!=='string'||body.id.length>80||!Array.isArray(body.laps)||body.laps.length!==3||body.laps.some(t=>!Number.isFinite(t)||t<20||t>3600)||!Number.isInteger(body.position)||body.position<1||body.position>8)throw Error('Invalid race result.');
       p.data.racing ||= {};const previous=p.data.racing[body.track];

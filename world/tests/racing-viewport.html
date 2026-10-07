@@ -4,6 +4,7 @@
 <iframe id="subject" title="Existing arcade at phone size" src="../../arcade-new.html#race"></iframe>
 <script type="module">
 const frame=document.getElementById('subject'),report=document.getElementById('report');let running=false;
+if(new URLSearchParams(location.search).has('family')){frame.src='../../index.html?race=family';frame.title='Existing family world at phone size';document.getElementById('replay').hidden=true;report.textContent='Family mode: use the real room, approval and race controls in the frame.';}
 document.getElementById('phone').onclick=()=>{frame.style.width='390px';frame.style.height='740px';};document.getElementById('landscape').onclick=()=>{frame.style.width='844px';frame.style.height='390px';};
 document.getElementById('replay').onclick=async()=>{
  if(running)return;const doc=frame.contentDocument,win=frame.contentWindow,root=doc.getElementById('moto');if(!doc.getElementById('race-start'))return;running=true;report.textContent='Starting real input replay…\n';
