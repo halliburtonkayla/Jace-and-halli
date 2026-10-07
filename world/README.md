@@ -1,5 +1,13 @@
 # Jace & Halli’s World — free family rooms
 
+## Current entry — approved illustrated town
+
+October 7 owner clarification: use the exact supplied town and room artwork as interactive navigation, like Transition Town. **Start playing → choose a profile → tap a glowing destination sign.** Drag the picture to look around, use **See whole town**, or open **Places to play**. The normal URL no longer enters the rejected primitive 3D prototype. Historical renderer notes below are retained for development only; `?view=3d` and `?view=legacy` are explicit optional development views.
+
+The home art table opens the touchscreen coloring editor; the school whiteboard opens free drawing/practice. Bubble Garden preserves pop progression and the backyard preserves shared grass cutting. Bowling & Arcade has a real shared bowling lane (swipe throws, moving pins, strike/spare scoring, computer/family turns), plus the existing skee-ball and racing games. The road's Driving Games sign and arena connect to the original vehicle activities. Classic Games preserves every original activity inside the same hosting page.
+
+The active release status is the first table in `docs/CHECKLIST.md`. Pictured attractions without interactions are still scenery, with no fake play buttons. `town-destinations.mjs` owns image coordinates and allowlisted destinations; `town-view.mjs` owns navigation presentation; `render-illustrated.mjs` owns bubble/mower drawing; `bowling-physics.mjs` owns host-side physics/scoring; `bowling-view.mjs` owns input/display. Room approval, profile IDs, localStorage key and IndexedDB galleries are preserved. Optional private-server pages still use their own previous app. Run `npm test --prefix world` from the repository root.
+
 The live entry point is the existing repository’s `index.html`. This version runs on the existing GitHub Pages hosting with **no paid application server**. It uses family room codes and host-approved PeerJS data connections, following the existing cooperative-game approach. This supersedes the paid/private-server deployment plan at the user’s request on October 6, 2026.
 
 ## Current visual instructions

@@ -1,14 +1,21 @@
-// The approved-town 3D scene is the normal play path. Keep old art for explicit developer rollback only.
-const use3D = new URLSearchParams(location.search).get('view') !== 'legacy';
-const { Renderer } = await import(use3D ? './render-3d.mjs?v=town-1' : './render.mjs?v=3');
+// The owner's approved illustrated town is primary. Experimental renderers stay opt-in.
+const view = new URLSearchParams(location.search).get('view');
+const use3D = view === '3d', illustrated = !['3d','legacy'].includes(view);
+const { Renderer } = await import(illustrated ? './render-illustrated.mjs?v=illustrated-1' : use3D ? './render-3d.mjs?v=town-1' : './render.mjs?v=3');
 import { Sound } from './audio.mjs';
 import { LOCATIONS } from './locations.mjs';
 import { drawPortrait, drawFamily, CHARACTER_ART } from './characters.mjs';
 import { routeTo, updateRoute, guidedInput, routeDots } from './routes.mjs';
-import { FamilyRoom } from './room.mjs?v=creativity-2';
+import { FamilyRoom } from './room.mjs?v=illustrated-1';
+import {TownView} from './town-view.mjs?v=illustrated-1';
+import {BowlingView} from './bowling-view.mjs?v=illustrated-1';
+import {SCENES} from './town-destinations.mjs?v=illustrated-1';
 const room=new FamilyRoom();
 let artCenter=null,artOpening=false,pendingArt=new URLSearchParams(location.search).get('activity')==='art';
 const $=id=>document.getElementById(id),renderer=new Renderer($('world')),sound=new Sound();
+document.body.classList.toggle('illustrated',illustrated);
+const townView=illustrated?new TownView($('play'),{visit:id=>action('visit',{destination:id}),art:station=>openArt(station),classic:openClassic,say:text=>{sound.unlock();sound.say(text,true);}}):null;
+const bowlingView=illustrated?new BowlingView($('play'),{action,sound}):null;
 let route=null,assist=false;
 let me=null,data=null,bubbles=[],snapshot={players:[],npcs:[],cut:[],tag:{}},events=null,role='',profiles=[],online=false,busy=false,lastIt=null,input={gas:0,brake:0,steer:0},inputBusy=false;
 document.querySelector('.build-note').textContent=use3D?'New town · buildings are growing into playable places':'Legacy development view';
@@ -30,25 +37,38 @@ room.addEventListener('lost',e=>{stop();show('welcome');$('login-error').textCon
 function stop(){artCenter?.dispose();artCenter=null;artOpening=false;events=null;me=null;online=false;input={gas:0,brake:0,steer:0};sound.motor(null);}
 async function logout(){stop();await api('logout',{});$('admin').close();$('classic-frame-panel').classList.add('hidden');$('classic-frame').src='about:blank';show('welcome');}
 $('profile-logout').onclick=logout;$('back').onclick=()=>{if(room.host&&room.game.players.has('host'))room.game.request('host','input',{gas:0,brake:1,steer:0});me=null;input={gas:0,brake:0,steer:0};sound.motor(null);room.selected=null;load();};
-async function select(id){try{sound.unlock();const r=await api('select',{profile:id});me=r.player;data=r.data;bubbles=r.bubbles;route=null;assist=me.mode==='toddler';role=room.host?'parent':'device';sound.mute(data.preferences.sound);$('parent').classList.toggle('hidden',!room.host);$('back').textContent='Profiles';$('room-lobby').classList.toggle('hidden',!room.host);show('play');updateUI();connect();if(pendingArt){pendingArt=false;openArt();return;}sound.say('Welcome to our world. Tap Where to, choose a place, then hold Go to travel.',true);}catch(e){$('profile-error').textContent=e.message;}}
+async function select(id){try{sound.unlock();const r=await api('select',{profile:id});me=r.player;data=r.data;bubbles=r.bubbles;route=null;assist=me.mode==='toddler';role=room.host?'parent':'device';sound.mute(data.preferences.sound);$('parent').classList.toggle('hidden',!room.host);$('back').textContent='Profiles';$('room-lobby').classList.toggle('hidden',!room.host);show('play');renderer.resize();updateUI();connect();if(pendingArt){pendingArt=false;openArt();return;}sound.say(illustrated?'Welcome to our world. Tap a glowing sign to play.':'Welcome to our world. Tap Where to, choose a place, then hold Go to travel.',true);}catch(e){$('profile-error').textContent=e.message;}}
 function connect(){online=room.connected;}
 room.addEventListener('snapshot',e=>{snapshot=e.detail;online=room.connected;$('connection').textContent=`${snapshot.players.length} family player${snapshot.players.length===1?'':'s'} · code ${room.code}`;const p=snapshot.players.find(p=>p.id===me?.id);if(p){me=p;updateUI();}if(snapshot.tag.active&&snapshot.tag.it!==lastIt){lastIt=snapshot.tag.it;sound.tone(650);sound.say(lastIt===me?.id?'You’re it!':'Run! You’re playing tag.',true);navigator.vibrate?.(30);}});
 
-function updateUI(){if(!me)return;updateRoute(me,route);renderer.setRoute?.(routeDots(me,route));$('assistance').textContent='Help steer: '+(assist?'on':'off');$('directions').classList.toggle('hidden',me.scene!=='world');document.body.classList.toggle('toddler',me.mode==='toddler');$('sound').textContent=sound.enabled?'Sound on':'Sound off';const outside=me.scene==='world';$('controls').classList.toggle('hidden',!outside);$('scene-exit').classList.toggle('hidden',outside);$('home-panel').classList.toggle('hidden',me.scene!=='home');$('classic-panel').classList.toggle('hidden',me.scene!=='classic');$('bubble-score').classList.toggle('hidden',me.scene!=='bubbles');$('hint').classList.toggle('hidden',!outside&&me.scene!=='bubbles');$('place').textContent=me.scene==='bubbles'?'Halli’s Bubble Garden':me.scene==='home'?'Our Home':me.scene==='classic'?'Game House':'Our Neighborhood';
+function updateIllustratedUI(){
+ const mowing=me.scene==='world'&&me.vehicle==='mower',garden=me.scene==='bubbles';
+ document.body.classList.toggle('toddler',me.mode==='toddler');$('sound').textContent=sound.enabled?'Sound on':'Sound off';
+ $('place').textContent=mowing?'Jace’s backyard':garden?'Bubble garden':me.scene==='bowling'?'Let’s bowl':SCENES[me.scene]?.title||'Our town';
+ $('controls').classList.toggle('hidden',!mowing);$('world').classList.toggle('hidden',!mowing&&!garden);
+ $('scene-exit').classList.toggle('hidden',me.scene==='world');$('scene-exit').textContent='Back to our town';
+ $('bubble-score').classList.toggle('hidden',!garden);$('hint').classList.toggle('hidden',!garden&&!mowing);
+ for(const id of['vehicle','enter','tag','camera-view'])$(id).classList.add('hidden');
+ $('start').classList.toggle('hidden',!mowing);$('start').textContent=me.engine?'Stop mower':'Start mower';$('leave-mower').classList.toggle('hidden',!mowing);$('leave-mower').textContent='Back to town';$('gas').textContent='GAS';
+ if(garden){const level=1+Math.min(2,Math.floor(data.pops/15));$('bubble-score').textContent=`Level ${level} · ${data.pops} pops`;$('hint').textContent=level===1?'Pop the big floating bubbles!':level===2?'Pop a color. Say its name!':'Pop for a surprise word!';}
+ if(mowing)$('hint').textContent='Start the mower. Hold GAS and steer to cut the tall grass.';
+ townView.update(snapshot,me);bowlingView.update(snapshot.bowling,me);sound.motor(mowing?me:null);
+}
+function updateUI(){if(!me)return;if(illustrated){updateIllustratedUI();return;}updateRoute(me,route);renderer.setRoute?.(routeDots(me,route));$('assistance').textContent='Help steer: '+(assist?'on':'off');$('directions').classList.toggle('hidden',me.scene!=='world');document.body.classList.toggle('toddler',me.mode==='toddler');$('sound').textContent=sound.enabled?'Sound on':'Sound off';const outside=me.scene==='world';$('controls').classList.toggle('hidden',!outside);$('scene-exit').classList.toggle('hidden',outside);$('home-panel').classList.toggle('hidden',me.scene!=='home');$('classic-panel').classList.toggle('hidden',me.scene!=='classic');$('bubble-score').classList.toggle('hidden',me.scene!=='bubbles');$('hint').classList.toggle('hidden',!outside&&me.scene!=='bubbles');$('place').textContent=me.scene==='bubbles'?'Halli’s Bubble Garden':me.scene==='home'?'Our Home':me.scene==='classic'?'Game House':'Our Neighborhood';
  $('gas').textContent=me.vehicle==='walk'?'GO':'GAS';$('start').classList.toggle('hidden',me.vehicle==='walk'||!outside);$('start').textContent=me.engine?'Stop':'Start';$('vehicle').textContent=me.vehicle==='walk'?'Ride car':'Walk';$('vehicle').classList.toggle('hidden',me.vehicle==='mower');$('leave-mower').classList.toggle('hidden',me.vehicle!=='mower');$('camera-view').classList.toggle('hidden',!outside||!use3D||Boolean(renderer.compatibility));$('tag').classList.toggle('hidden',me.vehicle!=='walk');$('tag').textContent=snapshot.tag.active?'Stop tag':'Play tag';const near=LOCATIONS.find(l=>Math.hypot(me.x-l.x,me.y-(l.y+45))<120);$('enter').classList.toggle('hidden',!near||!outside||me.vehicle==='mower');if(near)$('enter').textContent=near.action==='mower'?'Mow grass':`Enter ${near.name}`;
  if(me.scene==='bubbles'){const level=1+Math.min(2,Math.floor(data.pops/15));$('bubble-score').textContent=`Level ${level} · ${data.pops} pops`;$('hint').textContent=level===1?'Tap a bubble. Pop, pop, pop!':level===2?'Pop a color. Say its name!':'Pop for a surprise word!';}else $('hint').textContent=me.vehicle==='mower'?'Start the mower, hold GAS, and steer across tall grass.':near?`You found ${near.name}. Tap ${near.action==='mower'?'Mow grass':'Enter'}!`:me.vehicle==='walk'?(use3D&&!renderer.compatibility?'Hold GO to walk. Steer with the wheel. Drag the scenery to look around.':'Hold GO to walk. Turn the wheel. Arrow keys work too.'):me.engine?'Hold GAS and turn the wheel. BRAKE slows down.':'Tap START to start your car.';
  if(outside&&route&&!route.arrived&&me.vehicle!=='mower')$('hint').textContent='To '+route.name+' · '+(assist?'Hold '+(me.vehicle==='walk'?'GO':'GAS')+' to follow the golden path.':'Follow the golden path. Help steer is available in Where to.');
  if(me.scene==='world')$('place').textContent='Our Town';
  sound.motor(me);
 }
-async function action(action,extra={}){if(busy||!me)return;busy=true;try{sound.unlock();const r=await api('action',{action,...extra});me=r.player;data=r.data;bubbles=r.bubbles;updateUI();if(action==='enter'&&me.scene==='bubbles')sound.say('Pop! Now you say pop.',true);if(action==='start')sound.tone(110,.2);}catch(e){$('hint').textContent=e.message;}finally{busy=false;}}
+async function action(action,extra={}){if(busy||!me)return;busy=true;try{sound.unlock();if(['visit','exit'].includes(action)){release();route=null;}const r=await api('action',{action,...extra});me=r.player;data=r.data;bubbles=r.bubbles;updateUI();renderer.resize();if(['enter','visit'].includes(action)&&me.scene==='bubbles')sound.say('Pop! Now you say pop.',true);if(action==='start')sound.tone(110,.2);}catch(e){$('hint').textContent=e.message;if(me.scene==='bowling')bowlingView.message.textContent=e.message;}finally{busy=false;}}
 $('directions').onclick=()=>{release();$('destinations').showModal();};
 for(const place of LOCATIONS){const b=document.createElement('button');b.textContent=place.id==='home'?'Our home · outside':place.name;b.onclick=()=>{route=routeTo(me,place.id);$('destinations').close();updateUI();sound.say('Let’s go to '+place.name+'. Hold Go or Gas and follow the golden path.',true);};$('destination-list').append(b);}
 $('assistance').onclick=()=>{assist=!assist;updateUI();};
 $('clear-route').onclick=()=>{route=null;renderer.setRoute?.([]);$('destinations').close();updateUI();};
 $('camera-view').textContent=use3D?'Street view':'Town view';
 $('camera-view').onclick=()=>{$('camera-view').textContent=renderer.toggleCamera?.()?'Street view':'Town view';};
-$('town-overview')?.addEventListener('click',()=>{release();$('town-map').showModal();});
+$('town-overview')?.addEventListener('click',()=>{release();if(illustrated){if(me)action('exit');}else $('town-map').showModal();});
 $('welcome-overview')?.addEventListener('click',()=>$('town-map').showModal());
 window.addEventListener('town-open-art',()=>openArt());
 window.addEventListener('town-open-classic',()=>{if(!me)return;release();$('classic-frame').src='classic-home.html';$('classic-frame-panel').classList.remove('hidden');});
@@ -60,7 +80,7 @@ wheel.onpointerdown=e=>{e.preventDefault();steering=true;wheel.setPointerCapture
 const keySet=new Set();function keys(){input.gas=keySet.has('ArrowUp')||keySet.has('w')?1:0;input.brake=keySet.has('ArrowDown')||keySet.has('s')?1:0;input.steer=(keySet.has('ArrowRight')||keySet.has('d')?1:0)-(keySet.has('ArrowLeft')||keySet.has('a')?1:0);}
 addEventListener('keydown',e=>{if(!me||artCenter||artOpening||e.target.matches('input,textarea,select'))return;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d'].includes(e.key)){e.preventDefault();keySet.add(e.key);keys();}});addEventListener('keyup',e=>{keySet.delete(e.key);keys();});
 function release(){keySet.clear();input={gas:0,brake:0,steer:0};sound.motor(null);}addEventListener('blur',release);document.addEventListener('visibilitychange',()=>{if(document.hidden)release();});
-setInterval(async()=>{if(!me||!online||inputBusy)return;inputBusy=true;try{await api('input',document.hidden||artCenter||artOpening||renderer.playable===false?{gas:0,brake:1,steer:0}:guidedInput(me,input,route,assist));}catch{online=false;}finally{inputBusy=false;}},100);
+setInterval(async()=>{if(!me||!online||inputBusy)return;inputBusy=true;try{const paused=document.hidden||artCenter||artOpening||!$('classic-frame-panel').classList.contains('hidden')||(illustrated&&me.vehicle!=='mower');await api('input',paused||renderer.playable===false?{gas:0,brake:1,steer:0}:guidedInput(me,input,route,assist));}catch{online=false;}finally{inputBusy=false;}},100);
 $('world').onpointerdown=async e=>{if(me?.scene!=='bubbles'||busy)return;const r=$('world').getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;const b=renderer.bubbleHits.find(b=>Math.hypot(x-b.x,y-b.y)<b.r);if(!b)return;const count=data.pops;await action('pop',{id:b.id});if(data.pops===count)return;renderer.pop(x,y);sound.tone(500+Math.random()*300);navigator.vibrate?.(15);if(data.pops<15)sound.prompt();else if(data.pops<30)sound.say(['Pink.','Blue.','Yellow.','Green.'][b.color]);else sound.say(['Ball. Roll a ball.','Car. Vroom, vroom!','Baby. Say baby.','More. Say more.'][b.color]);};
 function renderRequests(){
  $('join-requests').replaceChildren();for(const request of room.pendingList()){const row=document.createElement('div'),name=document.createElement('b');name.textContent=request.name+' wants to join';const approve=document.createElement('button'),decline=document.createElement('button');approve.textContent='Approve';decline.textContent='Decline';approve.onclick=()=>{room.approve(request.id);devices();};decline.onclick=()=>room.deny(request.id);row.append(name,approve,decline);$('join-requests').append(row);}if(!room.pending.size)$('join-requests').textContent='No one is waiting to join.';
@@ -74,11 +94,12 @@ async function share(){try{await navigator.clipboard.writeText(new URL('./',loca
 $('copy-invite').onclick=share;$('lobby-share').onclick=share;
 $('reset-yard').onclick=()=>{room.game.cut.clear();room.game.save();$('admin-status').textContent='Fresh grass is ready for mowing.';};
 $('save-backup').onclick=()=>{room.game.save();const state={version:1,progress:room.game.progress,cut:[...room.game.cut],guests:room.game.profiles.filter(p=>p.id.startsWith('guest-'))},blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a'),url=URL.createObjectURL(blob);a.href=url;a.download='jace-halli-progress.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
-async function openArt(){
+async function openArt(station='coloring'){
+ if(typeof station!=='string')station='coloring';
  if(artCenter||artOpening||!me)return;artOpening=true;release();sound.unlock();sound.motor(null);
- try{const r=await api('action',{action:'creativity'});me=r.player;data=r.data;const loader=document.createElement('div');loader.id='art-loader';loader.className='art-loading';loader.setAttribute('role','status');loader.textContent='Opening the Creativity Center…';$('play').append(loader);const {CreativityCenter,prepareIllustratedSheets}=await import('./creativity/center.mjs?v=6');await prepareIllustratedSheets();
+ try{const r=await api('action',{action:'creativity'});me=r.player;data=r.data;const loader=document.createElement('div');loader.id='art-loader';loader.className='art-loading';loader.setAttribute('role','status');loader.textContent='Opening the Creativity Center…';$('play').append(loader);const {CreativityCenter,prepareIllustratedSheets}=await import('./creativity/center.mjs?v=illustrated-1');await prepareIllustratedSheets();
  if(!document.getElementById('art-style')){const link=document.createElement('link');link.id='art-style';link.rel='stylesheet';link.href=new URL('./creativity/center.css?v=5',import.meta.url).href;document.head.append(link);await new Promise(resolve=>{link.onload=link.onerror=resolve;});}
- artCenter=new CreativityCenter({parent:$('play'),room,sound,player:me,onClose:async()=>{artCenter=null;await action('art-exit');},onSoundChange:enabled=>action('preferences',{sound:enabled})});
+ artCenter=new CreativityCenter({parent:$('play'),room,sound,player:me,initialStation:illustrated?station:null,onClose:async()=>{artCenter=null;await action('art-exit');},onSoundChange:enabled=>action('preferences',{sound:enabled})});
  }catch(e){$('hint').textContent=e.message;if(me?.scene==='creativity')await action('art-exit');}finally{$('art-loader')?.remove();artOpening=false;}
 }
 $('create-art').onclick=openArt;$('classic-creativity').onclick=openArt;
@@ -87,4 +108,4 @@ $('classic-open').onclick=()=>openClassic('classic-home.html');$('classic-whiteb
 $('close-classic').onclick=()=>{$('classic-frame-panel').classList.add('hidden');$('classic-frame').src='about:blank';updateUI();};
 $('classic-frame').onload=()=>{try{const doc=$('classic-frame').contentDocument;if(!doc)return;doc.querySelectorAll('a[href]').forEach(a=>{const u=new URL(a.href);if(u.origin===location.origin&&u.pathname.endsWith('/index.html'))a.href=new URL('../../classic-home.html',import.meta.url).href;else if(u.origin!==location.origin)a.target='_blank';});doc.querySelectorAll('[onclick]').forEach(el=>{const v=el.getAttribute('onclick');if(v.includes("'index.html'"))el.setAttribute('onclick',v.replaceAll("'index.html'","'classic-home.html'"));});}catch{}};
 addEventListener('pagehide',()=>{if(room.host)room.game?.save();});
-addEventListener('resize',()=>renderer.resize());$('create-room').disabled=false;$('start-art').disabled=false;$('login-error').textContent='';function loop(t){if(!artCenter&&!artOpening)renderer.draw(snapshot,me,bubbles,data,t);requestAnimationFrame(loop);}requestAnimationFrame(loop);show('welcome');
+addEventListener('resize',()=>renderer.resize());$('create-room').disabled=false;$('start-art').disabled=false;$('login-error').textContent='';function loop(t){if(!artCenter&&!artOpening){if(!illustrated||me?.scene==='bubbles'||me?.vehicle==='mower')renderer.draw(snapshot,me,bubbles,data,t);bowlingView?.draw(t);}requestAnimationFrame(loop);}requestAnimationFrame(loop);show('welcome');

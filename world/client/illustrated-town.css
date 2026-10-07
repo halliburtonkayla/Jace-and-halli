@@ -1,0 +1,53 @@
+/* Approved artwork is the navigation surface, not a different welcome-only theme. */
+body.illustrated #play{background:#203c32;--town-top:66px;--town-bottom:58px}
+body.illustrated .topbar{inset:0 0 auto;min-height:var(--town-top);padding:8px max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left));background:#193c37f5;z-index:5;gap:8px;color:#fff}
+body.illustrated .topbar button{background:#ffffff12;color:#fff;box-shadow:none;border:1px solid #ffffff35;min-height:44px;padding:9px 13px;border-radius:14px;font-size:12px}
+body.illustrated .topbar button:hover{background:#ffffff26}body.illustrated #create-art{background:#f2c76a;color:#26392f;border-color:#f2c76a}
+body.illustrated .title{background:none;box-shadow:none;padding:0 8px;max-width:none;order:initial;flex-basis:auto;display:block;flex:1}
+body.illustrated .title b{font-size:16px}body.illustrated .title small{font-size:10px;color:#d6e6d8}
+body.illustrated #directions,body.illustrated .build-note,body.illustrated #home-panel,body.illustrated #classic-panel{display:none!important}
+#illustrated-town{position:absolute;inset:var(--town-top) 0 0;background:#193c37}
+#illustrated-town[hidden]{display:none}
+.town-viewport{position:absolute;inset:0 0 var(--town-bottom);overflow:auto;overscroll-behavior:contain;touch-action:pan-x pan-y;scrollbar-width:thin;scrollbar-color:#ebd6a5 #264c36;display:flex;align-items:center}
+.town-picture{position:relative;flex:none;isolation:isolate;user-select:none;-webkit-user-select:none}
+.town-picture>img{display:block;position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.town-hotspots,.town-presence{position:absolute;inset:0;pointer-events:none}
+.town-hotspot{position:absolute;transform:translate(-50%,-50%);pointer-events:auto;display:flex;align-items:center;gap:7px;background:#fff5dbeF;border:2px solid #e8b865;box-shadow:0 3px 0 #704f29,0 0 18px #fff5bc66;color:#273f35;border-radius:12px;padding:8px 12px;font-size:12px;min-height:46px;white-space:nowrap;max-width:220px}
+.town-hotspot:after{content:'';position:absolute;width:5px;height:10px;background:#e8b865;bottom:-12px;left:50%;border-radius:0 0 3px 3px}
+.town-hotspot svg,.town-choices svg{width:25px;height:25px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.town-hotspot:hover,.town-hotspot:focus-visible{background:#fff9e6;outline:3px solid #fff;outline-offset:3px}
+.town-hotspot:active{transform:translate(-50%,-47%)}
+.town-player{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;filter:drop-shadow(0 3px 3px #0007)}
+.town-player canvas{width:38px;height:50px}.town-player span{font-size:10px;font-weight:800;background:#fff1cd;border-radius:8px;padding:2px 7px;color:#1d4033}
+.town-footer{position:absolute;bottom:0;left:0;right:0;height:var(--town-bottom);display:flex;align-items:center;padding:6px max(14px,env(safe-area-inset-right)) 6px max(14px,env(safe-area-inset-left));gap:10px;color:#f6ead5;background:#193c37}
+.town-tip{font-size:12px;margin:0;flex:1;font-weight:600}.town-footer button{min-height:44px;border:1px solid #d9d2aa66;color:#f9edce;background:#ffffff0d;box-shadow:none;padding:8px 14px;border-radius:12px;font-size:12px;white-space:nowrap}
+.town-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:20px}.town-choices button{display:flex;align-items:center;gap:10px;background:#f4ead4;min-height:64px;text-align:left;padding:13px;font-size:14px}
+body.illustrated #scene-exit{z-index:4;min-height:48px;font-size:14px;padding:12px 18px}
+body.illustrated #bubble-score{padding:12px 15px;font-size:14px;bottom:max(22px,env(safe-area-inset-bottom));background:#fff3daed}
+body.illustrated #hint{z-index:2;top:78px;bottom:auto;max-width:80%;font-size:13px;padding:9px 18px;box-shadow:0 4px 14px #24382a30;margin:0}
+body.illustrated #controls{bottom:max(12px,env(safe-area-inset-bottom));z-index:3}
+body.illustrated .actions{max-width:160px}body.illustrated #wheel{width:120px;height:120px}body.illustrated #wheel svg{width:100px;height:100px}
+body.illustrated #classic-frame-panel{z-index:25}
+@media(max-width:700px){
+ body.illustrated #play{--town-top:66px;--town-bottom:68px}
+ body.illustrated .topbar{gap:5px;padding:8px}.topbar .title{order:initial}
+ body.illustrated .topbar button{flex:initial;padding:7px 9px;font-size:10px;white-space:normal;max-width:65px}
+ body.illustrated #create-art{display:none}body.illustrated .title{padding:0;min-width:50px}body.illustrated .title b{font-size:12px}body.illustrated #connection{display:none}
+ .town-footer{padding:6px 9px;gap:6px;flex-wrap:wrap;justify-content:center}.town-tip{flex-basis:100%;text-align:center;font-size:11px;line-height:1.2}.town-footer button{min-height:32px;padding:5px 12px;font-size:11px}
+ .town-hotspot{font-size:12px;padding:8px 10px;min-height:48px}
+ body.illustrated #hint{top:73px;font-size:11px;padding:6px 12px}
+ body.illustrated #bubble-score{font-size:12px;right:10px;bottom:22px}
+ body.illustrated #scene-exit{left:10px;bottom:16px;font-size:12px;padding:10px 12px}
+}
+@media(max-height:500px) and (orientation:landscape){
+ body.illustrated #play{--town-top:54px;--town-bottom:46px}body.illustrated .topbar{padding-top:5px;padding-bottom:5px;min-height:54px}body.illustrated .topbar button{min-height:42px;padding:7px 10px}
+ .town-hotspot{padding:6px 8px;font-size:10px;min-height:42px;gap:4px}.town-hotspot svg{width:20px;height:20px}.town-footer{flex-wrap:nowrap}.town-tip{flex-basis:auto;text-align:left}.town-footer button{min-height:36px}
+ body.illustrated #hint{top:58px}body.illustrated #wheel{width:88px;height:88px}body.illustrated #wheel svg{width:70px;height:70px}body.illustrated .pedals button{height:70px;width:75px}body.illustrated #gas{height:85px}body.illustrated .actions button{padding:9px;min-height:44px}
+}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+#bowling-game{position:absolute;inset:var(--town-top) 0 0;background-size:cover;background-position:center;color:#fff;display:grid;grid-template-rows:auto 1fr auto auto;padding:10px 20px 78px;gap:5px}
+#bowling-game[hidden]{display:none}#bowling-game canvas{display:block;width:100%;height:100%;min-height:0;touch-action:none}
+.bowling-scores{display:flex;gap:10px;justify-content:center;overflow:auto;max-height:75px}.bowling-scores>div{border:1px solid #9f72dc88;border-radius:12px;background:#171035d9;padding:7px 15px;min-width:130px;text-align:center;flex-shrink:0}.bowling-scores .active{border-color:#79f2ff;box-shadow:0 0 12px #79f2ff66}.bowling-scores b,.bowling-scores span{display:block}.bowling-scores b{font-size:14px}.bowling-scores span{font-size:11px;margin-top:3px}
+.bowling-message{text-align:center;font-size:14px;font-weight:700;margin:0;min-height:20px}.bowling-console{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}.bowling-colors{display:flex;gap:6px}.bowling-colors button{border-radius:50%;width:38px;height:38px;min-height:38px;padding:0;border:2px solid #fff;box-shadow:0 3px 8px #0005}.bowling-aim{display:flex;align-items:center;gap:10px;font-size:12px;margin:0}.bowling-aim input{width:120px;padding:0;accent-color:#d09aff;height:36px;touch-action:pan-y}.bowling-console>button{font-size:13px;padding:12px 16px;min-height:44px}.bowling-roll{background:#d0f8b0}.bowling-reset{background:#eedbff}
+@media(max-width:700px){#bowling-game{padding:8px 8px 75px;gap:4px}.bowling-console{gap:5px}.bowling-colors{gap:4px}.bowling-colors button{width:30px;height:30px;min-height:30px}.bowling-aim{flex:1;min-width:100px;justify-content:center}.bowling-aim input{width:85px}.bowling-message{font-size:12px}.bowling-scores>div{padding:6px 10px;min-width:110px}.bowling-console>button{padding:8px 14px;font-size:12px}}
+@media(max-height:500px) and (orientation:landscape){#bowling-game{padding:4px 10px 8px;grid-template-rows:1fr auto auto;margin-left:120px;margin-right:10px}.bowling-scores{position:absolute;right:0;top:0;display:block;max-height:80%;width:115px}.bowling-scores>div{min-width:0;margin-bottom:6px;padding:6px}.bowling-scores b{font-size:11px}.bowling-scores span{font-size:10px}.bowling-message{font-size:11px}.bowling-console{gap:10px}.bowling-colors button{width:30px;height:30px;min-height:30px}.bowling-console>button{min-height:40px;padding:7px 10px}.bowling-aim input{width:90px}.bowling-aim{flex:initial}}

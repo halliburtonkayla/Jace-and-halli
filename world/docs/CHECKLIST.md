@@ -1,5 +1,24 @@
 # Development checklist
 
+## Current release — October 7 illustrated-town correction
+
+This table supersedes the older renderer/default/attraction status entries below, which remain as development history. The owner explicitly approved the supplied illustrated town as the primary navigation experience.
+
+| Item | Status | Scope / evidence |
+|---|---|---|
+| Approved town as actual play entry | COMPLETE | Profile selection enters the exact supplied master artwork; proportional hotspots, native pan, whole-scene view and accessible destination chooser. No WebGL prerequisite. |
+| Approved scene rooms | COMPLETE | Home, arcade, backyard, bubble garden, arena and classroom images derived from exact supplied files; lazy loaded. Room pictures are navigation, not falsely labeled simulations. |
+| Existing content preservation | COMPLETE | Original HTML activity files untouched; all remain in Classic Games. Driving, racing, skee-ball, cooking, blocks, books and baby-doll activities also have direct room entrances. Their older presentation has not been represented as a new finished remake. |
+| Bubbles and mowing | COMPLETE | Existing authoritative pop IDs, progression and shared cut cells retained under the new presentation. |
+| Bowling foundation | COMPLETE | Swipe or aim/roll controls, ball colors, moving ball, pin collision/chain reaction, gutters, 10-frame strike/spare scoring, computer turns and approved family turn queue. Host owns results; completed personal best/game count saved with existing profile data. |
+| Coloring and whiteboard | COMPLETE | Opens actual existing editor directly from the art table or school board, with saved drafts/profile galleries; no intervening primitive 3D room. |
+| Family room and profile preservation | COMPLETE | Same host approval, profile lock, storage keys and gallery schema. New destination requests are allowlisted; no client-supplied position/score authority. |
+| Live browser and touch QA | IN PROGRESS | 27 automated tests pass, including scoring, collision outcomes, approved entry, asset/activity targets, preserved progress and returns. Live browser checks are recorded separately; real iPad/iPhone and separate-device connection checks remain required. |
+| Additional attractions | PLANNED | Shop purchases, full home routines, zoo interaction, circus show, theater library, playground equipment, railroad, church stories, Move & Groove and other requested new games remain separate implementation work. Unbuilt scenery has no fake play hotspot. |
+| Authentic sounds / further animations | NEEDS ASSET | Synthesized feedback/narration retained; approved scene art is received. Rigged family/NPC models are optional future 3D work, no longer a blocker to the approved illustrated town. |
+
+## Earlier foundation history
+
 COMPLETE means the stated foundation implementation exists and its listed checks pass. It does not mean the final requested world is finished. Free GitHub Pages room-code play supersedes mandatory paid server hosting at the user’s request.
 
 | System | Status | Evidence / next step |

@@ -1,4 +1,6 @@
-import { makePlayer, step, cutGrass, nearby, publicPlayer, clamp } from '../server/simulation.mjs';
+import { makePlayer, step, cutGrass, nearby, publicPlayer, clamp } from '../server/simulation.mjs?v=illustrated-1';
+import {TOWN_PLACES,VISIT_IDS} from './town-destinations.mjs?v=illustrated-1';
+import {BowlingLane} from './bowling-physics.mjs?v=illustrated-1';
 export const FAMILY = [
   { id: 'jace', name: 'Jace', mode: 'preschool' },
   { id: 'halli', name: 'Halli', mode: 'toddler' },
@@ -16,6 +18,7 @@ export class FamilyGame {
     this.saveCallback = save;
     this.tag = { active: false, it: null, cooldown: 0 };
     this.clock = 0;
+    this.bowling = new BowlingLane();
     this.npcs = [
       { id: 'npc-pip', name: 'Pip · computer', x: 90, y: 60, angle: 0, vehicle: 'walk', scene: 'world', npc: true },
       { id: 'npc-rosie', name: 'Rosie · computer', x: -90, y: 60, angle: 0, vehicle: 'walk', scene: 'world', npc: true },
@@ -38,6 +41,7 @@ export class FamilyGame {
     if (!profile) throw Error('Choose an approved profile.');
     if ([...this.players.entries()].some(([other, p]) => other !== id && p.profile === profileId)) throw Error('That profile is already playing.');
     const old = this.players.get(id);
+    if(old?.scene==='bowling')this.bowling.leave(id);
     if (old) this.progress[old.profile] = old.data;
     const p = makePlayer(id, profile, this.progress[profile.id] || fresh());
     this.players.set(id, p);
@@ -45,6 +49,7 @@ export class FamilyGame {
     return this.reply(p);
   }
   leave(id) {
+    this.bowling.leave(id);
     const p = this.players.get(id);
     if (p) this.progress[p.profile] = p.data;
     this.players.delete(id);
@@ -58,7 +63,7 @@ export class FamilyGame {
     const p = this.players.get(id);
     if (!p) throw Error('Choose a profile first.');
     p.lastSeen = Date.now();
-    if (path === 'resume') { p.scene = 'world'; return this.reply(p); }
+    if (path === 'resume') { if(p.scene==='bowling')this.bowling.leave(id);p.scene = 'world';p.destination=null; return this.reply(p); }
     if (path === 'input') {
       p.input = { gas: clamp(Number(body.gas) || 0, 0, 1), brake: clamp(Number(body.brake) || 0, 0, 1), steer: clamp(Number(body.steer) || 0, -1, 1) };
       p.inputAt = Date.now();
@@ -66,16 +71,28 @@ export class FamilyGame {
     }
     if (path !== 'action') throw Error('Unknown action.');
     const action = body.action;
-    if (action === 'vehicle' && p.scene === 'world') { p.vehicle = p.vehicle === 'car' ? 'walk' : 'car'; p.engine = false; p.speed = 0; }
+    if(action==='visit'){
+      if(!VISIT_IDS.has(body.destination))throw Error('Choose a place in our town.');
+      if(p.scene==='bowling'&&body.destination!=='bowling')this.bowling.leave(id);
+      p.destination=body.destination;p.speed=0;p.engine=false;p.input={gas:0,brake:1,steer:0};p.vehicle='walk';
+      p.scene=body.destination==='bowling'?'bowling':TOWN_PLACES.find(d=>d.id===body.destination).scene;
+      if(body.destination==='yard'){p.vehicle='mower';p.x=-300;p.y=290;p.angle=0;}
+      if(p.scene==='bubbles')this.makeBubbles(p);
+      if(p.scene==='bowling')this.bowling.join(p);
+    }
+    else if(action==='bowl'&&p.scene==='bowling')this.bowling.throw(id,{aim:body.aim,power:body.power,start:body.start});
+    else if(action==='ball-color'&&p.scene==='bowling')this.bowling.color(id,body.color);
+    else if(action==='bowl-reset'&&p.scene==='bowling')this.bowling.reset(id);
+    else if (action === 'vehicle' && p.scene === 'world') { p.vehicle = p.vehicle === 'car' ? 'walk' : 'car'; p.engine = false; p.speed = 0; }
     else if (action === 'start' && p.scene === 'world' && p.vehicle !== 'walk') p.engine = !p.engine;
     else if (action === 'enter' && p.scene === 'world') {
       const location = nearby(p);
       if (!location) throw Error('Move closer to the door.');
       if (location.action === 'mower') { p.vehicle = 'mower'; p.x = -300; p.y = 290; p.engine = false; p.speed = 0; }
       else { p.scene = location.action; p.speed = 0; p.input = { gas: 0, brake: 0, steer: 0 }; if (p.scene === 'bubbles') this.makeBubbles(p); }
-    } else if (action === 'exit') { p.scene = 'world'; p.speed = 0; p.engine = false; if (p.vehicle === 'mower') p.vehicle = 'walk'; }
+    } else if (action === 'exit') { if(p.scene==='bowling')this.bowling.leave(id);p.scene = 'world';p.destination=null; p.speed = 0; p.engine = false;p.input={gas:0,brake:1,steer:0}; if (p.vehicle === 'mower') p.vehicle = 'walk'; }
     else if (action === 'tag' && p.scene === 'world' && p.vehicle === 'walk') this.tag = { active: !this.tag.active, it: p.id, cooldown: Date.now() + 2500 };
-    else if(action==='creativity'&&p.scene!=='creativity'){p.artReturn=p.scene;p.scene='creativity';p.speed=0;p.engine=false;p.input={gas:0,brake:0,steer:0};}
+    else if(action==='creativity'&&p.scene!=='creativity'){if(p.scene==='bowling'){this.bowling.leave(id);p.artReturn='arcade';}else p.artReturn=p.scene;p.scene='creativity';p.speed=0;p.engine=false;p.input={gas:0,brake:0,steer:0};}
     else if(action==='art-exit'&&p.scene==='creativity'){p.scene=p.artReturn||'world';p.artReturn=null;p.speed=0;p.input={gas:0,brake:0,steer:0};}
     else if (action === 'preferences') { if (typeof body.sound !== 'boolean') throw Error('Invalid preference.'); p.data.preferences.sound = body.sound; }
     else if (action === 'pop' && p.scene === 'bubbles') {
@@ -92,7 +109,12 @@ export class FamilyGame {
   makeBubbles(p) { p.bubbles = Array.from({ length: p.mode === 'toddler' ? 5 : 8 }, () => this.bubble(p)); }
   tick(dt, now = Date.now()) {
     this.clock++;
+    this.bowling.tick(Math.min(.05,dt));
     let changed = false;
+    if(this.bowling.phase==='complete'&&this.bowling.sequence!==this.lastBowlingResult){
+      this.lastBowlingResult=this.bowling.sequence;
+      for(const member of this.bowling.snapshot().members){const player=this.players.get(member.id);if(player){player.data.bowlingBest=Math.max(player.data.bowlingBest||0,member.score.total);player.data.bowlingGames=(player.data.bowlingGames||0)+1;changed=true;}}
+    }
     for (const p of this.players.values()) {
       if (now - (p.inputAt || 0) > 500) p.input = { gas: 0, brake: 0, steer: 0 };
       step(p, Math.min(.05, dt));
@@ -113,5 +135,5 @@ export class FamilyGame {
     }
     if (changed) this.save();
   }
-  snapshot() { return { players: [...this.players.values()].map(publicPlayer), npcs: this.npcs, cut: [...this.cut], tag: this.tag, clock: this.clock }; }
+  snapshot() { return { players: [...this.players.values()].map(publicPlayer), npcs: this.npcs, cut: [...this.cut], tag: this.tag, clock: this.clock, bowling:this.bowling.snapshot() }; }
 }

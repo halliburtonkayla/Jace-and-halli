@@ -15,4 +15,4 @@ export function step(p,dt){
 }
 export function cutGrass(p,cut){if(p.vehicle!=='mower'||!p.engine||p.speed<3)return;for(let y=0;y<Math.ceil(LAWN.h/LAWN.cell);y++)for(let x=0;x<Math.ceil(LAWN.w/LAWN.cell);x++)if(Math.hypot(p.x-(LAWN.x+x*LAWN.cell),p.y-(LAWN.y+y*LAWN.cell))<28)cut.add(`${x},${y}`);}
 export function nearby(p){return LOCATIONS.find(l=>Math.hypot(p.x-l.x,p.y-(l.y+45))<120);}
-export function publicPlayer(p){return {id:p.id,profile:p.profile,name:p.name,mode:p.mode,x:p.x,y:p.y,angle:p.angle,speed:p.speed,vehicle:p.vehicle,engine:p.engine,scene:p.scene};}
+export function publicPlayer(p){return {id:p.id,profile:p.profile,name:p.name,mode:p.mode,x:p.x,y:p.y,angle:p.angle,speed:p.speed,vehicle:p.vehicle,engine:p.engine,scene:p.scene,destination:p.destination||null};}

@@ -1,0 +1,50 @@
+{
+  "home": {
+    "source": "11_Home_Living_Play_Area.png",
+    "sourceSha256": "589a7d04bd1f24be3876fb0462c3fbbdc2465b19693b1bbb483863bd74fe9fc6",
+    "file": "home-v1.webp",
+    "width": 1500,
+    "height": 1000,
+    "bytes": 322248
+  },
+  "backyard": {
+    "source": "13_Backyard_Play_Area.png",
+    "sourceSha256": "55553bb2751f027e728e2d79e2e7c78f3a798873c198d0dccd759fdba9c4c309",
+    "file": "backyard-v1.webp",
+    "width": 1500,
+    "height": 1000,
+    "bytes": 446270
+  },
+  "arcade": {
+    "source": "04_Bowling_Arcade_Interior.png",
+    "sourceSha256": "99298db984dd505dc8c5b42fa024644e442dc2e7877bd8751cd4f892c0387efb",
+    "file": "arcade-v1.webp",
+    "width": 1672,
+    "height": 941,
+    "bytes": 386088
+  },
+  "bubbles": {
+    "source": "35_Bubble_Garden.png",
+    "sourceSha256": "2b42c36c6394c9652fd28ecc8e2875d28746221b9d8d9b69280fdcd980469ffc",
+    "file": "bubbles-v1.webp",
+    "width": 1500,
+    "height": 1000,
+    "bytes": 398084
+  },
+  "arena": {
+    "source": "34_Monster_Truck_Arena.png",
+    "sourceSha256": "7e8741e53a7cf4ff43d8de4466145094c781588af98107c15da0ce727882d34c",
+    "file": "arena-v1.webp",
+    "width": 1500,
+    "height": 1000,
+    "bytes": 309600
+  },
+  "school": {
+    "source": "28_Jace_Classroom.png",
+    "sourceSha256": "12be0776decf5ff76a68b5d93c961d79a77d83fa6f3dafc2933cfd270ab3134f",
+    "file": "school-v1.webp",
+    "width": 1500,
+    "height": 1000,
+    "bytes": 330106
+  }
+}

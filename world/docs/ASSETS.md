@@ -1,5 +1,9 @@
 # Asset contract
 
+## Current use — approved illustrated town, October 7
+
+The owner approved the exact town and separate scene pictures as primary interactive navigation. This supersedes the historical welcome/overview-only and geometry-only restrictions below. `world/assets/town/approved-world-v1.webp` is the primary town after profile selection. `world/assets/scenes/manifest.json` maps six optimized, unaltered scene derivatives to their exact supplied originals and SHA-256 hashes. One image per scene; no collages or invented family figures. Scene images load on entry. Drawing, bubble hits, moving grass cutting and bowling collisions are actual gameplay layers; an image alone is not a game. Source ZIP/sheets remain outside the public repository. Existing family atlases are unchanged.
+
 October 7 town derivative: `world/assets/town/approved-world-v1.webp` is a size-optimized copy of the owner's `01_World_Master.png`, used for the welcome and clearly labeled overview only. Its source remains unchanged in the approved ZIP. `town-landmarks.mjs` contains real scene geometry following that layout's arch/fountain/destination vocabulary; it is still first-pass scenery, not all finished attractions. Individual family source sheets remain private reference assets, unchanged.
 
 Status: approved individual references COMPLETE; animated game models and final environment assets NEEDS ASSET. The owner supplied and approved Jace_Character_Sheet.png, Halli_Character_Sheet.png, Mommy_Character_Sheet.png and Unique_Character_Sheet.png. See [VISUAL-DIRECTION.md](VISUAL-DIRECTION.md) for authoritative mapping, hashes and the visual correction. These individual sheets supersede every older combined family/turnaround sheet. The current renderer is rejected as the final art direction; do not keep polishing its abstract/flat treatment. See [RENDERER-MIGRATION.md](RENDERER-MIGRATION.md) before implementation.

@@ -1,5 +1,9 @@
 # Preserve gameplay while replacing the world renderer
 
+## Superseding illustrated-town decision — October 7
+
+After reviewing the actual mismatch, the owner approved the exact supplied town/scene artwork as interactive navigation, with real games connected to destinations. The primary presentation is now a DOM image viewport with accessible scene hotspots and Canvas activity layers. The historical WebGL migration below is preserved for optional development views, not the default play path. Keep room.mjs, host-authoritative requests, profile IDs, gallery storage and legacy activity URLs unchanged. A new validated destination action may enter allowlisted places; clients must not supply arbitrary coordinates, scores or URLs. Native scrolling/panning and proportional hotspot coordinates keep the image and touch targets aligned across orientations. Do not overlay driving controls on a non-driving town image.
+
 Status: IN PROGRESS — October 7 owner instruction: “fix it to the new town.” The new-town 3D renderer is now the normal entry path; final visual acceptance and iPad/iPhone hardware verification remain pending. The rejected flat renderer is retained only at the explicit development rollback URL `?view=legacy`, not offered as the normal experience or graphics-failure fallback. This changes presentation, not the room transport or saved-state contract.
 
 ## What must change

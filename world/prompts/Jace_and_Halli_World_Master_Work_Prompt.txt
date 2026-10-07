@@ -1,5 +1,8 @@
 JACE & HALLI'S WORLD — MASTER WORK PROMPT
 
+LATEST OWNER DECISION — OCTOBER 7, 2026, AFTER MISMATCH REVIEW
+The owner approved the exact illustrated town and individual scene pictures as the primary experience, with tappable destinations connected to real playable games, like Transition Town. “Yes that was the point the whole time.” This overrides the earlier requirement for free-roaming 3D geometry as the main town. Do not use the approved image only at the welcome screen then switch to the rejected primitive 3D town. Preserve existing games, family identities, profiles, room codes, approvals and progress. Scenic pictures are navigation/exploration; games must actually respond to touch. Do not expose fake play controls for unfinished attractions. All other non-conflicting instructions remain.
+
 Continue working in my EXISTING Jace & Halli website/repository.
 
 DO NOT create a separate unrelated website.

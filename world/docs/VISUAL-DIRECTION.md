@@ -1,5 +1,9 @@
 # Approved visual direction and character style bible
 
+## Current direction — October 7, after the mismatch review
+
+The owner explicitly approved using the exact approved pictures as an **interactive illustrated town**, with destinations connected to working games. Her confirmation was “Yes that was the point the whole time.” This later decision overrides the historical free-roaming/geometry-only acceptance criteria below. The approved town is the main play navigation surface, not a decorative welcome screen that leads to a different-looking prototype. Preserve the polished dimensional style of the supplied art and the four approved family identities. Activities themselves still require real touch interaction. No fake controls for unfinished attractions. The older instructions below are retained as history, not a reason to reject the newly approved illustrated approach.
+
 Effective October 6, 2026. These owner instructions supersede older visual prompts, combined family sheets, and the current prototype's appearance. Read alongside `../prompts/Jace_and_Halli_World_Master_Work_Prompt.txt` and `RENDERER-MIGRATION.md` before any visual work.
 
 ## Owner's visual correction — authoritative
