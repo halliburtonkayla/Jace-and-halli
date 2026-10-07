@@ -1,4 +1,4 @@
-import {TOWN_PLACES,SCENES} from './town-destinations.mjs?v=cinema-1';
+import {TOWN_PLACES,SCENES} from './town-destinations.mjs?v=drive-1';
 import {drawPortrait} from './characters.mjs';
 const paths={
  film:'M3 5h20v16H3ZM8 5v16M18 5v16M3 10h5M3 16h5M18 10h5M18 16h5',
@@ -18,13 +18,12 @@ export class TownView{
  constructor(parent,{visit,art,classic,say}){
   this.visit=visit;this.art=art;this.classic=classic;this.say=say;this.key=null;this.playersKey='';
   this.root=document.createElement('section');this.root.id='illustrated-town';this.root.setAttribute('aria-label','Explore Jace and Halli’s town');
-  this.root.innerHTML='<div class="town-viewport" tabindex="0" aria-label="Town scene. Drag to look around or use Tab to choose a place."><div class="town-picture"><img draggable="false" alt=""><div class="town-hotspots"></div><div class="town-presence" aria-label="Family playing here"></div></div></div><footer class="town-footer"><p class="town-tip"></p><button class="town-fit">See whole town</button><button class="town-places">Places to play</button></footer><dialog class="town-chooser"><form method="dialog"><button class="close">Close</button></form><h2>Where shall we play?</h2><div class="town-choices"></div><p>More pictured places are still being built.</p></dialog>';
-  parent.prepend(this.root);this.viewport=this.root.querySelector('.town-viewport');this.picture=this.root.querySelector('.town-picture');this.img=this.root.querySelector('img');this.spots=this.root.querySelector('.town-hotspots');this.presence=this.root.querySelector('.town-presence');this.tip=this.root.querySelector('.town-tip');this.fitButton=this.root.querySelector('.town-fit');this.dialog=this.root.querySelector('dialog');
+  this.root.innerHTML='<div class="town-viewport" tabindex="0" aria-label="Town scene. Drag to look around."><div class="town-picture"><img draggable="false" alt=""><div class="town-presence" aria-label="Family playing here"></div></div></div><footer class="town-footer"><div class="dock-toolbar"><div class="dock-tabs" role="group" aria-label="Choose links"><button class="dock-places" aria-pressed="true">Places</button><button class="dock-games" aria-pressed="false">Games</button></div><p class="town-tip">Choose a picture below</p><button class="town-fit">See whole town</button></div><nav class="town-dock" aria-label="Places in our world"></nav></footer>';
+  parent.prepend(this.root);this.viewport=this.root.querySelector('.town-viewport');this.picture=this.root.querySelector('.town-picture');this.img=this.root.querySelector('img');this.presence=this.root.querySelector('.town-presence');this.tip=this.root.querySelector('.town-tip');this.fitButton=this.root.querySelector('.town-fit');this.dock=this.root.querySelector('.town-dock');
   this.fitButton.onclick=()=>{this.fitted=!this.fitted;this.layout();};
-  this.root.querySelector('.town-places').onclick=()=>this.dialog.showModal();
-  const choices=this.root.querySelector('.town-choices');
-  for(const place of TOWN_PLACES){const b=this.button(place.name,place.icon,()=>{this.dialog.close();visit(place.id);});choices.append(b);}
-  const draw=this.button('Color & draw','pencil',()=>{this.dialog.close();art('coloring');});choices.append(draw);
+  this.root.querySelector('.dock-places').onclick=()=>this.showDock('places');
+  this.root.querySelector('.dock-games').onclick=()=>this.showDock('games');
+  this.showDock('places');
   this.viewport.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'||e.button!==0)return;this.drag={x:e.clientX,y:e.clientY,left:this.viewport.scrollLeft,top:this.viewport.scrollTop};this.moved=false;});
   this.viewport.addEventListener('pointermove',e=>{if(!this.drag||e.buttons!==1)return;const dx=e.clientX-this.drag.x,dy=e.clientY-this.drag.y;if(Math.hypot(dx,dy)>7){this.moved=true;this.viewport.scrollLeft=this.drag.left-dx;this.viewport.scrollTop=this.drag.top-dy;}});
   this.viewport.addEventListener('click',e=>{if(this.moved){e.preventDefault();e.stopPropagation();this.moved=false;}},true);
@@ -32,13 +31,28 @@ export class TownView{
   this.observer=new ResizeObserver(()=>this.layout());this.observer.observe(this.viewport);
  }
  button(label,symbol,fn){const b=document.createElement('button');b.innerHTML=icon(symbol);const span=document.createElement('span');span.textContent=label;b.append(span);b.setAttribute('aria-label',label);b.onclick=fn;return b;}
+ showDock(mode){
+  this.dockMode=mode;this.dock.replaceChildren();this.dock.scrollLeft=0;
+  this.dock.setAttribute('aria-label',mode==='places'?'Places in our world':'Games and activities');
+  for(const name of ['places','games'])this.root.querySelector('.dock-'+name).setAttribute('aria-pressed',String(name===mode));
+  const entries=mode==='places'?TOWN_PLACES.map(p=>({label:p.name,icon:p.icon,visit:p.id,scene:SCENES[p.scene],image:p.id==='garden'?'bubbles':p.id==='yard'?'backyard':null})):Array.from(new Map(Object.values(SCENES).flatMap(scene=>scene.spots.filter(s=>!s.visit||s.visit==='bowling').map(s=>[s.file||s.art||s.visit,{...s,scene}]))).values());
+  for(const entry of entries){
+   const b=this.button(entry.label,entry.icon,()=>{this.say(entry.label);if(entry.visit)this.visit(entry.visit);else if(entry.art)this.art(entry.art);else this.classic(entry.file);});
+   b.className='dock-item';if(entry.visit)b.dataset.destination=entry.visit;
+   const thumb=document.createElement('img');thumb.alt='';thumb.draggable=false;
+   thumb.src=new URL('../assets/scenes/'+(entry.image?entry.image+'-v1.webp':entry.scene.asset||entry.scene.image+'-v1.webp'),import.meta.url);
+   b.prepend(thumb);const tooltip=document.createElement('span');tooltip.className='dock-tooltip';tooltip.textContent=entry.label;tooltip.setAttribute('aria-hidden','true');b.append(tooltip);this.dock.append(b);
+  }
+  this.markDock();
+ }
+ markDock(){for(const b of this.dock.children){if(b.dataset.destination===this.destination)b.setAttribute('aria-current','location');else b.removeAttribute('aria-current');}}
  layout(){if(!this.ratio||!this.viewport.clientWidth)return;const w=this.viewport.clientWidth,h=this.viewport.clientHeight;const width=this.fitted?Math.min(w,h*this.ratio):Math.max(w,h*this.ratio);this.root.dataset.fitted=String(Boolean(this.fitted));this.picture.style.width=width+'px';this.picture.style.height=width/this.ratio+'px';this.picture.style.margin=this.fitted?'auto':'0 auto';this.fitButton.textContent=this.fitted?'Look closer':'See whole '+(this.key==='world'?'town':'room');if(this.recenter){this.viewport.scrollLeft=(width-w)/2;this.recenter=false;}}
  update(snapshot,me){
   const shown=me&&['world','home','arcade','arena','school','garage','classic','theater'].includes(me.scene)&&me.vehicle!=='mower';this.root.hidden=!shown;if(!shown)return;
-  const key=me.scene;if(this.key!==key){this.key=key;this.playersKey='';this.fitted=false;this.recenter=true;
-   const scene=SCENES[key];this.ratio=scene?.ratio||1672/941;this.img.src=key==='world'?new URL('../assets/town/approved-world-v1.webp',import.meta.url):new URL('../assets/scenes/'+(scene.asset||scene.image+'-v1.webp'),import.meta.url);this.img.alt=scene?.title||'Jace and Halli’s World: our connected town';this.tip.textContent=scene?.hint||'Tap a glowing sign to play. Drag to look around.';this.spots.replaceChildren();
-   const spots=scene?.spots||TOWN_PLACES.map(p=>({x:p.x,y:p.y,label:p.name,icon:p.icon,visit:p.id}));
-   for(const spot of spots){const b=this.button(spot.label,spot.icon,()=>{this.say(spot.label);if(spot.visit)this.visit(spot.visit);else if(spot.art)this.art(spot.art);else this.classic(spot.file);});b.className='town-hotspot';b.style.left=spot.x+'%';b.style.top=spot.y+'%';this.spots.append(b);}this.layout();
+  this.destination=me.destination;this.markDock();const key=me.scene;if(this.key!==key){this.key=key;this.playersKey='';this.fitted=false;this.recenter=true;
+   const scene=SCENES[key];this.ratio=scene?.ratio||1672/941;this.img.src=key==='world'?new URL('../assets/town/approved-world-v1.webp',import.meta.url):new URL('../assets/scenes/'+(scene.asset||scene.image+'-v1.webp'),import.meta.url);this.img.alt=scene?.title||'Jace and Halli’s World: our connected town';this.tip.textContent='Choose a picture below';
+   this.layout();
+
   }
   const visible=snapshot.players||[];const hash=visible.map(p=>p.id+':'+p.scene+':'+p.destination).join();if(hash===this.playersKey)return;this.playersKey=hash;this.presence.replaceChildren();
   visible.forEach((p,i)=>{if(key!=='world'&&p.scene!==key)return;const at=TOWN_PLACES.find(d=>d.id===p.destination);const badge=document.createElement('div');badge.className='town-player';badge.title=p.name+' · '+(at?.name||'Our town');badge.setAttribute('aria-label',badge.title);badge.style.left=(key==='world'?(at?.x||49):50)+i*2.5+'%';badge.style.top=(key==='world'?Math.min(94,(at?.y||65)+9):91)+'%';const portrait=document.createElement('canvas');portrait.width=90;portrait.height=120;drawPortrait(portrait,p.profile);const name=document.createElement('span');name.textContent=p.name;badge.append(portrait,name);this.presence.append(badge);});
