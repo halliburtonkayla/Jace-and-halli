@@ -7,7 +7,7 @@ import { LOCATIONS } from './locations.mjs';
 import { drawPortrait, drawFamily, CHARACTER_ART } from './characters.mjs';
 import { routeTo, updateRoute, guidedInput, routeDots } from './routes.mjs';
 import { FamilyRoom } from './room.mjs?v=cinema-1';
-import {TownView} from './town-view.mjs?v=dock-1';
+import {TownView} from './town-view.mjs?v=movie-ipad-4';
 import {BowlingView} from './bowling-view.mjs?v=illustrated-2';
 import {SCENES} from './town-destinations.mjs?v=drive-1';
 import {PLACES as DRIVE_PLACES} from './driving/world.mjs?v=drive-1';
