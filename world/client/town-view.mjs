@@ -34,14 +34,6 @@ export class TownView{
   this.root.querySelector('.dock-places').onclick=()=>this.showDock('places');
   this.root.querySelector('.dock-games').onclick=()=>this.showDock('games');
   this.showDock('places');
-  // Always-visible shortcut to the existing playable town driving game.
-  const driveButton=this.button('DRIVE AROUND OUR WORLD','car',()=>this.classic('town-driving.html'));
-  driveButton.className='dock-item town-drive-shortcut';
-  driveButton.setAttribute('aria-label','Drive around Jace and Halli’s World');
-  driveButton.style.cssText='background:#ffe16c;color:#302246;border:3px solid white;min-width:145px;font-weight:900;';
-  this.driveShortcut=driveButton;
-  this.dock.parentElement.append(driveButton);
-
   this.viewport.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'||e.button!==0)return;this.drag={x:e.clientX,y:e.clientY,left:this.viewport.scrollLeft,top:this.viewport.scrollTop};this.moved=false;});
   this.viewport.addEventListener('pointermove',e=>{if(!this.drag||e.buttons!==1)return;const dx=e.clientX-this.drag.x,dy=e.clientY-this.drag.y;if(Math.hypot(dx,dy)>7){this.moved=true;this.viewport.scrollLeft=this.drag.left-dx;this.viewport.scrollTop=this.drag.top-dy;}});
   this.viewport.addEventListener('click',e=>{if(this.moved){e.preventDefault();e.stopPropagation();this.moved=false;}},true);
@@ -52,6 +44,12 @@ export class TownView{
  showDock(mode){
   this.dockMode=mode;this.dock.replaceChildren();this.dock.scrollLeft=0;
   this.dock.setAttribute('aria-label',mode==='places'?'Places in our world':'Games and activities');
+  // Keep the driving game as the FIRST visible tile in both dock tabs.
+  const drive=this.button('DRIVE OUR WORLD','car',()=>this.classic('town-driving.html'));
+  drive.className='dock-item town-drive-shortcut';
+  drive.style.cssText='background:#ffe16c;color:#302246;border:3px solid white;min-width:125px;font-weight:900;';
+  drive.setAttribute('aria-label','Drive around Jace and Halli’s World');
+  this.dock.append(drive);
   for(const name of ['places','games'])this.root.querySelector('.dock-'+name).setAttribute('aria-pressed',String(name===mode));
   const entries=mode==='places'?TOWN_PLACES.map(p=>({label:p.name,icon:p.icon,visit:p.id,scene:SCENES[p.scene],image:p.id==='garden'?'bubbles':p.id==='yard'?'backyard':null})):Array.from(new Map(Object.values(SCENES).flatMap(scene=>scene.spots.filter(s=>!s.visit||s.visit==='bowling').map(s=>[s.file||s.art||s.visit,{...s,scene}]))).values());
   for(const entry of entries){
