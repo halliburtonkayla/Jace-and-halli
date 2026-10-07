@@ -25,7 +25,7 @@ test('illustrated destinations validate entry and preserve saved progress and ac
 });
 
 test('every room hotspot points to existing artwork, an existing activity, or an allowed town destination',()=>{
- for(const scene of Object.values(SCENES)){assert.ok(statSync(new URL('../assets/scenes/'+scene.image+'-v1.webp',import.meta.url)).size>1000);for(const spot of scene.spots){assert.ok(spot.x>0&&spot.x<100&&spot.y>0&&spot.y<100);if(spot.file)assert.ok(statSync(new URL('../../'+spot.file,import.meta.url)).size>0);if(spot.visit)assert.ok(spot.visit==='bowling'||TOWN_PLACES.some(p=>p.id===spot.visit));}}
+ for(const scene of Object.values(SCENES)){assert.ok(statSync(new URL('../assets/scenes/'+(scene.asset||scene.image+'-v1.webp'),import.meta.url)).size>1000);for(const spot of scene.spots){assert.ok(spot.x>0&&spot.x<100&&spot.y>0&&spot.y<100);if(spot.file)assert.ok(statSync(new URL('../../'+spot.file,import.meta.url)).size>0);if(spot.visit)assert.ok(spot.visit==='bowling'||TOWN_PLACES.some(p=>p.id===spot.visit));}}
 });
 
 test('new town landmarks do not change activity IDs, doors or saved coordinates',()=>{

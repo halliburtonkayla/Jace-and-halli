@@ -6,11 +6,12 @@ import { Sound } from './audio.mjs';
 import { LOCATIONS } from './locations.mjs';
 import { drawPortrait, drawFamily, CHARACTER_ART } from './characters.mjs';
 import { routeTo, updateRoute, guidedInput, routeDots } from './routes.mjs';
-import { FamilyRoom } from './room.mjs?v=family-race-3';
-import {TownView} from './town-view.mjs?v=illustrated-2';
+import { FamilyRoom } from './room.mjs?v=cinema-1';
+import {TownView} from './town-view.mjs?v=cinema-1';
 import {BowlingView} from './bowling-view.mjs?v=illustrated-2';
-import {SCENES} from './town-destinations.mjs?v=illustrated-1';
+import {SCENES} from './town-destinations.mjs?v=cinema-1';
 const room=new FamilyRoom();
+let pendingTheater=new URLSearchParams(location.search).get('activity')==='theater';
 let pendingFamilyRace=new URLSearchParams(location.search).get('race')==='family',racingOpen=false;
 function sendRacing(body){if(racingOpen)$('classic-frame').contentWindow?.postMessage({channel:'jhw-racing',...body},location.origin);}
 room.addEventListener('snapshot',e=>sendRacing({type:'race-state',state:e.detail.racing}));
@@ -41,7 +42,7 @@ room.addEventListener('lost',e=>{stop();show('welcome');$('login-error').textCon
 function stop(){artCenter?.dispose();artCenter=null;artOpening=false;events=null;me=null;online=false;input={gas:0,brake:0,steer:0};sound.motor(null);}
 async function logout(){stop();await api('logout',{});$('admin').close();$('classic-frame-panel').classList.add('hidden');$('classic-frame').src='about:blank';show('welcome');}
 $('profile-logout').onclick=logout;$('back').onclick=()=>{if(room.host&&room.game.players.has('host'))room.game.request('host','input',{gas:0,brake:1,steer:0});me=null;input={gas:0,brake:0,steer:0};sound.motor(null);room.selected=null;load();};
-async function select(id){try{sound.unlock();const r=await api('select',{profile:id});me=r.player;data=r.data;bubbles=r.bubbles;route=null;assist=me.mode==='toddler';role=room.host?'parent':'device';sound.mute(data.preferences.sound);$('parent').classList.toggle('hidden',!room.host);$('back').textContent='Profiles';$('room-lobby').classList.toggle('hidden',!room.host);show('play');renderer.resize();updateUI();connect();if(pendingFamilyRace){pendingFamilyRace=false;openClassic('arcade-new.html#family');return;}if(pendingArt){pendingArt=false;openArt();return;}sound.say(illustrated?'Welcome to our world. Tap a glowing sign to play.':'Welcome to our world. Tap Where to, choose a place, then hold Go to travel.',true);}catch(e){$('profile-error').textContent=e.message;}}
+async function select(id){try{sound.unlock();const r=await api('select',{profile:id});me=r.player;data=r.data;bubbles=r.bubbles;route=null;assist=me.mode==='toddler';role=room.host?'parent':'device';sound.mute(data.preferences.sound);$('parent').classList.toggle('hidden',!room.host);$('back').textContent='Profiles';$('room-lobby').classList.toggle('hidden',!room.host);show('play');renderer.resize();updateUI();connect();if(pendingTheater){pendingTheater=false;await action('visit',{destination:'theater'});return;}if(pendingFamilyRace){pendingFamilyRace=false;openClassic('arcade-new.html#family');return;}if(pendingArt){pendingArt=false;openArt();return;}sound.say(illustrated?'Welcome to our world. Tap a glowing sign to play.':'Welcome to our world. Tap Where to, choose a place, then hold Go to travel.',true);}catch(e){$('profile-error').textContent=e.message;}}
 function connect(){online=room.connected;}
 room.addEventListener('snapshot',e=>{snapshot=e.detail;online=room.connected;$('connection').textContent=`${snapshot.players.length} family player${snapshot.players.length===1?'':'s'} · code ${room.code}`;const p=snapshot.players.find(p=>p.id===me?.id);if(p){me=p;updateUI();}if(snapshot.tag.active&&snapshot.tag.it!==lastIt){lastIt=snapshot.tag.it;sound.tone(650);sound.say(lastIt===me?.id?'You’re it!':'Run! You’re playing tag.',true);navigator.vibrate?.(30);}});
 
@@ -107,7 +108,7 @@ async function openArt(station='coloring'){
  }catch(e){$('hint').textContent=e.message;if(me?.scene==='creativity')await action('art-exit');}finally{$('art-loader')?.remove();artOpening=false;}
 }
 $('create-art').onclick=openArt;$('classic-creativity').onclick=openArt;
-function openClassic(file){$('classic-frame-panel').classList.remove('hidden');const url=new URL('../../'+file,import.meta.url);if(url.pathname.endsWith('/arcade-new.html'))url.searchParams.set('v','family-race-4');$('classic-frame').src=url.href;input={gas:0,brake:1,steer:0};sound.motor(null);}
+function openClassic(file){$('classic-frame-panel').classList.remove('hidden');const url=new URL('../../'+file,import.meta.url);if(url.pathname.endsWith('/arcade-new.html'))url.searchParams.set('v','family-race-4');if(url.pathname.endsWith('/theater.html'))url.searchParams.set('v','cinema-1');$('classic-frame').src=url.href;input={gas:0,brake:1,steer:0};sound.motor(null);}
 $('classic-open').onclick=()=>openClassic('classic-home.html');$('classic-whiteboard').onclick=()=>openClassic('whiteboard.html');$('classic-books').onclick=()=>openClassic('family-library.html');
 function racingFrame(active){racingOpen=active;$('classic-frame-panel').style.paddingTop=active?'0':'';$('close-classic').hidden=active;}
 $('close-classic').onclick=()=>{if(me&&room.connected)api('race',{op:'leave'}).catch(()=>{});racingFrame(false);$('classic-frame-panel').classList.add('hidden');$('classic-frame').src='about:blank';updateUI();};
@@ -125,3 +126,10 @@ window.addEventListener('message',async e=>{
 $('classic-frame').onload=()=>{try{const doc=$('classic-frame').contentDocument;if(!doc)return;doc.querySelectorAll('a[href]').forEach(a=>{const u=new URL(a.href);if(u.origin===location.origin&&u.pathname.endsWith('/index.html'))a.href=new URL('../../classic-home.html',import.meta.url).href;else if(u.origin!==location.origin)a.target='_blank';});doc.querySelectorAll('[onclick]').forEach(el=>{const v=el.getAttribute('onclick');if(v.includes("'index.html'"))el.setAttribute('onclick',v.replaceAll("'index.html'","'classic-home.html'"));});}catch{}};
 addEventListener('pagehide',()=>{if(room.host)room.game?.save();});
 addEventListener('resize',()=>renderer.resize());$('create-room').disabled=false;$('start-art').disabled=false;$('login-error').textContent='';function loop(t){if(!artCenter&&!artOpening){if(!illustrated||me?.scene==='bubbles'||me?.vehicle==='mower')renderer.draw(snapshot,me,bubbles,data,t);bowlingView?.draw(t);}requestAnimationFrame(loop);}requestAnimationFrame(loop);show('welcome');
+
+window.addEventListener('message',async e=>{
+ if(e.origin!==location.origin||e.source!==$('classic-frame').contentWindow||e.data?.channel!=='jhw-theater'||!new URL($('classic-frame').src,location.href).pathname.endsWith('/theater.html')||!me)return;
+ if(e.data.type==='context')e.source.postMessage({channel:'jhw-theater',type:'context',sound:data.preferences.sound},location.origin);
+ if(e.data.type==='sound'&&typeof e.data.enabled==='boolean'){sound.mute(e.data.enabled);await action('preferences',{sound:e.data.enabled});}
+ if(e.data.type==='exit'){$('close-classic').click();await action('exit');}
+});

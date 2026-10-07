@@ -5,6 +5,7 @@ export const TOWN_PLACES = [
  {id:'yard',name:'Backyard',x:26,y:57,icon:'leaf',scene:'world'},
  {id:'garden',name:'Bubble garden',x:67,y:66,icon:'bubbles',scene:'bubbles'},
  {id:'arcade',name:'Bowling & arcade',x:72,y:37,icon:'bowling',scene:'arcade'},
+ {id:'theater',name:'Movie theater',x:83.5,y:37,icon:'film',scene:'theater'},
  {id:'arena',name:'Monster trucks',x:81,y:17,icon:'truck',scene:'arena'},
  {id:'school',name:'School',x:14,y:38,icon:'pencil',scene:'school'},
  {id:'garage',name:'Driving games',x:48,y:85,icon:'car',scene:'garage'},
@@ -12,6 +13,7 @@ export const TOWN_PLACES = [
 ];
 export const VISIT_IDS = new Set([...TOWN_PLACES.map(p=>p.id),'bowling']);
 export const SCENES = {
+ theater:{title:'Movie theater',image:'cinema-lobby',asset:'cinema-lobby-v1.svg',ratio:1672/941,hint:'Choose our movie and take a seat.',spots:[{x:53,y:61,label:'Watch our movie',icon:'film',file:'theater.html'}]},
  home:{title:'Our home',image:'home',ratio:1.5,hint:'Tap the art table, toys, books, or kitchen.',spots:[
   {x:64,y:63,label:'Color & draw',icon:'pencil',art:'coloring'},
   {x:33,y:83,label:'Story books',icon:'book',file:'family-library.html'},
