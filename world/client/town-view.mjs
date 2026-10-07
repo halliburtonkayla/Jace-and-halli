@@ -1,3 +1,4 @@
+import {GAME_PAGES} from './game-catalog.mjs?v=all-games-1';
 import {TOWN_PLACES,SCENES} from './town-destinations.mjs?v=drive-1';
 import {drawPortrait} from './characters.mjs';
 const paths={
@@ -18,7 +19,7 @@ export class TownView{
  constructor(parent,{visit,art,classic,say}){
   this.visit=visit;this.art=art;this.classic=classic;this.say=say;this.key=null;this.playersKey='';
   this.root=document.createElement('section');this.root.id='illustrated-town';this.root.setAttribute('aria-label','Explore Jace and Halli’s town');
-  this.root.innerHTML='<div class="town-viewport" tabindex="0" aria-label="Town scene. Drag to look around."><div class="town-picture"><img draggable="false" alt=""><div class="town-presence" aria-label="Family playing here"></div></div></div><footer class="town-footer"><div class="dock-toolbar"><div class="dock-tabs" role="group" aria-label="Choose links"><button class="dock-places" aria-pressed="true">Places</button><button class="dock-games" aria-pressed="false">Games</button></div><p class="town-tip">Choose a picture below</p><button class="town-fit">See whole town</button></div><nav class="town-dock" aria-label="Places in our world"></nav></footer>';
+  this.root.innerHTML='<div class="town-viewport" tabindex="0" aria-label="Town scene. Drag to look around."><div class="town-picture"><img draggable="false" alt=""><div class="town-presence" aria-label="Family playing here"></div></div></div><footer class="town-footer"><div class="dock-toolbar"><div class="dock-tabs" role="group" aria-label="Choose links"><button class="dock-places" aria-pressed="true">Places</button><button class="dock-games" aria-pressed="false">Games</button><button class="dock-all">All games</button></div><p class="town-tip">Choose a picture below</p><button class="town-fit">See whole town</button></div><nav class="town-dock" aria-label="Places in our world"></nav></footer>';
   // Persistent theater entrance lives inside the illustrated town itself,
   // above the picture dock so it remains reachable on landscape iPads.
   this.watchMovie=document.createElement('button');
@@ -36,6 +37,12 @@ export class TownView{
   this.fitButton.onclick=()=>{this.fitted=!this.fitted;this.layout();};
   this.root.querySelector('.dock-places').onclick=()=>this.showDock('places');
   this.root.querySelector('.dock-games').onclick=()=>this.showDock('games');
+  this.allGames=document.createElement('dialog');this.allGames.className='town-all-games';this.allGames.setAttribute('aria-label','All games and activities');
+  this.allGames.innerHTML='<form method="dialog"><button>Close</button></form><h2>All games & activities</h2><label>Find a game <input type="search" placeholder="Search games"></label><div class="town-choices"></div><p class="game-search-empty" hidden>No games found. Try another name.</p>';
+  this.root.append(this.allGames);
+  for(const entry of this.gameEntries()){const b=this.button(entry.label,entry.icon,()=>{this.allGames.close();this.launch(entry);});b.dataset.label=entry.label.toLowerCase();this.allGames.querySelector('.town-choices').append(b);}
+  this.allGames.querySelector('input').oninput=e=>{let count=0;for(const b of this.allGames.querySelectorAll('.town-choices button')){b.hidden=!b.dataset.label.includes(e.target.value.trim().toLowerCase());if(!b.hidden)count++;}this.allGames.querySelector('.game-search-empty').hidden=count>0;};
+  this.root.querySelector('.dock-all').onclick=()=>this.allGames.showModal();
   this.showDock('places');
   this.viewport.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'||e.button!==0)return;this.drag={x:e.clientX,y:e.clientY,left:this.viewport.scrollLeft,top:this.viewport.scrollTop};this.moved=false;});
   this.viewport.addEventListener('pointermove',e=>{if(!this.drag||e.buttons!==1)return;const dx=e.clientX-this.drag.x,dy=e.clientY-this.drag.y;if(Math.hypot(dx,dy)>7){this.moved=true;this.viewport.scrollLeft=this.drag.left-dx;this.viewport.scrollTop=this.drag.top-dy;}});
@@ -44,6 +51,12 @@ export class TownView{
   this.observer=new ResizeObserver(()=>this.layout());this.observer.observe(this.viewport);
  }
  button(label,symbol,fn){const b=document.createElement('button');b.innerHTML=icon(symbol);const span=document.createElement('span');span.textContent=label;b.append(span);b.setAttribute('aria-label',label);b.onclick=fn;return b;}
+ gameEntries(){
+  const entries=new Map(GAME_PAGES.map(entry=>[entry.file,entry]));
+  for(const scene of Object.values(SCENES))for(const spot of scene.spots){if(spot.visit&&spot.visit!=='bowling')continue;entries.set(spot.file||spot.art||spot.visit,{...spot,scene});}
+  return [...entries.values()].sort((a,b)=>a.label.localeCompare(b.label));
+ }
+ launch(entry){this.say(entry.label);if(entry.visit)this.visit(entry.visit);else if(entry.art)this.art(entry.art);else this.classic(entry.file);}
  showDock(mode){
   this.dockMode=mode;this.dock.replaceChildren();this.dock.scrollLeft=0;
   this.dock.setAttribute('aria-label',mode==='places'?'Places in our world':'Games and activities');
@@ -54,9 +67,9 @@ export class TownView{
   drive.setAttribute('aria-label','Drive around Jace and Halli’s World');
   this.dock.append(drive);
   for(const name of ['places','games'])this.root.querySelector('.dock-'+name).setAttribute('aria-pressed',String(name===mode));
-  const entries=mode==='places'?TOWN_PLACES.map(p=>({label:p.name,icon:p.icon,visit:p.id,scene:SCENES[p.scene],image:p.id==='garden'?'bubbles':p.id==='yard'?'backyard':null})):Array.from(new Map(Object.values(SCENES).flatMap(scene=>scene.spots.filter(s=>!s.visit||s.visit==='bowling').map(s=>[s.file||s.art||s.visit,{...s,scene}]))).values());
+  const entries=mode==='places'?TOWN_PLACES.map(p=>({label:p.name,icon:p.icon,visit:p.id,scene:SCENES[p.scene],image:p.id==='garden'?'bubbles':p.id==='yard'?'backyard':null})):this.gameEntries();
   for(const entry of entries){
-   const b=this.button(entry.label,entry.icon,()=>{this.say(entry.label);if(entry.visit)this.visit(entry.visit);else if(entry.art)this.art(entry.art);else this.classic(entry.file);});
+   const b=this.button(entry.label,entry.icon,()=>{this.launch(entry);});
    b.className='dock-item';if(entry.visit)b.dataset.destination=entry.visit;
    const thumb=document.createElement('img');thumb.alt='';thumb.draggable=false;
    thumb.src=new URL('../assets/scenes/'+(entry.image?entry.image+'-v1.webp':entry.scene.asset||entry.scene.image+'-v1.webp'),import.meta.url);
