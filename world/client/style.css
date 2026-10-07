@@ -26,7 +26,7 @@
 #welcome .login-card{width:350px;padding:23px;background:#fff9ecef;border:2px solid #fff4d8;box-shadow:0 10px 35px #162e3540}
 #welcome .login-card h2{font-size:23px}#welcome .login-card p{font-size:14px;line-height:1.45}
 #welcome summary{padding:15px 0;font-size:14px;font-weight:750}
-.town-link{background:transparent;box-shadow:none;padding:6px 0;text-decoration:underline;font-size:13px}
+.town-link{display:block;background:transparent;box-shadow:none;padding:6px 0;margin-bottom:10px;text-decoration:underline;font-size:13px}
 #welcome #login-error:empty{display:none}
 #profiles{background:#ebf3ec url('../assets/town/approved-world-v1.webp') center/cover fixed;position:relative;isolation:isolate}
 #profiles:before{content:'';position:absolute;inset:0;background:#fffae8cc;z-index:-1}
