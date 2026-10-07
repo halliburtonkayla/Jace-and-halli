@@ -90,3 +90,5 @@ body.illustrated #play:has(#illustrated-town:not([hidden])) #scene-exit{bottom:c
 @media(max-height:500px) and (orientation:landscape){#illustrated-town .town-arcade-actions{bottom:calc(var(--town-bottom,148px) + 3px)}#illustrated-town .town-arcade-game{min-height:40px;padding:5px 9px;font-size:12px}}
 
 .town-all-games{width:min(720px,94vw);max-height:85dvh;overflow:auto;color:#243e36;background:#fff5dd;border:3px solid #d8b26b;border-radius:22px;padding:20px}.town-all-games::backdrop{background:#102d29bb}.town-all-games form{float:right}.town-all-games input{display:block;width:100%;min-height:44px;margin-top:8px}.town-all-games .town-choices button[hidden]{display:none}.town-all-games .town-choices button{font-size:13px;min-height:60px}.town-all-games h2{padding-right:75px}.town-all-games .town-choices{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}.dock-tabs .dock-all{border:1px solid #ffe3a177!important}
+
+.dock-tabs strong{font-size:13px;color:#fff0cb;padding:8px}.town-all-games label[hidden]{display:none}
