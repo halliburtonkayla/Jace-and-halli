@@ -1,5 +1,5 @@
 import { GalleryService } from './creativity/gallery.mjs?v=studio-1';
-import { FAMILY, FamilyGame } from './family-game.mjs?v=illustrated-1';
+import { FAMILY, FamilyGame } from './family-game.mjs?v=race-1';
 const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 export function newCode() { const bytes = new Uint8Array(10); crypto.getRandomValues(bytes); return [...bytes].map(v => alphabet[v % alphabet.length]).join(''); }
 export function normalizeCode(value) { return String(value || '').toUpperCase().replace(/[\s-]/g, ''); }

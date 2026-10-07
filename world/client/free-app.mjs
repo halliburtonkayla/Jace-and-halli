@@ -6,7 +6,7 @@ import { Sound } from './audio.mjs';
 import { LOCATIONS } from './locations.mjs';
 import { drawPortrait, drawFamily, CHARACTER_ART } from './characters.mjs';
 import { routeTo, updateRoute, guidedInput, routeDots } from './routes.mjs';
-import { FamilyRoom } from './room.mjs?v=illustrated-1';
+import { FamilyRoom } from './room.mjs?v=race-1';
 import {TownView} from './town-view.mjs?v=illustrated-2';
 import {BowlingView} from './bowling-view.mjs?v=illustrated-2';
 import {SCENES} from './town-destinations.mjs?v=illustrated-1';
@@ -105,7 +105,17 @@ async function openArt(station='coloring'){
 $('create-art').onclick=openArt;$('classic-creativity').onclick=openArt;
 function openClassic(file){$('classic-frame-panel').classList.remove('hidden');$('classic-frame').src=new URL('../../'+file,import.meta.url).href;input={gas:0,brake:1,steer:0};sound.motor(null);}
 $('classic-open').onclick=()=>openClassic('classic-home.html');$('classic-whiteboard').onclick=()=>openClassic('whiteboard.html');$('classic-books').onclick=()=>openClassic('family-library.html');
-$('close-classic').onclick=()=>{$('classic-frame-panel').classList.add('hidden');$('classic-frame').src='about:blank';updateUI();};
+function racingFrame(active){$('classic-frame-panel').style.paddingTop=active?'0':'';$('close-classic').hidden=active;}
+$('close-classic').onclick=()=>{racingFrame(false);$('classic-frame-panel').classList.add('hidden');$('classic-frame').src='about:blank';updateUI();};
+window.addEventListener('message',async e=>{
+ if(e.origin!==location.origin||e.source!==$('classic-frame').contentWindow||e.data?.channel!=='jhw-racing'||!new URL($('classic-frame').src,location.href).pathname.endsWith('/arcade-new.html')||!me)return;
+ const message=e.data,send=body=>e.source.postMessage({channel:'jhw-racing',...body},location.origin);
+ if(message.type==='context')send({type:'context',profile:me.profile,name:me.name,mode:me.mode,sound:data.preferences.sound,records:data.racing||{}});
+ if(message.type==='active'&&typeof message.active==='boolean')racingFrame(message.active);
+ if(message.type==='exit')$('close-classic').click();
+ if(message.type==='sound'&&typeof message.enabled==='boolean'){sound.mute(message.enabled);await action('preferences',{sound:message.enabled});}
+ if(message.type==='result'){try{const r=await api('action',{...message.result,action:'race-result'});data=r.data;send({type:'saved',ok:true});}catch{send({type:'saved',ok:false});}}
+});
 $('classic-frame').onload=()=>{try{const doc=$('classic-frame').contentDocument;if(!doc)return;doc.querySelectorAll('a[href]').forEach(a=>{const u=new URL(a.href);if(u.origin===location.origin&&u.pathname.endsWith('/index.html'))a.href=new URL('../../classic-home.html',import.meta.url).href;else if(u.origin!==location.origin)a.target='_blank';});doc.querySelectorAll('[onclick]').forEach(el=>{const v=el.getAttribute('onclick');if(v.includes("'index.html'"))el.setAttribute('onclick',v.replaceAll("'index.html'","'classic-home.html'"));});}catch{}};
 addEventListener('pagehide',()=>{if(room.host)room.game?.save();});
 addEventListener('resize',()=>renderer.resize());$('create-room').disabled=false;$('start-art').disabled=false;$('login-error').textContent='';function loop(t){if(!artCenter&&!artOpening){if(!illustrated||me?.scene==='bubbles'||me?.vehicle==='mower')renderer.draw(snapshot,me,bubbles,data,t);bowlingView?.draw(t);}requestAnimationFrame(loop);}requestAnimationFrame(loop);show('welcome');

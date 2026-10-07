@@ -94,6 +94,12 @@ export class FamilyGame {
     else if (action === 'tag' && p.scene === 'world' && p.vehicle === 'walk') this.tag = { active: !this.tag.active, it: p.id, cooldown: Date.now() + 2500 };
     else if(action==='creativity'&&p.scene!=='creativity'){if(p.scene==='bowling'){this.bowling.leave(id);p.artReturn='arcade';}else p.artReturn=p.scene;p.scene='creativity';p.speed=0;p.engine=false;p.input={gas:0,brake:0,steer:0};}
     else if(action==='art-exit'&&p.scene==='creativity'){p.scene=p.artReturn||'world';p.artReturn=null;p.speed=0;p.input={gas:0,brake:0,steer:0};}
+    else if(action==='race-result'){
+      // These are personal arcade records, not a trusted competitive leaderboard.
+      if(!['neon','dino','speedway','beach','country'].includes(body.track)||!['comet','spark','thunder','monster'].includes(body.car)||typeof body.id!=='string'||body.id.length>80||!Array.isArray(body.laps)||body.laps.length!==3||body.laps.some(t=>!Number.isFinite(t)||t<20||t>3600)||!Number.isInteger(body.position)||body.position<1||body.position>8)throw Error('Invalid race result.');
+      p.data.racing ||= {};const previous=p.data.racing[body.track];
+      if(previous?.lastId!==body.id){p.data.racing[body.track]={bestLap:Math.min(previous?.bestLap||Infinity,...body.laps),bestRace:Math.min(previous?.bestRace||Infinity,body.laps.reduce((sum,t)=>sum+t,0)),races:(previous?.races||0)+1,lastId:body.id,lastCar:body.car,lastPosition:body.position};}
+    }
     else if (action === 'preferences') { if (typeof body.sound !== 'boolean') throw Error('Invalid preference.'); p.data.preferences.sound = body.sound; }
     else if (action === 'pop' && p.scene === 'bubbles') {
       const bubble = p.bubbles.find(b => b.id === body.id);
