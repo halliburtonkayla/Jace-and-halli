@@ -65,4 +65,4 @@ function frame(t){const dt=Math.min(.1,(t-last)/1000);last=t;acc+=dt;const raw=i
  audio.update({v:Math.abs(game.player.v),car:{max:game.maxSpeed},steer:game.player.steer,braking:raw.brake},game.active);renderer.draw();uiTime+=dt;saveTimer+=dt;if(uiTime>.12){updateUI();renderer.map($('mini-map'));uiTime=0;}if(saveTimer>4){if(game.active)save();saveTimer=0;}requestAnimationFrame(frame);
 }
 addEventListener('resize',()=>renderer.resize());$('menu').showModal();requestAnimationFrame(frame);
-if(new URLSearchParams(location.search).has('qa'))Object.defineProperty(window,'driveSnapshot',{get:()=>({mode,active:game.active,camera:game.camera,player:{...game.player},phase:game.phase,progress:game.progress,visited:[...game.visited],profile})});
+if(new URLSearchParams(location.search).has('qa'))Object.defineProperty(window,'driveSnapshot',{get:()=>({mode,time:game.time,active:game.active,camera:game.camera,player:{...game.player},phase:game.phase,progress:game.progress,visited:[...game.visited],profile})});
