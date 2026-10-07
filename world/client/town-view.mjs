@@ -34,6 +34,14 @@ export class TownView{
   this.root.querySelector('.dock-places').onclick=()=>this.showDock('places');
   this.root.querySelector('.dock-games').onclick=()=>this.showDock('games');
   this.showDock('places');
+  // Always-visible shortcut to the existing playable town driving game.
+  const driveButton=this.button('DRIVE AROUND OUR WORLD','car',()=>this.classic('town-driving.html'));
+  driveButton.className='dock-item town-drive-shortcut';
+  driveButton.setAttribute('aria-label','Drive around Jace and Halli’s World');
+  driveButton.style.cssText='background:#ffe16c;color:#302246;border:3px solid white;min-width:145px;font-weight:900;';
+  this.driveShortcut=driveButton;
+  this.dock.parentElement.append(driveButton);
+
   this.viewport.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'||e.button!==0)return;this.drag={x:e.clientX,y:e.clientY,left:this.viewport.scrollLeft,top:this.viewport.scrollTop};this.moved=false;});
   this.viewport.addEventListener('pointermove',e=>{if(!this.drag||e.buttons!==1)return;const dx=e.clientX-this.drag.x,dy=e.clientY-this.drag.y;if(Math.hypot(dx,dy)>7){this.moved=true;this.viewport.scrollLeft=this.drag.left-dx;this.viewport.scrollTop=this.drag.top-dy;}});
   this.viewport.addEventListener('click',e=>{if(this.moved){e.preventDefault();e.stopPropagation();this.moved=false;}},true);
