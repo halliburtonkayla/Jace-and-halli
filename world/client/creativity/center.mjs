@@ -2,7 +2,7 @@ import {CreativityStudio} from './studio.mjs?v=1';
 import {prepareIllustratedSheets} from './illustrated.mjs?v=studio-1';
 export {prepareIllustratedSheets};
 import {W,H,PALETTE,SHEETS,STAMPS,drawSheet,drawMotif} from './catalog.mjs?v=studio-1';
-import {DrawingEngine} from './engine.mjs?v=studio-1';
+import {DrawingEngine} from './engine.mjs?v=studio-2';
 import {newDocument} from './document.mjs?v=studio-1';
 import {PRACTICES,WORDS,SIGHT,SHAPES,practiceLabel} from './practice.mjs?v=studio-1';
 import {ArtworkStore,saveToRoom,readFromRoom} from './gallery.mjs?v=studio-1';

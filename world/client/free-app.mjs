@@ -69,10 +69,10 @@ $('reset-yard').onclick=()=>{room.game.cut.clear();room.game.save();$('admin-sta
 $('save-backup').onclick=()=>{room.game.save();const state={version:1,progress:room.game.progress,cut:[...room.game.cut],guests:room.game.profiles.filter(p=>p.id.startsWith('guest-'))},blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a'),url=URL.createObjectURL(blob);a.href=url;a.download='jace-halli-progress.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
 async function openArt(){
  if(artCenter||artOpening||!me)return;artOpening=true;release();sound.unlock();sound.motor(null);
- try{const r=await api('action',{action:'creativity'});me=r.player;data=r.data;const {CreativityCenter,prepareIllustratedSheets}=await import('./creativity/center.mjs?v=3');await prepareIllustratedSheets();
- if(!document.getElementById('art-style')){const link=document.createElement('link');link.id='art-style';link.rel='stylesheet';link.href=new URL('./creativity/center.css?v=2',import.meta.url).href;document.head.append(link);await new Promise(resolve=>{link.onload=link.onerror=resolve;});}
+ try{const r=await api('action',{action:'creativity'});me=r.player;data=r.data;const loader=document.createElement('div');loader.id='art-loader';loader.className='art-loading';loader.setAttribute('role','status');loader.textContent='Opening the Creativity Center…';$('play').append(loader);const {CreativityCenter,prepareIllustratedSheets}=await import('./creativity/center.mjs?v=4');await prepareIllustratedSheets();
+ if(!document.getElementById('art-style')){const link=document.createElement('link');link.id='art-style';link.rel='stylesheet';link.href=new URL('./creativity/center.css?v=3',import.meta.url).href;document.head.append(link);await new Promise(resolve=>{link.onload=link.onerror=resolve;});}
  artCenter=new CreativityCenter({parent:$('play'),room,sound,player:me,onClose:async()=>{artCenter=null;await action('art-exit');},onSoundChange:enabled=>action('preferences',{sound:enabled})});
- }catch(e){$('hint').textContent=e.message;if(me?.scene==='creativity')await action('art-exit');}finally{artOpening=false;}
+ }catch(e){$('hint').textContent=e.message;if(me?.scene==='creativity')await action('art-exit');}finally{$('art-loader')?.remove();artOpening=false;}
 }
 $('create-art').onclick=openArt;$('classic-creativity').onclick=openArt;
 function openClassic(file){$('classic-frame-panel').classList.remove('hidden');$('classic-frame').src=new URL('../../'+file,import.meta.url).href;input={gas:0,brake:1,steer:0};sound.motor(null);}
@@ -80,4 +80,4 @@ $('classic-open').onclick=()=>openClassic('classic-home.html');$('classic-whiteb
 $('close-classic').onclick=()=>{$('classic-frame-panel').classList.add('hidden');$('classic-frame').src='about:blank';updateUI();};
 $('classic-frame').onload=()=>{try{const doc=$('classic-frame').contentDocument;if(!doc)return;doc.querySelectorAll('a[href]').forEach(a=>{const u=new URL(a.href);if(u.origin===location.origin&&u.pathname.endsWith('/index.html'))a.href=new URL('../../classic-home.html',import.meta.url).href;else if(u.origin!==location.origin)a.target='_blank';});doc.querySelectorAll('[onclick]').forEach(el=>{const v=el.getAttribute('onclick');if(v.includes("'index.html'"))el.setAttribute('onclick',v.replaceAll("'index.html'","'classic-home.html'"));});}catch{}};
 addEventListener('pagehide',()=>{if(room.host)room.game?.save();});
-addEventListener('resize',()=>renderer.resize());function loop(t){if(!artCenter&&!artOpening)renderer.draw(snapshot,me,bubbles,data,t);requestAnimationFrame(loop);}requestAnimationFrame(loop);show('welcome');
+addEventListener('resize',()=>renderer.resize());$('create-room').disabled=false;$('start-art').disabled=false;$('login-error').textContent='';function loop(t){if(!artCenter&&!artOpening)renderer.draw(snapshot,me,bubbles,data,t);requestAnimationFrame(loop);}requestAnimationFrame(loop);show('welcome');
