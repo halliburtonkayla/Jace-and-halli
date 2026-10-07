@@ -1,6 +1,6 @@
 # Preserve gameplay while replacing the world renderer
 
-Status: IN PROGRESS — optional neighborhood preview implemented behind `?view=3d`; final visual acceptance is pending. Architecture reviewed against `world/client/render.mjs`, `free-app.mjs`, `room.mjs`, `family-game.mjs` and `locations.mjs` on October 6, 2026. The new `render-3d.mjs` / `neighborhood.mjs` implement a first 3D environment while the existing renderer remains the default pending visual and hardware verification.
+Status: IN PROGRESS — October 7 owner instruction: “fix it to the new town.” The new-town 3D renderer is now the normal entry path; final visual acceptance and iPad/iPhone hardware verification remain pending. The rejected flat renderer is retained only at the explicit development rollback URL `?view=legacy`, not offered as the normal experience or graphics-failure fallback. This changes presentation, not the room transport or saved-state contract.
 
 ## What must change
 
@@ -52,3 +52,14 @@ Physics for jumping trucks, bowling or other later activities may need dedicated
 ### Directional artwork integration
 
 Family walkers now use the separate approved character-derived atlases instead of name markers alone. The camera follows the walking player; four directional views change with camera bearing. This remains an interim sprite presentation, pending approved animated models. Route dots share the existing logical coordinates in both renderers, and assisted steering feeds the authoritative movement simulation only while the child holds a pedal. No destination selection teleports players. The optional 3D gate and hardware QA requirement remain.
+
+### October 7 new-town correction (supersedes optional-default notes above)
+
+- `01_World_Master.png` from `Jace_Halli_World_MASTER_Clean_Approved_For_Work(2).zip` supplies the approved welcome/overview artwork. The optimized derivative is `world/assets/town/approved-world-v1.webp` (about 339 KiB). The source image is unchanged and retained outside the public repo. Source SHA-256: `b8b2ecabc238fe7c5cc632cb5e7b97ced9b610114c43da6ebc3c0b22140edece`.
+- The welcome and “Our town” overview show this actual supplied image. They do not simulate movement or claim the pictured attractions are finished games. In portrait the full artwork is shown above the start controls; the overview supports native horizontal scrolling to inspect it.
+- Start playing and shared room links select `render-3d.mjs` by default. `?view=3d` still works. `?view=legacy` is the deliberate development rollback only.
+- `town-landmarks.mjs` adds a modeled stone-and-timber entrance arch, fountain plaza with moving water, and distinct school, church, zoo, bowling, movies, toy-store, circus, arena, park and station exteriors. Planned places are scenery beyond the original play bounds, not fake activity buttons. These first-pass meshes are not an exact reproduction of every detail in the approved artwork or accepted final production art.
+- The four playable doorway IDs/coordinates, lawn cells, simulation bounds, profile identities, storage keys, galleries and room protocol are unchanged. Existing car/foot travel still uses the authoritative simulation; the art image is not used as a pretend driving background.
+- On a WebGL error, movement is paused, the approved overview stays behind a clear error, and real Coloring/Classic Games remain accessible within the same room. The old flat town is not silently restored.
+- Checks: 22 repository tests pass. Native Three scene construction found 175 scene meshes/batches, 217,408 triangles including instanced grass/water, finite vertices, moving water instance transforms, and reversible grass-cut rendering for all 340 cells. These are structural checks, not GPU frame-rate or iPad visual acceptance.
+- NEEDS ASSET: rigged/animated family and NPC models, final detailed environment art and authentic audio. PLANNED: actual activities inside the added scenic destinations. IN PROGRESS: real-device rendering/performance, mobile comfort, shared visual presence verification.

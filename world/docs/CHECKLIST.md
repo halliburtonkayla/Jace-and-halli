@@ -19,7 +19,7 @@ COMPLETE means the stated foundation implementation exists and its listed checks
 | Hide-and-seek / Find Mommy | PLANNED | Countdown/hide/search, shared visibility rules, toddler assistance |
 | Approved individual character references / visual prompt | COMPLETE | Four unchanged approved sheets mapped in VISUAL-DIRECTION.md; older combined sheet superseded |
 | 3D renderer migration contract | COMPLETE | Preserve gameplay/state while replacing Canvas world presentation; see RENDERER-MIGRATION.md |
-| 3D renderer implementation / corrected neighborhood | IN PROGRESS | Optional ?view=3d preview: real scene/camera, roads, four destination exteriors, vehicle meshes, shared cut grass and 3D bubbles. Cloud test browser disables WebGL; GPU visuals and Safari hardware remain unverified. Approved character rigs still needed |
+| 3D renderer implementation / corrected neighborhood | IN PROGRESS | New-town 3D scene is the default following October 7 owner request; arch, fountain and destination skyline added. Approved master artwork is used for welcome/overview. 22 regression tests and structural geometry checks pass; GPU visuals and Safari hardware remain unverified. Approved character rigs still needed |
 | Directional family artwork and visual profiles | COMPLETE | Four separate approved references used for derived transparent atlases, visual profile selector and directional walkers; not rigged models |
 | Final family character models | NEEDS ASSET | Individual sheets received; rigging, animation and consistent game-ready models still required |
 | Final world scenery / authentic sounds | NEEDS ASSET | See ASSETS.md; development art/audio explicitly identified |
@@ -55,4 +55,4 @@ COMPLETE means the stated foundation implementation exists and its listed checks
 | Assisted touch coloring | COMPLETE | Starting-region clip, wider Halli crayon, validated save/undo/redo; native pixel isolation verified |
 | Other coloring pages at final illustrated quality | NEEDS ASSET | 23 originals retained, not represented as the final commissioned art collection |
 | Shared visible characters inside the art room | PLANNED | Family room connection maintained; interior avatar presence is not yet implemented |
-| Whole-world approved visual correction | IN PROGRESS | Main renderer unchanged by this scoped art correction; approved town/model migration still required |
+| Whole-world approved visual correction | IN PROGRESS | October 7: approved town welcome/overview installed, default changed from flat prototype to 3D town, modeled landmarks added. Final detailed scenery, animated character models and real-device visual acceptance still required |

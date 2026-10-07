@@ -14,3 +14,50 @@
 .art-launch{display:block;width:100%;margin-top:12px;background:#d9ecfb;font-size:19px}#create-art{background:#ffe1b0}@media(max-width:700px){.topbar{gap:5px}.topbar button{padding:10px 7px;font-size:11px}.title{max-width:135px}}
 
 .art-loading{position:absolute;inset:0;z-index:30;background:#fff9ed;display:grid;place-items:center;text-align:center;padding:24px;color:#25485e;font:700 24px ui-rounded,system-ui,sans-serif}
+
+/* Approved artwork belongs to the welcome/overview, not a pretend driving game. */
+#welcome{position:relative;isolation:isolate;min-height:100dvh;display:grid;grid-template-columns:1fr 350px;align-items:end;gap:24px;padding:32px;background:#446b62;overflow:hidden}
+.approved-town-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:-2}
+#welcome .brand{align-self:end;background:#fff6dfef;border:2px solid #fff0c6;border-radius:28px;padding:18px 24px;max-width:440px;box-shadow:0 8px 32px #233b3825}
+#welcome h1{font-size:30px;letter-spacing:-1px;margin:6px 0}
+#welcome .eyebrow{font-size:10px;letter-spacing:1.5px}
+#welcome #family-welcome{width:300px;max-width:100%;height:auto;margin:auto}
+#welcome .brand small{font-size:11px;margin:4px 0;opacity:.8}
+#welcome .login-card{width:350px;padding:23px;background:#fff9ecef;border:2px solid #fff4d8;box-shadow:0 10px 35px #162e3540}
+#welcome .login-card h2{font-size:23px}#welcome .login-card p{font-size:14px;line-height:1.45}
+#welcome summary{padding:15px 0;font-size:14px;font-weight:750}
+.town-link{background:transparent;box-shadow:none;padding:6px 0;text-decoration:underline;font-size:13px}
+#welcome #login-error:empty{display:none}
+#profiles{background:#ebf3ec url('../assets/town/approved-world-v1.webp') center/cover fixed;position:relative;isolation:isolate}
+#profiles:before{content:'';position:absolute;inset:0;background:#fffae8cc;z-index:-1}
+#play{background:#527d65 url('../assets/town/approved-world-v1.webp') center/cover}
+.town-unavailable #world{visibility:hidden}
+.town-unavailable #controls,.town-unavailable #hint,.town-unavailable #directions{display:none!important}
+#town-map{width:min(1250px,96vw);max-height:94dvh;padding:16px;background:#fff8e8}
+#town-map header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+#town-map h2{margin:0;font-size:24px}#town-map p{font-size:13px;line-height:1.5;margin:12px 4px 0}
+.town-map-scroll{overflow:auto;border-radius:18px;max-height:66dvh;-webkit-overflow-scrolling:touch}
+.town-map-scroll img{display:block;width:100%;height:auto;min-width:700px}
+.render-notice{max-height:64dvh;overflow:auto;top:50%;font-size:14px;background:#fff8e8f5;border:2px solid #fff}
+.render-notice button{min-height:52px;margin-top:12px}
+.topbar{flex-wrap:wrap}.title{min-width:100px}
+@media(max-width:700px){
+ #welcome{display:flex;flex-direction:column;justify-content:flex-start;gap:0;padding:0;background:#e9f2e5;overflow:visible}
+ .approved-town-art{position:relative;z-index:auto;inset:auto;width:100%;height:auto;object-fit:contain}
+ #welcome .brand{width:100%;max-width:none;background:#fff6e7;border:0;border-radius:0;box-shadow:none;padding:16px 20px 2px;text-align:center}
+ #welcome h1{font-size:25px}#welcome #family-welcome{width:210px}#welcome .brand small{display:none}
+ #welcome .login-card{width:100%;border:0;border-radius:0;padding:12px 24px 24px;box-shadow:none;background:#fff6e7}
+ #welcome .login-card h2,#welcome .login-card>p:first-of-type{display:none}
+ #welcome .login-card small{font-size:11px}
+ .topbar .title{order:-1;flex-basis:100%;max-width:none;padding:5px 10px;display:flex;justify-content:center;gap:10px;align-items:center}
+ .topbar .title small{font-size:9px;max-width:170px}.topbar button{flex:1;padding:10px 6px;min-height:44px;font-size:10px;white-space:nowrap}
+ .build-note{top:110px;max-width:90%;font-size:9px;white-space:normal;text-align:center}
+}
+@media(max-height:500px) and (min-width:701px){
+ #welcome{grid-template-columns:1fr 310px;padding:16px;align-items:center}
+ #welcome .brand{padding:10px 16px;max-width:330px}#welcome h1{font-size:24px}
+ #welcome #family-welcome{width:180px}#welcome .login-card{width:310px;max-height:90dvh;overflow:auto;padding:15px 18px}
+ #welcome .login-card h2{font-size:19px}#welcome .login-card>p:first-of-type{display:none}
+ #welcome #create-room{min-height:54px;font-size:20px}#welcome .art-launch{font-size:16px;padding:12px}
+ .render-notice{max-height:70dvh;font-size:12px;padding:16px}.render-notice button{display:inline-block;min-height:44px;margin:10px 5px 0;font-size:12px;padding:10px}
+}

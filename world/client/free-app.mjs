@@ -1,5 +1,6 @@
-const use3D = new URLSearchParams(location.search).get('view') === '3d';
-const { Renderer } = await import(use3D ? './render-3d.mjs?v=3' : './render.mjs?v=3');
+// The approved-town 3D scene is the normal play path. Keep old art for explicit developer rollback only.
+const use3D = new URLSearchParams(location.search).get('view') !== 'legacy';
+const { Renderer } = await import(use3D ? './render-3d.mjs?v=town-1' : './render.mjs?v=3');
 import { Sound } from './audio.mjs';
 import { LOCATIONS } from './locations.mjs';
 import { drawPortrait, drawFamily, CHARACTER_ART } from './characters.mjs';
@@ -10,7 +11,7 @@ let artCenter=null,artOpening=false,pendingArt=new URLSearchParams(location.sear
 const $=id=>document.getElementById(id),renderer=new Renderer($('world')),sound=new Sound();
 let route=null,assist=false;
 let me=null,data=null,bubbles=[],snapshot={players:[],npcs:[],cut:[],tag:{}},events=null,role='',profiles=[],online=false,busy=false,lastIt=null,input={gas:0,brake:0,steer:0},inputBusy=false;
-document.querySelector('.build-note').textContent=use3D?'3D preview · directional family artwork · animated models in progress':'Playable foundation · 3D preview available from the start screen';
+document.querySelector('.build-note').textContent=use3D?'New town · buildings are growing into playable places':'Legacy development view';
 drawFamily($('family-welcome'));
 async function api(path,body){return room.request(path,body);}
 function show(id){['welcome','profiles','play'].forEach(x=>$(x).classList.toggle('hidden',x!==id));}
@@ -44,7 +45,12 @@ $('directions').onclick=()=>{release();$('destinations').showModal();};
 for(const place of LOCATIONS){const b=document.createElement('button');b.textContent=place.id==='home'?'Our home · outside':place.name;b.onclick=()=>{route=routeTo(me,place.id);$('destinations').close();updateUI();sound.say('Let’s go to '+place.name+'. Hold Go or Gas and follow the golden path.',true);};$('destination-list').append(b);}
 $('assistance').onclick=()=>{assist=!assist;updateUI();};
 $('clear-route').onclick=()=>{route=null;renderer.setRoute?.([]);$('destinations').close();updateUI();};
-$('camera-view').onclick=()=>{$('camera-view').textContent=renderer.toggleCamera?.()?'Rider view':'Town view';};
+$('camera-view').textContent=use3D?'Street view':'Town view';
+$('camera-view').onclick=()=>{$('camera-view').textContent=renderer.toggleCamera?.()?'Street view':'Town view';};
+$('town-overview')?.addEventListener('click',()=>{release();$('town-map').showModal();});
+$('welcome-overview')?.addEventListener('click',()=>$('town-map').showModal());
+window.addEventListener('town-open-art',()=>openArt());
+window.addEventListener('town-open-classic',()=>{if(!me)return;release();$('classic-frame').src='classic-home.html';$('classic-frame-panel').classList.remove('hidden');});
 $('vehicle').onclick=()=>action('vehicle');$('start').onclick=()=>action('start');$('enter').onclick=()=>action('enter');$('tag').onclick=()=>action('tag');['scene-exit','home-outside','classic-outside','leave-mower'].forEach(id=>$(id).onclick=()=>action('exit'));
 $('sound').onclick=()=>{sound.mute(!sound.enabled);action('preferences',{sound:sound.enabled});updateUI();};
 function pedal(id,key){const el=$(id);el.onpointerdown=e=>{e.preventDefault();el.setPointerCapture(e.pointerId);sound.unlock();input[key]=1;};el.onpointerup=el.onpointercancel=()=>{input[key]=0;};}pedal('gas','gas');pedal('brake','brake');

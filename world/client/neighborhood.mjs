@@ -1,4 +1,5 @@
 import { LOCATIONS, LAWN } from './locations.mjs';
+import { addTownLandmarks } from './town-landmarks.mjs?v=town-1';
 
 // Presentation units only. The game continues to own its original x/y coordinates.
 export const WORLD_SCALE = .05;
@@ -158,7 +159,16 @@ export function createNeighborhood(T, makeCanvas = () => document.createElement(
       box(g, 7.8, .34, 4.45, '#ddd4be', 0, .17, 0, .15);
       box(g, 7.5, 2.95, 4.1, home ? '#f3d8ae' : '#83bcd6', 0, 1.82, 0, .13);
       for (let y = .65; y < 3.2; y += .32) box(g, 7.45, .028, .06, home ? '#dfbf91' : '#649dbd', 0, y, 2.086, .006);
-      roof(g, 8.5, 4.85, 2.05, home ? '#c66e57' : '#476a9f', 3.32);
+      roof(g, 8.5, 4.85, 2.05, home ? '#5c7079' : '#476a9f', 3.32);
+      if(home){
+        // Porch, columns and roof courses echo the approved family-home exterior.
+        box(g,7.6,.26,2.2,'#ead9b7',0,.25,3.1,.06);
+        for(const x of[-3.35,-1.7,1.7,3.35])box(g,.16,2.65,.16,'#fff2d8',x,1.65,3.9,.03);
+        roof(g,8.2,2.5,.85,'#647782',3.01).position.z=3.05;
+        for(let n=0;n<7;n++) for(const side of[-1,1]){
+          const seam=box(g,.035,.045,4.84,'#8b9a9c',side*(.25+n*.56),5.35-(.25+n*.56)*2.05/4.25,0,.007);
+        }
+      }
       for (const x of [-3.65, 3.65]) box(g, .18, 2.98, .18, '#fff6db', x, 1.85, 2.1, .035);
       box(g, 1.28, 2.15, .2, home ? '#619faa' : '#edb851', 0, 1.39, 2.2, .11);
       sphere(g, .065, .065, .07, '#d8a948', .39, 1.29, 2.32);
@@ -208,6 +218,7 @@ export function createNeighborhood(T, makeCanvas = () => document.createElement(
   for (const [x,y,z] of [[-25,18,-38],[20,20,-45],[40,17,20],[-40,21,15]]) {
     sphere(clouds, 4, 1, 1.6, '#fff8e9', x,y,z); sphere(clouds, 2.5,1.7,1.7,'#fffdf3',x+1,y+.8,z);
   }
+  const town=addTownLandmarks(T,{root,box,sphere,cylinder,mesh,material,geometries,materials,textures,makeCanvas,roof,windowPane,sign,tree,flower,lamp,fence});
   // Batch static scenery by material. Hundreds of detailed pieces become a few dozen draws.
   root.updateMatrixWorld(true);
   const batches = new Map();
@@ -232,6 +243,7 @@ export function createNeighborhood(T, makeCanvas = () => document.createElement(
     const batch = new T.Mesh(merged, mat); batch.castShadow = mat !== groundMat && mat !== roadMat; batch.receiveShadow = true; root.add(batch);
     for (const part of parts) part.dispose();
   }
+  root.add(town.dynamic);
   let previousCut = '';
   function updateGrass(cut) {
     const signature = cut.join('|'); if (signature === previousCut) return; previousCut = signature;
@@ -240,5 +252,5 @@ export function createNeighborhood(T, makeCanvas = () => document.createElement(
     grass.instanceMatrix.needsUpdate = true;
   }
   function dispose() { for (const g of new Set(geometries.values())) g.dispose(); for (const m of new Set(materials.values())) m.dispose(); for (const t of textures) t.dispose(); }
-  return { root, updateGrass, dispose, box, sphere, cylinder, material, textTexture, meshes: { grass }, grassCells, greenery, blossoms };
+  return { root, updateGrass, animate:town.animate, landmarks:town.landmarks, dispose, box, sphere, cylinder, material, textTexture, meshes: { grass }, grassCells, greenery, blossoms };
 }

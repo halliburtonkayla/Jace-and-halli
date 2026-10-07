@@ -1,4 +1,4 @@
-import { createNeighborhood, position3D, heading3D, WORLD_SCALE } from './neighborhood.mjs';
+import { createNeighborhood, position3D, heading3D, WORLD_SCALE } from './neighborhood.mjs?v=town-1';
 import { LAWN } from './locations.mjs';
 import { CHARACTER_ART, characterURL, viewFrame } from './characters.mjs';
 
@@ -9,20 +9,21 @@ const COLORS = { jace: '#309bd7', halli: '#ed84bc', mommy: '#dc6697', unique: '#
 export class Renderer {
   constructor(canvas) {
     this.c = canvas; this.bubbleHits = []; this.ready = null; this.engine = null; this.failed = false;
-    this.lastScene = null; this.lastPlayer = null; this.lastTime = 0; this.orbit = 0; this.highView = false;
+    this.lastScene = null; this.lastPlayer = null; this.lastTime = 0; this.orbit = 0; this.highView = true;
     this.actors = new Map(); this.bubbleMeshes = new Map(); this.particles = []; this.characterTextures=new Map(); this.route=[];
     this.overlay = document.createElement('canvas'); this.overlay.className = 'world-effects'; this.overlay.setAttribute('aria-hidden','true');
     canvas.after(this.overlay); this.ctx = this.overlay.getContext('2d');
     this.notice = document.createElement('div'); this.notice.className = 'render-notice hidden'; this.notice.setAttribute('role','status'); canvas.after(this.notice);
     this.resize(); this.bindLook();
-    canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); this.contextLost = true; this.message('The 3D view paused. Waiting for it to recover…'); });
-    canvas.addEventListener('webglcontextrestored', () => { this.contextLost = false; this.notice.classList.add('hidden'); });
+    canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); this.contextLost = true; document.body.classList.add('town-unavailable'); this.message('The 3D streets paused. Waiting for graphics to recover…'); });
+    canvas.addEventListener('webglcontextrestored', () => { this.contextLost = false; document.body.classList.remove('town-unavailable'); this.notice.classList.add('hidden'); });
   }
   message(text, retry = false) {
     this.notice.replaceChildren(document.createTextNode(text)); this.notice.classList.remove('hidden');
     if (retry) {
       const b = document.createElement('button'); b.textContent = 'Retry 3D view'; b.onclick = () => { this.failed = false; this.ready = null; this.prepare(); }; this.notice.append(b);
-      const fallback = document.createElement('button'); fallback.textContent = 'Use the current playable view'; fallback.onclick = () => this.useCompatibility(); this.notice.append(fallback);
+      const art = document.createElement('button'); art.textContent = 'Color & draw'; art.onclick = () => window.dispatchEvent(new Event('town-open-art')); this.notice.append(art);
+      const games = document.createElement('button'); games.textContent = 'Open Classic Games'; games.onclick = () => window.dispatchEvent(new Event('town-open-classic')); this.notice.append(games);
     }
   }
   get playable() { return Boolean(this.compatibility || this.engine && !this.contextLost); }
@@ -35,15 +36,16 @@ export class Renderer {
   }
   async prepare() {
     if (this.ready || this.failed) return this.ready;
-    this.message('Opening our neighborhood…');
+    document.body.classList.add('town-unavailable');
+    this.message('Opening the new town’s 3D streets…');
     this.ready = (async () => {
       try {
         const T = await import(THREE_URL); this.T = T;
         this.engine = new T.WebGLRenderer({ canvas: this.c, antialias: true, alpha: false, powerPreference: 'high-performance' });
         this.engine.outputColorSpace = T.SRGBColorSpace; this.engine.toneMapping = T.ACESFilmicToneMapping; this.engine.toneMappingExposure = 1.15;
         this.engine.shadowMap.enabled = true; this.engine.shadowMap.type = T.PCFSoftShadowMap;
-        this.scene = new T.Scene(); this.scene.background = new T.Color('#b9e1ee'); this.scene.fog = new T.Fog('#b9e1ee', 39, 100);
-        this.camera = new T.PerspectiveCamera(55, this.w / this.h, .08, 150);
+        this.scene = new T.Scene(); this.scene.background = new T.Color('#b9e1ee'); this.scene.fog = new T.Fog('#b9e1ee', 64, 145);
+        this.camera = new T.PerspectiveCamera(55, this.w / this.h, .08, 180);
         this.scene.add(new T.HemisphereLight('#fff8e6', '#a4c28b', 2.2));
         const sun = new T.DirectionalLight('#fff3da', 3.0); sun.position.set(-20, 36, 16); sun.castShadow = true;
         sun.shadow.mapSize.set(1024,1024); Object.assign(sun.shadow.camera, { left: -35, right: 35, top: 35, bottom: -35, near: 1, far: 95 });
@@ -58,10 +60,10 @@ export class Renderer {
         this.routeMesh=new T.InstancedMesh(new T.CylinderGeometry(.14,.14,.055,10),new T.MeshBasicMaterial({color:'#ffe099'}),80);
         this.routeMesh.count=0;this.routeMesh.frustumCulled=false;this.scene.add(this.routeMesh);
         this.traffic = [this.vehicle('#eab856'),this.vehicle('#9d8cce')]; this.traffic.forEach(v => this.scene.add(v));
-        this.resize(); this.notice.classList.add('hidden'); this.c.dataset.renderer = 'webgl-3d'; this.failed = false;
+        this.resize(); this.notice.classList.add('hidden'); document.body.classList.remove('town-unavailable'); this.c.dataset.renderer = 'webgl-3d'; this.failed = false;
       } catch (error) {
         console.error('Neighborhood renderer:', error); this.engine?.dispose(); this.engine = null; this.failed = true;
-        this.message('The 3D preview needs WebGL 2 graphics. This device or connection could not open it. You can keep playing in the current view without leaving your room.', true);
+        this.message('The 3D streets could not open in this browser. The picture behind this message is the town overview, not driving gameplay. Retry, or keep playing in the Creativity Center or Classic Games without leaving your family room.', true);
       }
     })();
     return this.ready;
@@ -168,6 +170,7 @@ export class Renderer {
     }
     for(const [id,g] of this.actors) if(!visible.has(id)){this.removeActor(g);this.actors.delete(id);}
     this.town.updateGrass(snapshot.cut);
+    this.town.animate?.(time);
     const dot=new T.Object3D();this.routeMesh.count=isBubbles?0:this.route.length;
     this.route.forEach((p,i)=>{dot.position.set(p.x*WORLD_SCALE,.20,p.y*WORLD_SCALE);dot.updateMatrix();this.routeMesh.setMatrixAt(i,dot.matrix);});this.routeMesh.instanceMatrix.needsUpdate=true;
     // Ambient traffic follows the same streets, pausing at the intersection.
@@ -183,8 +186,8 @@ export class Renderer {
     if(isBubbles) {
       this.cameraPosition.set(14,2.8,-1.6);this.cameraTarget.set(14,2.8,-9);
     } else {
-      const a=this.cameraAngle+this.orbit, walking=me.vehicle==='walk', distance=this.highView?14:walking?5.3:5.8;
-      const height=this.highView?11:3.4;
+      const a=this.cameraAngle+this.orbit, walking=me.vehicle==='walk', distance=this.highView?18:walking?5.3:5.8;
+      const height=this.highView?14:3.4;
       this.cameraPosition.set(this.smoothedPlayer.x-Math.sin(a)*distance,height,this.smoothedPlayer.z+Math.cos(a)*distance);
       this.cameraTarget.set(this.smoothedPlayer.x+Math.sin(a)*5,this.highView?.6:walking?1.8:1.25,this.smoothedPlayer.z-Math.cos(a)*5);
     }
