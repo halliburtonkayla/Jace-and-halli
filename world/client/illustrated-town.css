@@ -81,3 +81,10 @@ body.illustrated #play:has(#illustrated-town:not([hidden])) #scene-exit{bottom:c
 #illustrated-town .town-watch-movie{position:absolute;z-index:18;left:50%;bottom:calc(var(--town-bottom,176px) + 12px);transform:translateX(-50%);width:min(90%,440px);min-height:58px;padding:10px 18px;border:3px solid white;border-radius:18px;background:#ffe16c;color:#342044;font-size:clamp(16px,2.4vw,22px);font-weight:900;box-shadow:0 7px 18px #0009;touch-action:manipulation;cursor:pointer;}
 #illustrated-town .town-watch-movie[hidden]{display:none!important;}
 @media(max-height:500px) and (orientation:landscape){#illustrated-town .town-watch-movie{bottom:calc(var(--town-bottom,148px) + 5px);min-height:46px;font-size:16px;padding:6px 12px;}}
+
+/* Accessible game entrances inside the bowling alley, above the bottom dock. */
+#illustrated-town .town-arcade-actions{position:absolute;z-index:19;left:50%;bottom:calc(var(--town-bottom,176px) + 8px);transform:translateX(-50%);width:min(96%,720px);display:flex;justify-content:center;flex-wrap:wrap;gap:8px;pointer-events:auto}
+#illustrated-town .town-arcade-actions[hidden]{display:none!important}
+#illustrated-town .town-arcade-game{display:flex;align-items:center;gap:7px;min-height:52px;padding:10px 14px;background:#ffe16c;color:#342044;border:2px solid #fff;border-radius:15px;font-size:clamp(12px,2vw,17px);font-weight:900;box-shadow:0 5px 14px #0008;touch-action:manipulation}
+#illustrated-town .town-arcade-game svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2}
+@media(max-height:500px) and (orientation:landscape){#illustrated-town .town-arcade-actions{bottom:calc(var(--town-bottom,148px) + 3px)}#illustrated-town .town-arcade-game{min-height:40px;padding:5px 9px;font-size:12px}}
