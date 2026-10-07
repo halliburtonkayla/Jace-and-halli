@@ -22,8 +22,17 @@ The existing `arcade-new.html` racing tab is upgraded in place. Skee-ball and St
 
 ## IN PROGRESS
 
-- Live browser phone/landscape interaction and full-race checks (recorded below after release validation).
 - Physical iPhone/iPad Safari checks, especially simultaneous touch, audio balance and sustained frame rate. Desktop browser viewport checks cannot certify device performance.
+
+## Live browser validation — completed October 7
+
+- The published existing arcade was tested at 390×740. START RACE produced the countdown; held gas reached 82 MPH and moved 100 meters from its grid position; release coasted to 79 MPH; held brake reduced speed to 25 MPH. Continuous steering changed lateral position, and both passing and collisions occurred.
+- The input replay drove three full-length laps without setting race state or shortening the track. Positions changed from 8th through 6th and 4th to 2nd. Jace's actual finish was 2:06.45; laps were 0:48.04, 0:41.66 and 0:36.75. The seven computers finished at 2:06.04, 2:10.76, 2:14.12, 2:18.34, 2:18.46, 2:18.58 and 2:21.60. All eight result rows, lap times, best lap and result navigation rendered. The document had no scrolling during racing.
+- Actual pointer holds on the visible on-screen gas, steering and brake controls accelerated the car, moved it into a barrier, and braked it back to 0 MPH. Independent simultaneous pointer state is also covered by the automated input test; two-finger Safari hardware input is still pending.
+- The 844×390 landscape garage initially clipped Start Race. Its corrected layout now shows that control fully at y=271–316 within the 390-pixel viewport. Vehicle and track selection changed the rendered racer to Little Monster on Bubble Beach. Change Track from results returned to the garage.
+- The first browser run exposed timing tied to throttled redraws. The fixed-step simulation now uses an independent clock; the successful complete race above ran with that correction. Painting remains requestAnimationFrame-driven with adaptive detail. No claim of measured 60 FPS on physical iOS hardware is made.
+- Verified both direct arcade → World entry and embedded World → arcade → race → Back to Our World. The latter kept the same Jace profile, room code, and arcade scene without reloading the host. The host's outer return toolbar is hidden only while the racer's own return control is active.
+- GitHub Pages successfully published commit `902b6b9`; this record-only change does not alter that tested game build. The earlier publishing failure was recovered. GitHub's direct ref API later returned internal errors, so the timing/layout fix went through clean, merged PR #2.
 
 ## NEEDS ASSET / PLANNED
 
