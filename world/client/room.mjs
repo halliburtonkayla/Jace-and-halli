@@ -40,7 +40,7 @@ export class FamilyRoom extends EventTarget {
       this.peer.on('open', () => {
         this.emit('status','Room service reached. Connecting to the hosting device…');
         const conn = this.peer.connect('jh-world-' + this.code.toLowerCase(), { reliable: true, serialization: 'json', metadata: { version: 1 } }); this.connection = conn;
-        conn.on('open', () => { conn.send({ type: 'hello', profile, guestName }); this.emit('status', 'Waiting for Mommy to approve this device…'); });
+        conn.on('open', () => { conn.send({ type: 'hello', profile, guestName }); this.emit('status', 'Joining family room…'); });
         conn.on('data', message => {
           if (!message || typeof message !== 'object') return;
           if (message.type === 'approved') { this.profile = message.profile; this.connected = true; clearTimeout(timeout); finished = true; resolve(this.me()); }
@@ -68,14 +68,14 @@ export class FamilyRoom extends EventTarget {
         const name = message.profile === 'guest' && typeof message.guestName === 'string' ? message.guestName.trim().slice(0, 24) : family?.name;
         if (!name) { this.deny(conn.peer); return; }
         record.requested = { id: conn.peer, profile: family?.id || 'guest', name };
-        this.pending.set(conn.peer, record); this.emit('requests', this.pendingList()); return;
+        this.pending.set(conn.peer, record); this.approve(conn.peer); return;
       }
       if (message.type !== 'request' || typeof message.id !== 'string' || message.id.length > 80) return;
       if (Date.now() - record.lastWindow > 1000) { record.lastWindow = Date.now(); record.requestCount = 0; }
       if (++record.requestCount > 35) return;
       try {
         if (!['select', 'input', 'action', 'resume','race','art-list','art-read','art-begin','art-part','art-finish'].includes(message.path)) throw Error('Unknown room request.');
-        if (message.path === 'select' && message.body?.profile !== record.profile.id) throw Error('Use the profile Mommy approved.');
+        if (message.path === 'select' && message.body?.profile !== record.profile.id) throw Error('Use the profile selected when joining.');
         const result = message.path.startsWith('art-') ? await this.galleryService.request(conn.peer,this.game.players.get(conn.peer)?.profile,message.path,message.body) : this.game.request(conn.peer, message.path, message.body);
         conn.send({ type: 'reply', id: message.id, result });
       } catch (error) { conn.send({ type: 'reply', id: message.id, error: error.message }); }
