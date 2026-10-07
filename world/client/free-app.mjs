@@ -59,7 +59,7 @@ function updateIllustratedUI(){
  $('start').classList.toggle('hidden',!mowing);$('start').textContent=me.engine?'Stop mower':'Start mower';$('leave-mower').classList.toggle('hidden',!mowing);$('leave-mower').textContent='Back to town';$('gas').textContent='GAS';
  if(garden){const level=1+Math.min(2,Math.floor(data.pops/15));$('bubble-score').textContent=`Level ${level} · ${data.pops} pops`;$('hint').textContent=level===1?'Pop the big floating bubbles!':level===2?'Pop a color. Say its name!':'Pop for a surprise word!';}
  if(mowing)$('hint').textContent='Start the mower. Hold GAS and steer to cut the tall grass.';
- townView.update(snapshot,me);bowlingView.update(snapshot.bowling,me);sound.motor(mowing?me:null);
+ townView.update(snapshot,me);updateTheaterWatchButton();bowlingView.update(snapshot.bowling,me);sound.motor(mowing?me:null);
 }
 function updateUI(){if(!me)return;if(illustrated){updateIllustratedUI();return;}updateRoute(me,route);renderer.setRoute?.(routeDots(me,route));$('assistance').textContent='Help steer: '+(assist?'on':'off');$('directions').classList.toggle('hidden',me.scene!=='world');document.body.classList.toggle('toddler',me.mode==='toddler');$('sound').textContent=sound.enabled?'Sound on':'Sound off';const outside=me.scene==='world';$('controls').classList.toggle('hidden',!outside);$('scene-exit').classList.toggle('hidden',outside);$('home-panel').classList.toggle('hidden',me.scene!=='home');$('classic-panel').classList.toggle('hidden',me.scene!=='classic');$('bubble-score').classList.toggle('hidden',me.scene!=='bubbles');$('hint').classList.toggle('hidden',!outside&&me.scene!=='bubbles');$('place').textContent=me.scene==='bubbles'?'Halli’s Bubble Garden':me.scene==='home'?'Our Home':me.scene==='classic'?'Game House':'Our Neighborhood';
  $('gas').textContent=me.vehicle==='walk'?'GO':'GAS';$('start').classList.toggle('hidden',me.vehicle==='walk'||!outside);$('start').textContent=me.engine?'Stop':'Start';$('vehicle').textContent=me.vehicle==='walk'?'Ride car':'Walk';$('vehicle').classList.toggle('hidden',me.vehicle==='mower');$('leave-mower').classList.toggle('hidden',me.vehicle!=='mower');$('camera-view').classList.toggle('hidden',!outside||!use3D||Boolean(renderer.compatibility));$('tag').classList.toggle('hidden',me.vehicle!=='walk');$('tag').textContent=snapshot.tag.active?'Stop tag':'Play tag';const near=LOCATIONS.find(l=>Math.hypot(me.x-l.x,me.y-(l.y+45))<120);$('enter').classList.toggle('hidden',!near||!outside||me.vehicle==='mower');if(near)$('enter').textContent=near.action==='mower'?'Mow grass':`Enter ${near.name}`;
@@ -158,11 +158,11 @@ theaterWatchButton.id='theater-watch-movie';
 theaterWatchButton.type='button';
 theaterWatchButton.textContent='🎬 NOW SHOWING · WATCH MOVIE';
 theaterWatchButton.setAttribute('aria-label','Open the movie theater and watch Jace and Halli’s World');
-theaterWatchButton.style.cssText='position:absolute;z-index:35;top:76px;left:50%;transform:translateX(-50%);width:min(88vw,430px);min-height:62px;padding:12px 20px;border:3px solid #fff;border-radius:22px;background:#ffe16c;color:#342044;font-size:clamp(16px,3vw,23px);font-weight:900;box-shadow:0 8px 20px #0008;cursor:pointer;touch-action:manipulation;';
+theaterWatchButton.style.cssText='position:absolute;z-index:35;bottom:105px;left:50%;transform:translateX(-50%);width:min(88vw,430px);min-height:62px;padding:12px 20px;border:3px solid #fff;border-radius:22px;background:#ffe16c;color:#342044;font-size:clamp(16px,3vw,23px);font-weight:900;box-shadow:0 8px 20px #0008;cursor:pointer;touch-action:manipulation;';
 theaterWatchButton.hidden=true;
 $('play').append(theaterWatchButton);
 theaterWatchButton.onclick=()=>{if(me)openClassic('theater.html');};
-function updateTheaterWatchButton(){const place=$('place').textContent.toLowerCase();theaterWatchButton.hidden=!me||!$('classic-frame-panel').classList.contains('hidden')||!/(movie theater|movie theatre|cinema)/.test(place);}
+function updateTheaterWatchButton(){const place=$('place').textContent.toLowerCase();theaterWatchButton.hidden=!me||me.scene!=='theater'||!$('classic-frame-panel').classList.contains('hidden');}
 new MutationObserver(updateTheaterWatchButton).observe($('place'),{childList:true,subtree:true,characterData:true});
 new MutationObserver(updateTheaterWatchButton).observe($('classic-frame-panel'),{attributes:true,attributeFilter:['class']});
 updateTheaterWatchButton();
