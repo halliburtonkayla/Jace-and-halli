@@ -29,7 +29,9 @@ export class FamilyRoom extends EventTarget {
     if (!FAMILY.some(p => p.id === profile && p.id !== 'mommy') && profile !== 'guest') throw Error('Choose Jace, Halli, Unique, or an approved guest.');
     if (profile === 'guest' && (!guestName.trim() || guestName.length > 24)) throw Error('Enter the guest’s first name.');
     if (!this.PeerClass) throw Error('The multiplayer library could not load. Check your internet connection.');
-    this.peer = new this.PeerClass(undefined, { secure: true, debug: 0 });
+    // Temporary routing ID, not a profile or an access credential. Avoid an extra
+    // server ID-allocation request before the approval connection can begin.
+    this.peer = new this.PeerClass('jh-device-'+crypto.randomUUID(), { secure: true, debug: 0 });
     return new Promise((resolve, reject) => {
       let finished = false;
       const fail = message => { if (!finished) { finished = true; clearTimeout(timeout); this.close(); reject(Error(message)); } else if (!this.closing) { this.connected = false; this.emit('lost', message); } };
