@@ -1,6 +1,7 @@
 // Image coordinates are percentages of the owner's unchanged approved artwork.
 // Only destinations with working activities have hotspots.
 export const TOWN_PLACES = [
+ {id:'zoo',name:'Zoo',x:15,y:17,icon:'heart',scene:'zoo'},
  {id:'home',name:'Our home',x:12,y:63,icon:'home',scene:'home'},
  {id:'yard',name:'Backyard',x:26,y:57,icon:'leaf',scene:'world'},
  {id:'garden',name:'Bubble garden',x:67,y:66,icon:'bubbles',scene:'bubbles'},
@@ -13,6 +14,7 @@ export const TOWN_PLACES = [
 ];
 export const VISIT_IDS = new Set([...TOWN_PLACES.map(p=>p.id),'bowling']);
 export const SCENES = {
+ zoo:{title:'Our zoo',image:'zoo',ratio:1672/941,hint:'Explore the zoo and choose an animal activity.',spots:[{x:40,y:80,label:'Animal sounds',icon:'heart',file:'halli-animals.html'},{x:65,y:80,label:'Dinosaur adventure',icon:'game',file:'dinosaurs.html'}]},
  theater:{title:'Movie theater',image:'cinema-lobby',asset:'cinema-lobby-v1.svg',ratio:1672/941,hint:'Choose our movie and take a seat.',spots:[{x:53,y:61,label:'Watch our movie',icon:'film',file:'theater.html'}]},
  home:{title:'Our home',image:'home',ratio:1.5,hint:'Tap the art table, toys, books, or kitchen.',spots:[
   {x:64,y:63,label:'Color & draw',icon:'pencil',art:'coloring'},
