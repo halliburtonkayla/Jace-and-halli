@@ -76,3 +76,8 @@ body.illustrated #play:has(#illustrated-town:not([hidden])) #scene-exit{bottom:c
 @media(max-width:700px){body.illustrated #play{--town-bottom:calc(176px + env(safe-area-inset-bottom))}.town-footer{padding-inline:6px;flex-wrap:nowrap}.dock-toolbar{gap:5px}.dock-toolbar .town-tip{display:none}.town-dock{gap:6px}.town-footer .dock-item{flex-basis:84px}.dock-item>span:not(.dock-tooltip){max-width:84px}.dock-item>svg{right:5px}}
 @media(max-height:500px) and (orientation:landscape){body.illustrated #play{--town-bottom:calc(148px + env(safe-area-inset-bottom))}.dock-toolbar{height:34px}.town-dock{padding-top:39px;padding-bottom:4px}.town-footer .dock-item{height:65px;min-height:65px}.dock-item>img{height:38px;width:58px}.dock-item>svg{top:23px}.dock-item>span:not(.dock-tooltip){margin-top:3px}}
 @media(prefers-reduced-motion:reduce){.town-footer .dock-item{transition:none}}
+
+/* iPad theater: visible action above the bottom picture dock. */
+#illustrated-town .town-watch-movie{position:absolute;z-index:18;left:50%;bottom:calc(var(--town-bottom,176px) + 12px);transform:translateX(-50%);width:min(90%,440px);min-height:58px;padding:10px 18px;border:3px solid white;border-radius:18px;background:#ffe16c;color:#342044;font-size:clamp(16px,2.4vw,22px);font-weight:900;box-shadow:0 7px 18px #0009;touch-action:manipulation;cursor:pointer;}
+#illustrated-town .town-watch-movie[hidden]{display:none!important;}
+@media(max-height:500px) and (orientation:landscape){#illustrated-town .town-watch-movie{bottom:calc(var(--town-bottom,148px) + 5px);min-height:46px;font-size:16px;padding:6px 12px;}}
