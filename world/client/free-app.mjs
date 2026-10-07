@@ -6,7 +6,7 @@ import { Sound } from './audio.mjs';
 import { LOCATIONS } from './locations.mjs';
 import { drawPortrait, drawFamily, CHARACTER_ART } from './characters.mjs';
 import { routeTo, updateRoute, guidedInput, routeDots } from './routes.mjs';
-import { FamilyRoom } from './room.mjs?v=cinema-1';
+import { FamilyRoom } from './room.mjs?v=auto-join-1';
 import {TownView} from './town-view.mjs?v=movie-ipad-4';
 import {BowlingView} from './bowling-view.mjs?v=illustrated-2';
 import {SCENES} from './town-destinations.mjs?v=drive-1';
@@ -97,7 +97,7 @@ function devices(){
 }
 function openRoom(){if(!room.host)return;$('share-code').value=room.code;renderRequests();devices();$('admin').showModal();}
 $('parent').onclick=openRoom;$('lobby-controls').onclick=openRoom;
-async function share(){try{await navigator.clipboard.writeText(new URL('./',location.href).href+(racingOpen?'?race=family':'')+'#room='+room.code);$('admin-status').textContent='Room link copied. Open it on the other approved device.';}catch{$('share-code').value=room.code;$('share-code').select();$('admin-status').textContent='Share room code '+room.code;}}
+async function share(){try{await navigator.clipboard.writeText(new URL('./',location.href).href+(racingOpen?'?race=family':'')+'#room='+room.code);$('admin-status').textContent='Room link copied. Open it on the other device.';}catch{$('share-code').value=room.code;$('share-code').select();$('admin-status').textContent='Share room code '+room.code;}}
 $('copy-invite').onclick=share;$('lobby-share').onclick=share;
 $('reset-yard').onclick=()=>{room.game.cut.clear();room.game.save();$('admin-status').textContent='Fresh grass is ready for mowing.';};
 $('save-backup').onclick=()=>{room.game.save();const state={version:1,progress:room.game.progress,cut:[...room.game.cut],guests:room.game.profiles.filter(p=>p.id.startsWith('guest-'))},blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a'),url=URL.createObjectURL(blob);a.href=url;a.download='jace-halli-progress.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
