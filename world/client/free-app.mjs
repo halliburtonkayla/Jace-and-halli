@@ -6,7 +6,7 @@ import { Sound } from './audio.mjs';
 import { LOCATIONS } from './locations.mjs';
 import { drawPortrait, drawFamily, CHARACTER_ART } from './characters.mjs';
 import { routeTo, updateRoute, guidedInput, routeDots } from './routes.mjs';
-import { FamilyRoom } from './room.mjs?v=family-race-2';
+import { FamilyRoom } from './room.mjs?v=family-race-3';
 import {TownView} from './town-view.mjs?v=illustrated-2';
 import {BowlingView} from './bowling-view.mjs?v=illustrated-2';
 import {SCENES} from './town-destinations.mjs?v=illustrated-1';
