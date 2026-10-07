@@ -7,7 +7,7 @@ import { LOCATIONS } from './locations.mjs';
 import { drawPortrait, drawFamily, CHARACTER_ART } from './characters.mjs';
 import { routeTo, updateRoute, guidedInput, routeDots } from './routes.mjs';
 import { FamilyRoom } from './room.mjs?v=code-entry-2';
-import {TownView} from './town-view.mjs?v=drive-link-1';
+import {TownView} from './town-view.mjs?v=drive-link-2';
 import {BowlingView} from './bowling-view.mjs?v=illustrated-2';
 import {SCENES} from './town-destinations.mjs?v=drive-1';
 import {PLACES as DRIVE_PLACES} from './driving/world.mjs?v=drive-1';
@@ -112,6 +112,7 @@ async function openArt(station='coloring'){
 $('create-art').onclick=openArt;$('classic-creativity').onclick=openArt;
 function openClassic(file){$('classic-frame-panel').classList.remove('hidden');const url=new URL('../../'+file,import.meta.url);if(url.pathname.endsWith('/arcade-new.html'))url.searchParams.set('v','family-race-4');if(url.pathname.endsWith('/theater.html'))url.searchParams.set('v','cinema-1');if(/\/(town-driving|tractor-farm)\.html$/.test(url.pathname))url.searchParams.set('v','drive-1');$('classic-frame').src=url.href;input={gas:0,brake:1,steer:0};sound.motor(null);}
 $('classic-open').onclick=()=>openClassic('classic-home.html');$('classic-whiteboard').onclick=()=>openClassic('whiteboard.html');$('classic-books').onclick=()=>openClassic('family-library.html');
+$('drive-our-world').onclick=()=>{if(me)openClassic('town-driving.html');};
 function racingFrame(active){racingOpen=active;$('classic-frame-panel').style.paddingTop=active?'0':'';$('close-classic').hidden=active;}
 $('close-classic').onclick=()=>{if(me&&room.connected)api('race',{op:'leave'}).catch(()=>{});racingFrame(false);$('classic-frame-panel').classList.add('hidden');$('classic-frame').src='about:blank';updateUI();};
 window.addEventListener('message',async e=>{
