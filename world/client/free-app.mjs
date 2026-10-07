@@ -4,7 +4,7 @@ import { Sound } from './audio.mjs';
 import { LOCATIONS } from './locations.mjs';
 import { drawPortrait, drawFamily, CHARACTER_ART } from './characters.mjs';
 import { routeTo, updateRoute, guidedInput, routeDots } from './routes.mjs';
-import { FamilyRoom } from './room.mjs?v=creativity-1';
+import { FamilyRoom } from './room.mjs?v=creativity-2';
 const room=new FamilyRoom();
 let artCenter=null,artOpening=false,pendingArt=new URLSearchParams(location.search).get('activity')==='art';
 const $=id=>document.getElementById(id),renderer=new Renderer($('world')),sound=new Sound();
@@ -69,8 +69,8 @@ $('reset-yard').onclick=()=>{room.game.cut.clear();room.game.save();$('admin-sta
 $('save-backup').onclick=()=>{room.game.save();const state={version:1,progress:room.game.progress,cut:[...room.game.cut],guests:room.game.profiles.filter(p=>p.id.startsWith('guest-'))},blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a'),url=URL.createObjectURL(blob);a.href=url;a.download='jace-halli-progress.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
 async function openArt(){
  if(artCenter||artOpening||!me)return;artOpening=true;release();sound.unlock();sound.motor(null);
- try{const r=await api('action',{action:'creativity'});me=r.player;data=r.data;const {CreativityCenter}=await import('./creativity/center.mjs?v=2');
- if(!document.getElementById('art-style')){const link=document.createElement('link');link.id='art-style';link.rel='stylesheet';link.href=new URL('./creativity/center.css?v=1',import.meta.url).href;document.head.append(link);await new Promise(resolve=>{link.onload=link.onerror=resolve;});}
+ try{const r=await api('action',{action:'creativity'});me=r.player;data=r.data;const {CreativityCenter,prepareIllustratedSheets}=await import('./creativity/center.mjs?v=3');await prepareIllustratedSheets();
+ if(!document.getElementById('art-style')){const link=document.createElement('link');link.id='art-style';link.rel='stylesheet';link.href=new URL('./creativity/center.css?v=2',import.meta.url).href;document.head.append(link);await new Promise(resolve=>{link.onload=link.onerror=resolve;});}
  artCenter=new CreativityCenter({parent:$('play'),room,sound,player:me,onClose:async()=>{artCenter=null;await action('art-exit');},onSoundChange:enabled=>action('preferences',{sound:enabled})});
  }catch(e){$('hint').textContent=e.message;if(me?.scene==='creativity')await action('art-exit');}finally{artOpening=false;}
 }

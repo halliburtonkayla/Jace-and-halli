@@ -1,6 +1,6 @@
-import {W,H,drawSheet,drawMotif,PALETTE} from './catalog.mjs';
-import {drawPractice,TraceCoverage} from './practice.mjs';
-import {DrawingHistory} from './document.mjs';
+import {W,H,drawSheet,drawMotif,PALETTE} from './catalog.mjs?v=studio-1';
+import {drawPractice,TraceCoverage} from './practice.mjs?v=studio-1';
+import {DrawingHistory} from './document.mjs?v=studio-1';
 const rgba=hex=>[parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16),255];
 export function floodFill(ink,visible,w,h,x,y,color,boundary=null){
  x=Math.floor(x);y=Math.floor(y);if(x<0||y<0||x>=w||y>=h)return false;
@@ -17,7 +17,7 @@ export function floodFill(ink,visible,w,h,x,y,color,boundary=null){
 }
 export class DrawingEngine{
  constructor(canvas,{makeCanvas=()=>document.createElement('canvas'),name='Jace',mode='preschool',feedback=()=>{},changed=()=>{}}={}){
- this.canvas=canvas;canvas.width=W;canvas.height=H;this.makeCanvas=makeCanvas;this.ctx=canvas.getContext('2d');this.ink=makeCanvas();this.base=makeCanvas();this.composite=makeCanvas();this.mask=makeCanvas();for(const c of [this.ink,this.base,this.composite,this.mask]){c.width=W;c.height=H;}this.name=name;this.ageMode=mode;this.feedback=feedback;this.changed=changed;this.color='#ed3348';this.tool='crayon';this.size=18;this.stamp='star';this.pointer=null;this.current=null;this.completed=false;this.history=new DrawingHistory();this.bind();this.rebuild();
+ this.canvas=canvas;canvas.width=W;canvas.height=H;this.makeCanvas=makeCanvas;this.ctx=canvas.getContext('2d');this.ink=makeCanvas();this.base=makeCanvas();this.composite=makeCanvas();this.mask=makeCanvas();this.strokeLayer=makeCanvas();this.regionLayer=makeCanvas();for(const c of [this.ink,this.base,this.composite,this.mask,this.strokeLayer,this.regionLayer]){c.width=W;c.height=H;}this.name=name;this.ageMode=mode;this.feedback=feedback;this.changed=changed;this.color='#ed3348';this.tool='crayon';this.size=mode==='toddler'?35:18;this.inside=mode==='toddler';this.stamp='star';this.pointer=null;this.current=null;this.completed=false;this.history=new DrawingHistory();this.bind();this.rebuild();
  }
  load(doc){this.end();this.history=new DrawingHistory(doc);this.completed=false;this.rebuild();this.changed();}
  get document(){return structuredClone(this.history.document);}
@@ -27,7 +27,7 @@ export class DrawingEngine{
  if(this.tapActivity?.(p)){this.pointer=null;return;}
  if(this.tool==='fill'){this.commit({type:'fill',x:p[0],y:p[1],size:this.size,color:this.color});this.pointer=null;return;}
  if(this.tool==='stamp'){this.commit({type:'stamp',stamp:this.stamp,x:p[0],y:p[1],size:Math.max(45,this.size*3),color:this.color});this.pointer=null;return;}
- this.current={type:'stroke',tool:this.tool,color:this.color,size:this.size,points:[p]};this.stroke(this.current,0);this.touch(p,p);this.present();};
+ this.current={type:'stroke',tool:this.tool,color:this.color,size:this.size,points:[p],...(this.inside&&this.history.document.mode==='coloring'&&this.tool!=='eraser'?{inside:true}:{})};this.stroke(this.current,0);this.touch(p,p);this.present();};
  c.onpointermove=e=>{if(e.pointerId!==this.pointer||!this.current)return;e.preventDefault();const events=e.getCoalescedEvents?.();for(const ev of events?.length?events:[e]){const p=this.point(ev),points=this.current.points,a=points.at(-1);if(Math.hypot(p[0]-a[0],p[1]-a[1])<2)continue;if(points.length>=1500){this.end();return;}points.push(p);this.stroke(this.current,points.length-1);this.touch(a,p);}this.present();};
  c.onpointerup=c.onpointercancel=e=>{if(e.pointerId===this.pointer)this.end();};
  c.onlostpointercapture=()=>this.end();
@@ -36,10 +36,11 @@ export class DrawingEngine{
  touch(a,b){if(this.tool==='eraser')return;this.coverage?.segment(a,b,this.size/2);}
  check(){const doc=this.history.document;if(this.coverage?.targets.size&&this.coverage.progress>=(this.ageMode==='toddler'?.48:.68)&&!this.completed){this.completed=true;this.feedback('You did it!','celebrate');}else if(doc.mode==='whiteboard'&&doc.practice.id==='color'&&PALETTE.find(p=>p[0]===doc.practice.value)?.[1]===this.color&&this.tool!=='eraser'){this.feedback('Great job! '+doc.practice.value+'.','celebrate');}this.onProgress?.(this.coverage?.progress||0);}
  commit(op){this.end();try{this.history.add(op);this.apply(op);this.present();this.changed();this.check();}catch(e){this.feedback(e.message,'notice');}}
- stroke(op,i){const c=this.ink.getContext('2d'),a=op.points[Math.max(0,i-1)],b=op.points[i];c.save();c.globalCompositeOperation=op.tool==='eraser'?'destination-out':'source-over';c.globalAlpha=op.tool==='pencil'?.55:op.tool==='crayon'?.78:op.tool==='marker'?.83:1;c.lineCap='round';c.lineJoin='round';c.lineWidth=op.size*(op.tool==='brush'?.5+b[2]:1);const color=op.color==='rainbow'?PALETTE[(i+Math.floor(a[0]/45))%7][1]:op.color;c.strokeStyle=color;c.fillStyle=color;
+ region(op){if(this.regionOp===op)return;this.regionOp=op;const mix=this.composite.getContext('2d');mix.fillStyle='#fff';mix.fillRect(0,0,W,H);mix.drawImage(this.base,0,0);const data=mix.getImageData(0,0,W,H),ctx=this.regionLayer.getContext('2d'),mask=ctx.createImageData(W,H);floodFill(mask.data,data.data,W,H,op.points[0][0],op.points[0][1],'#ffffff',this.base.getContext('2d').getImageData(0,0,W,H).data);ctx.putImageData(mask,0,0);}
+ stroke(op,i){if(op.inside)this.region(op);const c=(op.inside?this.strokeLayer:this.ink).getContext('2d');if(op.inside)c.clearRect(0,0,W,H);const a=op.points[Math.max(0,i-1)],b=op.points[i];c.save();c.globalCompositeOperation=op.tool==='eraser'?'destination-out':'source-over';c.globalAlpha=op.tool==='pencil'?.55:op.tool==='crayon'?.78:op.tool==='marker'?.83:1;c.lineCap='round';c.lineJoin='round';c.lineWidth=op.size*(op.tool==='brush'?.5+b[2]:1);const color=op.color==='rainbow'?PALETTE[(i+Math.floor(a[0]/45))%7][1]:op.color;c.strokeStyle=color;c.fillStyle=color;
  if(i===0||a[0]===b[0]&&a[1]===b[1]){c.beginPath();c.arc(b[0],b[1],c.lineWidth/2,0,Math.PI*2);c.fill();}else{c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke();}
  if(op.tool==='crayon'){c.globalAlpha=.3;c.lineWidth=1;for(let n=-2;n<=2;n++){c.beginPath();c.moveTo(a[0]+n*2,a[1]+n);c.lineTo(b[0]+n*2,b[1]+n);c.stroke();}}
- c.restore();}
+ c.restore();if(op.inside){c.save();c.globalCompositeOperation='destination-in';c.drawImage(this.regionLayer,0,0);c.restore();this.ink.getContext('2d').drawImage(this.strokeLayer,0,0);}}
  apply(op){const c=this.ink.getContext('2d');if(op.type==='clear'){c.clearRect(0,0,W,H);return;}
  if(op.type==='stroke'){for(let i=0;i<op.points.length;i++)this.stroke(op,i);}
  else if(op.type==='stamp'){c.save();c.translate(op.x-op.size/2,op.y-op.size/2);c.scale(op.size/100,op.size/100);let color=op.color;if(color==='rainbow'){color=c.createLinearGradient(0,0,100,100);PALETTE.slice(0,7).forEach((p,i)=>color.addColorStop(i/6,p[1]));}drawMotif(c,op.stamp,color);c.restore();}

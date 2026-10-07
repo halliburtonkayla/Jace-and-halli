@@ -1,5 +1,5 @@
-import {SHEETS,STAMPS,PALETTE,W,H} from './catalog.mjs';
-import {PRACTICES} from './practice.mjs';
+import {SHEETS,STAMPS,PALETTE,W,H} from './catalog.mjs?v=studio-1';
+import {PRACTICES} from './practice.mjs?v=studio-1';
 export const MAX_DOCUMENT_BYTES=180000;
 export function validateDocument(value){
  if(!value||value.version!==1||!['coloring','whiteboard'].includes(value.mode))throw Error('This picture format is not supported.');
@@ -16,7 +16,7 @@ export function validateDocument(value){
  const c={type:op.type,color:op.color,size:op.size};
  if(op.type==='stroke'){
  if(!['crayon','marker','brush','pencil','eraser'].includes(op.tool)||!Array.isArray(op.points)||op.points.length<1)throw Error('Invalid stroke.');
- points+=op.points.length;if(points>18000)throw Error('This picture is full. Save it and start another.');c.tool=op.tool;c.points=op.points.map(p=>{if(!Array.isArray(p)||p.length!==3||!p.every(Number.isFinite)||p[0]<0||p[0]>W||p[1]<0||p[1]>H||p[2]<.1||p[2]>1)throw Error('Invalid drawing point.');return [...p];});
+ points+=op.points.length;if(points>18000)throw Error('This picture is full. Save it and start another.');c.tool=op.tool;if(op.inside===true)c.inside=true;c.points=op.points.map(p=>{if(!Array.isArray(p)||p.length!==3||!p.every(Number.isFinite)||p[0]<0||p[0]>W||p[1]<0||p[1]>H||p[2]<.1||p[2]>1)throw Error('Invalid drawing point.');return [...p];});
  }else{if(!Number.isFinite(op.x)||!Number.isFinite(op.y)||op.x<0||op.x>W||op.y<0||op.y>H)throw Error('Invalid drawing position.');c.x=op.x;c.y=op.y;if(op.type==='stamp'){if(!STAMPS.includes(op.stamp))throw Error('Choose an approved stamp.');c.stamp=op.stamp;}}
  clean.ops.push(c);
  }

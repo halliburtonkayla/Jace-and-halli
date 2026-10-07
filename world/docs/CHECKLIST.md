@@ -43,3 +43,16 @@ COMPLETE means the stated foundation implementation exists and its listed checks
 | Move & Groove studio | PLANNED | Mommy animation, original songs/video manifest, no camera requirement |
 | Progress backup / restore | IN PROGRESS | Host can download progress JSON; restore interface planned |
 | Multi-instance scalability | PLANNED | Shared authoritative session service + centralized storage; do not scale current process horizontally |
+
+
+### Creativity correction after owner rejection
+
+| Item | Status | Evidence / remaining work |
+|---|---|---|
+| Drawing engine, profile galleries, original pictures | COMPLETE | Existing engine/data preserved; 19 tests and native pixel checks pass |
+| Actual 3D Creativity Center room | IN PROGRESS | Physical furniture, window/outdoor geometry, walk/look, raycast stations, gallery textures; mobile/Safari visual acceptance pending |
+| Monster truck and dinosaur illustrated pages | COMPLETE | Two versioned WebP pages, genuine fill verified; older backgrounds preserved |
+| Assisted touch coloring | COMPLETE | Starting-region clip, wider Halli crayon, validated save/undo/redo; native pixel isolation verified |
+| Other coloring pages at final illustrated quality | NEEDS ASSET | 23 originals retained, not represented as the final commissioned art collection |
+| Shared visible characters inside the art room | PLANNED | Family room connection maintained; interior avatar presence is not yet implemented |
+| Whole-world approved visual correction | IN PROGRESS | Main renderer unchanged by this scoped art correction; approved town/model migration still required |

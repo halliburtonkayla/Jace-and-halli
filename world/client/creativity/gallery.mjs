@@ -1,4 +1,4 @@
-import {validateDocument,MAX_DOCUMENT_BYTES} from './document.mjs';
+import {validateDocument,MAX_DOCUMENT_BYTES} from './document.mjs?v=studio-1';
 export const MAX_PICTURES=40;
 export class ArtworkStore{
  constructor({indexedDB=globalThis.indexedDB}={}){this.indexedDB=indexedDB;this.opening=null;}

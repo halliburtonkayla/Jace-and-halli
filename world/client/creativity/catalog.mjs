@@ -1,7 +1,8 @@
+import {ILLUSTRATED} from './illustrated.mjs?v=studio-1';
 // Original vector line art: closed shapes for bucket fills; no emoji or remote assets.
 export const W=960,H=640;
 export const PALETTE=[['red','#ed3348'],['orange','#ff941c'],['yellow','#ffdc32'],['green','#23ad66'],['blue','#248ae8'],['purple','#8c4ed6'],['pink','#f476b8'],['brown','#965a36'],['black','#202027'],['white','#ffffff'],['gray','#90969f'],['rainbow','rainbow']];
-export const SHEETS=[['truck','Monster truck'],['dino','Friendly dinosaur'],['bubbles','Bubble garden'],['doll','Baby doll'],['dog','Puppy'],['cat','Kitten'],['zoo','Zoo friends'],['train','Our train'],['school','Our school'],['church','Our church'],['ark','Noah’s ark'],['playground','Playground'],['car','Family car'],['motorcycle','Motorcycle'],['cook','Little kitchen'],['food','Picnic lunch'],['shapes','Shape garden'],['letters','ABC balloons'],['numbers','Counting stars'],['spring','Spring flowers'],['summer','Summer treats'],['autumn','Autumn leaves'],['winter','Winter snow friend']].map(([id,title])=>({id,title}));
+export const SHEETS=[['truck-v2','Monster Truck Adventure'],['dino-v2','Dinosaur Friends'],['truck','Monster truck'],['dino','Friendly dinosaur'],['bubbles','Bubble garden'],['doll','Baby doll'],['dog','Puppy'],['cat','Kitten'],['zoo','Zoo friends'],['train','Our train'],['school','Our school'],['church','Our church'],['ark','Noah’s ark'],['playground','Playground'],['car','Family car'],['motorcycle','Motorcycle'],['cook','Little kitchen'],['food','Picnic lunch'],['shapes','Shape garden'],['letters','ABC balloons'],['numbers','Counting stars'],['spring','Spring flowers'],['summer','Summer treats'],['autumn','Autumn leaves'],['winter','Winter snow friend']].map(([id,title])=>({id,title}));
 export const STAMPS=['star','heart','flower','bubble','ball','car','dino','dog','cat','train','cup','shoe','doll','butterfly'];
 function path(c,d,fill='white'){c.beginPath();const p=new Path2D(d);if(fill){c.fillStyle=fill;c.fill(p);}c.stroke(p);}
 function ellipse(c,x,y,rx,ry=rx,fill='white'){c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);if(fill){c.fillStyle=fill;c.fill();}c.stroke();}
@@ -34,6 +35,8 @@ function motif(c,id,x,y,size,color='white'){c.save();c.translate(x,y);c.scale(si
 function sun(c){ellipse(c,810,85,42);for(let i=0;i<12;i++){const a=i*Math.PI/6;line(c,`M${810+Math.cos(a)*53} ${85+Math.sin(a)*53}L${810+Math.cos(a)*68} ${85+Math.sin(a)*68}`);}}
 function clouds(c){path(c,'M70 100Q49 73 72 59Q91 30 115 55Q150 28 168 67Q203 74 192 99Z');path(c,'M556 98Q536 68 565 60Q580 23 609 48Q641 26 659 63Q693 71 681 98Z');}
 export function drawSheet(c,id){
+ if(ILLUSTRATED.has(id)){c.drawImage(ILLUSTRATED.get(id),0,0,W,H);return;}
+ if(id==='truck-v2')id='truck';if(id==='dino-v2')id='dino';
  c.save();c.lineWidth=4;c.strokeStyle='#252938';c.lineJoin='round';c.lineCap='round';
  if(['truck','car','motorcycle','train'].includes(id)){
  sun(c);clouds(c);line(c,'M15 545H945M15 588H945');for(let x=30;x<950;x+=130)rect(c,x,563,60,8,3);
