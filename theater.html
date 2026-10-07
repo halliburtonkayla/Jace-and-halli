@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#170d29"><title>Movie Theater · Jace & Halli’s World</title><link rel="stylesheet" href="world/client/theater/theater.css?v=cinema-1"></head>
+<body>
+ <header><button id="exit">Back to Our World</button><span>JACE & HALLI’S CINEMA</span><button id="sound" aria-pressed="false">Sound on</button></header>
+ <main id="lobby"><section class="billboard"><p class="eyebrow">NOW SHOWING</p><h1>Let’s watch a movie</h1><div id="movies"></div><p id="library-status" role="status">Opening the movie library…</p></section></main>
+ <main id="auditorium" hidden><div class="house-lights"></div><div class="screen"><video id="film" controls playsinline preload="none" aria-label="Jace and Halli movie"></video><div class="curtain left"></div><div class="curtain right"></div></div>
+ <section class="movie-panel"><h2 id="movie-title"></h2><p id="status" role="status"></p><progress id="loading" max="100" value="0" aria-label="Movie download progress"></progress><div class="buttons"><button id="play" disabled>Getting your movie ready…</button><button id="rewind" disabled>Back 10 seconds</button><button id="fullscreen" disabled>Full screen</button><button id="movie-list">Movie lobby</button></div></section></main>
+ <script type="module" src="world/client/theater/theater.mjs?v=cinema-1"></script>
+</body></html>

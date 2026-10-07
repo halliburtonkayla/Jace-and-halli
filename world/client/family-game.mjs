@@ -1,5 +1,5 @@
 import { makePlayer, step, cutGrass, nearby, publicPlayer, clamp } from '../server/simulation.mjs?v=illustrated-1';
-import {TOWN_PLACES,VISIT_IDS} from './town-destinations.mjs?v=illustrated-1';
+import {TOWN_PLACES,VISIT_IDS} from './town-destinations.mjs?v=cinema-1';
 import {BowlingLane} from './bowling-physics.mjs?v=illustrated-1';
 import {RaceSession} from './racing/session.mjs?v=family-race-1';
 export const FAMILY = [

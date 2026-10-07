@@ -1,5 +1,10 @@
 # Development checklist
 
+## Movie theater — October 7
+
+COMPLETE: existing town Movies destination, approved lobby and auditorium artwork, first owner-supplied three-minute movie, expandable manifest, native playback, mute, rewind, replay and return to the same family session. All 44 automated checks and complete MP4 decoding pass. IN PROGRESS: published browser verification and physical iPad/Safari testing. This supersedes the earlier planned theater entries. See THEATER.md.
+
+
 ## Family racing update — October 7
 
 COMPLETE (code + 42 automated checks): approved-room race lobby, eight shared racers, continuous independent human inputs, AI fill, host-owned countdown/collisions/laps/results, per-profile records, smooth snapshot interpolation, pit-stop helper and departure handling. Solo racing and world navigation remain intact. COMPLETE browser checks: host race, full results, next lobby, world return and phone lobby. IN PROGRESS: live two-device connection validation (the test browser timed out before approval), physical iPad/Safari network/performance testing. See the family racing section of `RACING.md`. This supersedes the earlier planned multiplayer status below.
