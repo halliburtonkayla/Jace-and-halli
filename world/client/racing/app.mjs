@@ -56,7 +56,7 @@ function familyState(state){
   const signature=JSON.stringify([state.members,state.track,state.captain]);if(signature===lobbySignature)return;lobbySignature=signature;
   $('race-family-roster').replaceChildren();
   for(const [i,m]of state.members.entries()){const row=document.createElement('li');for(const text of [ordinal(i+1),m.name+(m.id===myId?' · you':'')+(m.id===state.captain?' · leader':''),m.ready?'READY':'Choosing…']){const span=document.createElement('span');span.textContent=text;row.append(span);}$('race-family-roster').append(row);}
-  const computers=document.createElement('li');computers.textContent=(8-state.members.length)+' computer racers';$('race-family-roster').append(computers);
+  const computers=document.createElement('li');computers.className='family-computers';computers.textContent=(8-state.members.length)+' computer racers';$('race-family-roster').append(computers);
   $('family-car').value=member.car;$('family-track').value=state.track;$('family-track').disabled=state.captain!==myId;
   $('family-ready').textContent=member.ready?'READY ✓ · tap to change':'I’M READY';$('family-ready').setAttribute('aria-pressed',String(member.ready));
   $('family-start').hidden=state.captain!==myId;$('family-start').disabled=!state.members.every(m=>m.ready);

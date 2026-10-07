@@ -1,5 +1,6 @@
 body.racing-open,html:has(body.racing-open){overflow:hidden;overscroll-behavior:none;height:100%;}
 #moto .race-family-button{width:100%;margin-top:12px;border-color:#73e1ef;color:#baf7ff;background:#164553}
+#moto .family-computers{display:block;color:#a6c4d2}#moto #race-toast{z-index:9;white-space:normal;width:max-content;max-width:calc(100% - 30px);text-align:center}
 #race-family-lobby h2{font-size:30px;color:#f5e9b7;margin:6px 0}
 .family-choices{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}.family-choices label{display:grid;gap:7px;font-size:13px;color:#bde6ec}.family-choices select{width:100%;min-height:48px;border-radius:12px;background:#1c3450;color:white;border:1px solid #7dd5e0;padding:8px;font:700 14px system-ui;touch-action:manipulation}
 .family-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}#moto .family-actions button{font-size:13px;white-space:normal;padding:12px;min-height:54px}#moto button:disabled{opacity:.5;cursor:default}

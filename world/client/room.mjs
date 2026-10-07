@@ -1,5 +1,5 @@
 import { GalleryService } from './creativity/gallery.mjs?v=studio-1';
-import { FAMILY, FamilyGame } from './family-game.mjs?v=family-race-1';
+import { FAMILY, FamilyGame } from './family-game.mjs?v=family-race-2';
 const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 export function newCode() { const bytes = new Uint8Array(10); crypto.getRandomValues(bytes); return [...bytes].map(v => alphabet[v % alphabet.length]).join(''); }
 export function normalizeCode(value) { return String(value || '').toUpperCase().replace(/[\s-]/g, ''); }
@@ -33,9 +33,10 @@ export class FamilyRoom extends EventTarget {
     return new Promise((resolve, reject) => {
       let finished = false;
       const fail = message => { if (!finished) { finished = true; clearTimeout(timeout); this.close(); reject(Error(message)); } else if (!this.closing) { this.connected = false; this.emit('lost', message); } };
-      const timeout = setTimeout(() => fail('No room response. Ask Mommy to keep her hosting page open, check the code, and try again.'), 45000);
+      const timeout = setTimeout(() => fail('The devices could not connect. Keep the host open, check the code, and try the same home Wi-Fi. Some networks block direct game connections.'), 45000);
       this.peer.on('error', () => fail('Could not reach the room. Check the code, host page, and Wi-Fi.'));
       this.peer.on('open', () => {
+        this.emit('status','Room service reached. Connecting to the hosting device…');
         const conn = this.peer.connect('jh-world-' + this.code.toLowerCase(), { reliable: true, serialization: 'json', metadata: { version: 1 } }); this.connection = conn;
         conn.on('open', () => { conn.send({ type: 'hello', profile, guestName }); this.emit('status', 'Waiting for Mommy to approve this device…'); });
         conn.on('data', message => {
