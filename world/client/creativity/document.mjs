@@ -1,4 +1,4 @@
-import {SHEETS,STAMPS,PALETTE,W,H} from './catalog.mjs?v=studio-1';
+import {SHEETS,STAMPS,PALETTE,W,H} from './catalog.mjs?v=studio-2';
 import {PRACTICES} from './practice.mjs?v=studio-1';
 export const MAX_DOCUMENT_BYTES=180000;
 export function validateDocument(value){

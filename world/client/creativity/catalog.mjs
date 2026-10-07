@@ -3,6 +3,7 @@ import {ILLUSTRATED} from './illustrated.mjs?v=studio-1';
 export const W=960,H=640;
 export const PALETTE=[['red','#ed3348'],['orange','#ff941c'],['yellow','#ffdc32'],['green','#23ad66'],['blue','#248ae8'],['purple','#8c4ed6'],['pink','#f476b8'],['brown','#965a36'],['black','#202027'],['white','#ffffff'],['gray','#90969f'],['rainbow','rainbow']];
 export const SHEETS=[['truck-v2','Monster Truck Adventure'],['dino-v2','Dinosaur Friends'],['truck','Monster truck'],['dino','Friendly dinosaur'],['bubbles','Bubble garden'],['doll','Baby doll'],['dog','Puppy'],['cat','Kitten'],['zoo','Zoo friends'],['train','Our train'],['school','Our school'],['church','Our church'],['ark','Noah’s ark'],['playground','Playground'],['car','Family car'],['motorcycle','Motorcycle'],['cook','Little kitchen'],['food','Picnic lunch'],['shapes','Shape garden'],['letters','ABC balloons'],['numbers','Counting stars'],['spring','Spring flowers'],['summer','Summer treats'],['autumn','Autumn leaves'],['winter','Winter snow friend']].map(([id,title])=>({id,title}));
+export const BOOK_PAGES=SHEETS.filter(page=>!['truck','dino'].includes(page.id));
 export const STAMPS=['star','heart','flower','bubble','ball','car','dino','dog','cat','train','cup','shoe','doll','butterfly'];
 function path(c,d,fill='white'){c.beginPath();const p=new Path2D(d);if(fill){c.fillStyle=fill;c.fill(p);}c.stroke(p);}
 function ellipse(c,x,y,rx,ry=rx,fill='white'){c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);if(fill){c.fillStyle=fill;c.fill();}c.stroke();}

@@ -1,4 +1,4 @@
-import {W,H,drawSheet,drawMotif,PALETTE} from './catalog.mjs?v=studio-1';
+import {W,H,drawSheet,drawMotif,PALETTE} from './catalog.mjs?v=studio-2';
 import {drawPractice,TraceCoverage} from './practice.mjs?v=studio-1';
 import {DrawingHistory} from './document.mjs?v=studio-1';
 const rgba=hex=>[parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16),255];
