@@ -29,6 +29,9 @@ export class TownView{
   this.watchMovie.addEventListener('click',()=>this.classic('theater.html'));
   this.watchMovie.hidden=true;
   this.root.append(this.watchMovie);
+  this.arcadeActions=document.createElement('nav');this.arcadeActions.className='town-arcade-actions';this.arcadeActions.setAttribute('aria-label','Play games in the bowling arcade');this.arcadeActions.hidden=true;
+  for(const spot of SCENES.arcade.spots){const b=this.button(spot.label,spot.icon,()=>{if(spot.visit)this.visit(spot.visit);else if(spot.file)this.classic(spot.file);});b.className='town-arcade-game';this.arcadeActions.append(b);}
+  this.root.append(this.arcadeActions);
   parent.prepend(this.root);this.viewport=this.root.querySelector('.town-viewport');this.picture=this.root.querySelector('.town-picture');this.img=this.root.querySelector('img');this.presence=this.root.querySelector('.town-presence');this.tip=this.root.querySelector('.town-tip');this.fitButton=this.root.querySelector('.town-fit');this.dock=this.root.querySelector('.town-dock');
   this.fitButton.onclick=()=>{this.fitted=!this.fitted;this.layout();};
   this.root.querySelector('.dock-places').onclick=()=>this.showDock('places');
@@ -64,7 +67,7 @@ export class TownView{
  markDock(){for(const b of this.dock.children){if(b.dataset.destination===this.destination)b.setAttribute('aria-current','location');else b.removeAttribute('aria-current');}}
  layout(){if(!this.ratio||!this.viewport.clientWidth)return;const w=this.viewport.clientWidth,h=this.viewport.clientHeight;const width=this.fitted?Math.min(w,h*this.ratio):Math.max(w,h*this.ratio);this.root.dataset.fitted=String(Boolean(this.fitted));this.picture.style.width=width+'px';this.picture.style.height=width/this.ratio+'px';this.picture.style.margin=this.fitted?'auto':'0 auto';this.fitButton.textContent=this.fitted?'Look closer':'See whole '+(this.key==='world'?'town':'room');if(this.recenter){this.viewport.scrollLeft=(width-w)/2;this.recenter=false;}}
  update(snapshot,me){
-  const shown=me&&['world','home','arcade','arena','school','garage','classic','theater'].includes(me.scene)&&me.vehicle!=='mower';this.root.hidden=!shown;if(!shown)return;this.watchMovie.hidden=me.scene!=='theater';
+  const shown=me&&['world','home','arcade','arena','school','garage','classic','theater'].includes(me.scene)&&me.vehicle!=='mower';this.root.hidden=!shown;if(!shown)return;this.watchMovie.hidden=me.scene!=='theater';this.arcadeActions.hidden=me.scene!=='arcade';
   this.destination=me.destination;this.markDock();const key=me.scene;if(this.key!==key){this.key=key;this.playersKey='';this.fitted=false;this.recenter=true;
    const scene=SCENES[key];this.ratio=scene?.ratio||1672/941;this.img.src=key==='world'?new URL('../assets/town/approved-world-v1.webp',import.meta.url):new URL('../assets/scenes/'+(scene.asset||scene.image+'-v1.webp'),import.meta.url);this.img.alt=scene?.title||'Jace and Halli’s World: our connected town';this.tip.textContent='Choose a picture below';
    this.layout();
