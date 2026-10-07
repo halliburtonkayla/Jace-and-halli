@@ -1,7 +1,7 @@
 import { GalleryService } from './creativity/gallery.mjs?v=studio-1';
 import { FAMILY, FamilyGame } from './family-game.mjs?v=cinema-1';
-const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-export function newCode() { const bytes = new Uint8Array(10); crypto.getRandomValues(bytes); return [...bytes].map(v => alphabet[v % alphabet.length]).join(''); }
+const alphabet = '0123456789';
+export function newCode() { const bytes = new Uint8Array(4); crypto.getRandomValues(bytes); return [...bytes].map(v => alphabet[v % alphabet.length]).join(''); }
 export function normalizeCode(value) { return String(value || '').toUpperCase().replace(/[\s-]/g, ''); }
 const storageKey = 'jace-halli-world.family.v1';
 export class FamilyRoom extends EventTarget {
@@ -25,7 +25,7 @@ export class FamilyRoom extends EventTarget {
   }
   async join(code, profile, guestName = '') {
     this.close(); this.closing = false; this.code = normalizeCode(code); this.host = false;
-    if (!/^[A-Z2-9]{10}$/.test(this.code)) throw Error('Enter the 10-character family room code.');
+    if (!/^[0-9]{4}$/.test(this.code)) throw Error('Enter the 4-digit family room code.');
     if (!FAMILY.some(p => p.id === profile && p.id !== 'mommy') && profile !== 'guest') throw Error('Choose Jace, Halli, Unique, or an approved guest.');
     if (profile === 'guest' && (!guestName.trim() || guestName.length > 24)) throw Error('Enter the guest’s first name.');
     if (!this.PeerClass) throw Error('The multiplayer library could not load. Check your internet connection.');
