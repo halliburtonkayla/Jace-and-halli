@@ -1,3 +1,4 @@
+import {PLACE_LINKS,PLACE_NOTES,activitiesForPlace} from './place-activities.mjs?v=places-1';
 import {GAME_PAGES} from './game-catalog.mjs?v=all-games-1';
 import {TOWN_PLACES,SCENES} from './town-destinations.mjs?v=drive-1';
 import {drawPortrait} from './characters.mjs';
@@ -19,7 +20,7 @@ export class TownView{
  constructor(parent,{visit,art,classic,say}){
   this.visit=visit;this.art=art;this.classic=classic;this.say=say;this.key=null;this.playersKey='';
   this.root=document.createElement('section');this.root.id='illustrated-town';this.root.setAttribute('aria-label','Explore Jace and Halli’s town');
-  this.root.innerHTML='<div class="town-viewport" tabindex="0" aria-label="Town scene. Drag to look around."><div class="town-picture"><img draggable="false" alt=""><div class="town-presence" aria-label="Family playing here"></div></div></div><footer class="town-footer"><div class="dock-toolbar"><div class="dock-tabs" role="group" aria-label="Choose links"><button class="dock-places" aria-pressed="true">Places</button><button class="dock-games" aria-pressed="false">Games</button><button class="dock-all">All games</button></div><p class="town-tip">Choose a picture below</p><button class="town-fit">See whole town</button></div><nav class="town-dock" aria-label="Places in our world"></nav></footer>';
+  this.root.innerHTML='<div class="town-viewport" tabindex="0" aria-label="Town scene. Drag to look around."><div class="town-picture"><img draggable="false" alt=""><div class="town-presence" aria-label="Family playing here"></div></div></div><footer class="town-footer"><div class="dock-toolbar"><div class="dock-tabs" role="group" aria-label="Choose links"><strong>Our places</strong></div><p class="town-tip">Choose a picture below</p><button class="town-fit">See whole town</button></div><nav class="town-dock" aria-label="Places in our world"></nav></footer>';
   // Persistent theater entrance lives inside the illustrated town itself,
   // above the picture dock so it remains reachable on landscape iPads.
   this.watchMovie=document.createElement('button');
@@ -35,14 +36,12 @@ export class TownView{
   this.root.append(this.arcadeActions);
   parent.prepend(this.root);this.viewport=this.root.querySelector('.town-viewport');this.picture=this.root.querySelector('.town-picture');this.img=this.root.querySelector('img');this.presence=this.root.querySelector('.town-presence');this.tip=this.root.querySelector('.town-tip');this.fitButton=this.root.querySelector('.town-fit');this.dock=this.root.querySelector('.town-dock');
   this.fitButton.onclick=()=>{this.fitted=!this.fitted;this.layout();};
-  this.root.querySelector('.dock-places').onclick=()=>this.showDock('places');
-  this.root.querySelector('.dock-games').onclick=()=>this.showDock('games');
   this.allGames=document.createElement('dialog');this.allGames.className='town-all-games';this.allGames.setAttribute('aria-label','All games and activities');
-  this.allGames.innerHTML='<form method="dialog"><button>Close</button></form><h2>All games & activities</h2><label>Find a game <input type="search" placeholder="Search games"></label><div class="town-choices"></div><p class="game-search-empty" hidden>No games found. Try another name.</p>';
+  this.allGames.innerHTML='<form method="dialog"><button>Close</button></form><h2>Activities</h2><p class="place-note"></p><label>Find a game <input type="search" placeholder="Search games"></label><div class="town-choices"></div><p class="game-search-empty" hidden>No games found. Try another name.</p>';
   this.root.append(this.allGames);
   for(const entry of this.gameEntries()){const b=this.button(entry.label,entry.icon,()=>{this.allGames.close();this.launch(entry);});b.dataset.label=entry.label.toLowerCase();this.allGames.querySelector('.town-choices').append(b);}
   this.allGames.querySelector('input').oninput=e=>{let count=0;for(const b of this.allGames.querySelectorAll('.town-choices button')){b.hidden=!b.dataset.label.includes(e.target.value.trim().toLowerCase());if(!b.hidden)count++;}this.allGames.querySelector('.game-search-empty').hidden=count>0;};
-  this.root.querySelector('.dock-all').onclick=()=>this.allGames.showModal();
+
   this.showDock('places');
   this.viewport.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'||e.button!==0)return;this.drag={x:e.clientX,y:e.clientY,left:this.viewport.scrollLeft,top:this.viewport.scrollTop};this.moved=false;});
   this.viewport.addEventListener('pointermove',e=>{if(!this.drag||e.buttons!==1)return;const dx=e.clientX-this.drag.x,dy=e.clientY-this.drag.y;if(Math.hypot(dx,dy)>7){this.moved=true;this.viewport.scrollLeft=this.drag.left-dx;this.viewport.scrollTop=this.drag.top-dy;}});
@@ -56,23 +55,32 @@ export class TownView{
   for(const scene of Object.values(SCENES))for(const spot of scene.spots){if(spot.visit&&spot.visit!=='bowling')continue;entries.set(spot.file||spot.art||spot.visit,{...spot,scene});}
   return [...entries.values()].sort((a,b)=>a.label.localeCompare(b.label));
  }
- launch(entry){this.say(entry.label);if(entry.visit)this.visit(entry.visit);else if(entry.art)this.art(entry.art);else this.classic(entry.file);}
+ launch(entry){if(entry.place){this.openPlace(entry.place);return;}this.say(entry.label);if(entry.visit)this.visit(entry.visit);else if(entry.art)this.art(entry.art);else this.classic(entry.file);}
+ openPlace(id){
+  const place=PLACE_LINKS.find(p=>p.id===id);this.say(place.name);
+  if(id==='theater'){this.visit('theater');this.classic('theater.html');return;}
+  if(place.scene&&!['world','bubbles'].includes(place.scene))this.visit(id);
+  const items=id==='classic'?this.gameEntries():activitiesForPlace(id);
+  if(id==='arcade')items.unshift({label:'Let’s bowl',icon:'bowling',visit:'bowling'});
+  if(id==='garden')items.unshift({label:'Play in the bubble garden',icon:'bubbles',visit:'garden'});
+  if(id==='yard')items.unshift({label:'Mow our backyard',icon:'leaf',visit:'yard'});
+  this.allGames.querySelector('h2').textContent=place.name+(id==='classic'?' — all games':'');
+  this.allGames.querySelector('.place-note').textContent=PLACE_NOTES[id]||'Choose an activity to play.';
+  const choices=this.allGames.querySelector('.town-choices');choices.replaceChildren();
+  for(const entry of items){const b=this.button(entry.label,entry.icon,()=>{this.allGames.close();this.launch(entry);});b.dataset.label=entry.label.toLowerCase();choices.append(b);}
+  this.allGames.querySelector('input').value='';this.allGames.querySelector('label').hidden=items.length<10;this.allGames.querySelector('.game-search-empty').hidden=true;
+  this.allGames.setAttribute('aria-label',place.name+' activities');this.allGames.showModal();
+ }
  showDock(mode){
   this.dockMode=mode;this.dock.replaceChildren();this.dock.scrollLeft=0;
   this.dock.setAttribute('aria-label',mode==='places'?'Places in our world':'Games and activities');
-  // Keep the driving game as the FIRST visible tile in both dock tabs.
-  const drive=this.button('DRIVE OUR WORLD','car',()=>this.classic('town-driving.html'));
-  drive.className='dock-item town-drive-shortcut';
-  drive.style.cssText='background:#ffe16c;color:#302246;border:3px solid white;min-width:125px;font-weight:900;';
-  drive.setAttribute('aria-label','Drive around Jace and Halli’s World');
-  this.dock.append(drive);
-  for(const name of ['places','games'])this.root.querySelector('.dock-'+name).setAttribute('aria-pressed',String(name===mode));
-  const entries=mode==='places'?TOWN_PLACES.map(p=>({label:p.name,icon:p.icon,visit:p.id,scene:SCENES[p.scene],image:p.id==='garden'?'bubbles':p.id==='yard'?'backyard':null})):this.gameEntries();
+  const entries=PLACE_LINKS.map(p=>({label:p.name,icon:p.icon,place:p.id,scene:SCENES[p.scene],image:p.id==='garden'?'bubbles':p.id==='yard'?'backyard':null,x:p.x,y:p.y}));
   for(const entry of entries){
    const b=this.button(entry.label,entry.icon,()=>{this.launch(entry);});
-   b.className='dock-item';if(entry.visit)b.dataset.destination=entry.visit;
+   b.className='dock-item';if(entry.place)b.dataset.destination=entry.place;
    const thumb=document.createElement('img');thumb.alt='';thumb.draggable=false;
-   thumb.src=new URL('../assets/scenes/'+(entry.image?entry.image+'-v1.webp':entry.scene.asset||entry.scene.image+'-v1.webp'),import.meta.url);
+   thumb.src=entry.scene||entry.image?new URL('../assets/scenes/'+(entry.image?entry.image+'-v1.webp':entry.scene.asset||entry.scene.image+'-v1.webp'),import.meta.url):new URL('../assets/town/approved-world-v1.webp',import.meta.url);
+   if(!entry.scene&&!entry.image)thumb.style.objectPosition=entry.x+'% '+entry.y+'%';
    b.prepend(thumb);const tooltip=document.createElement('span');tooltip.className='dock-tooltip';tooltip.textContent=entry.label;tooltip.setAttribute('aria-hidden','true');b.append(tooltip);this.dock.append(b);
   }
   this.markDock();
