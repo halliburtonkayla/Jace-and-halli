@@ -75,6 +75,8 @@ export class FamilyGame {
       else { p.scene = location.action; p.speed = 0; p.input = { gas: 0, brake: 0, steer: 0 }; if (p.scene === 'bubbles') this.makeBubbles(p); }
     } else if (action === 'exit') { p.scene = 'world'; p.speed = 0; p.engine = false; if (p.vehicle === 'mower') p.vehicle = 'walk'; }
     else if (action === 'tag' && p.scene === 'world' && p.vehicle === 'walk') this.tag = { active: !this.tag.active, it: p.id, cooldown: Date.now() + 2500 };
+    else if(action==='creativity'&&p.scene!=='creativity'){p.artReturn=p.scene;p.scene='creativity';p.speed=0;p.engine=false;p.input={gas:0,brake:0,steer:0};}
+    else if(action==='art-exit'&&p.scene==='creativity'){p.scene=p.artReturn||'world';p.artReturn=null;p.speed=0;p.input={gas:0,brake:0,steer:0};}
     else if (action === 'preferences') { if (typeof body.sound !== 'boolean') throw Error('Invalid preference.'); p.data.preferences.sound = body.sound; }
     else if (action === 'pop' && p.scene === 'bubbles') {
       const bubble = p.bubbles.find(b => b.id === body.id);

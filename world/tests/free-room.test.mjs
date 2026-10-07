@@ -1,5 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import {GalleryService,saveToRoom,readFromRoom} from '../client/creativity/gallery.mjs';
+import {newDocument,validateDocument} from '../client/creativity/document.mjs';
 import { FamilyGame } from '../client/family-game.mjs';
 import { FamilyRoom, newCode, normalizeCode } from '../client/room.mjs';
 class Events {
@@ -36,3 +38,9 @@ test('host approves joining devices, locks profiles and broadcasts actual shared
  const loaded=new FamilyRoom({PeerClass:FakePeer,storage});try{await loaded.create();assert.equal(loaded.me().profiles.length,4);}finally{loaded.close();}
 });
 test('host clock stops controls after missed input instead of trusting remote positions',()=>{const game=new FamilyGame();game.select('device','jace');game.request('device','input',{gas:999,steer:999,x:500,y:500});const p=game.players.get('device');assert.equal(p.x,0);assert.equal(p.input.gas,1);assert.equal(p.input.steer,1);game.tick(.05,Date.now()+2000);assert.equal(p.speed,0);});
+
+test('approved peer artwork round trip preserves profile isolation and shared world state',async()=>{
+ const rows=new Map(),store={async list(profile){return [...rows.values()].filter(r=>r.profile===profile).map(({id,title})=>({id,title}));},async put(profile,row){rows.set(profile+'/'+row.id,{...row,profile,document:validateDocument(row.document)});return {id:row.id};},async get(profile,id){const row=rows.get(profile+'/'+id);if(!row)throw Error('Not in your gallery');return row;}};
+ const host=new FamilyRoom({PeerClass:FakePeer,storage:memory(),galleryService:new GalleryService(store)}),child=new FamilyRoom({PeerClass:FakePeer,storage:memory()});
+ try{await host.create();await host.request('select',{profile:'mommy'});const waiting=once(host,'requests'),joining=child.join(host.code,'halli');await waiting;host.approve(host.pendingList()[0].id);await joining;await child.request('select',{profile:'halli'});const doc=newDocument('coloring','bubbles');doc.ops.push({type:'fill',x:100,y:100,size:18,color:'#f476b8'});await saveToRoom(child,'halli-art','My bubbles',doc);assert.deepEqual((await readFromRoom(child,'halli-art')).document,doc);assert.equal((await child.request('art-list',{profile:'mommy'})).pictures.length,1);assert.equal((await host.request('art-list')).pictures.length,0);await assert.rejects(host.request('art-read',{id:'halli-art'}),/gallery/);assert.equal(host.game.snapshot().players.length,2);assert.equal(host.game.players.get('host').profile,'mommy');}finally{child.close();host.close();}
+});

@@ -34,7 +34,8 @@ COMPLETE means the stated foundation implementation exists and its listed checks
 | Zoo (~25 animals) | PLANNED | Recognizable approved models, authentic audio, narrated local content |
 | Circus | PLANNED | Animated show, lights/music, look-around camera |
 | Expandable theater | PLANNED | Lobby, posters, seats, dimming, local original movie manifest |
-| New art center/coloring book | PLANNED | Classic whiteboard/coloring preserved; new physical book, undo and page gestures |
+| Coloring & Creativity Center / Whiteboard | COMPLETE | 23 original vector coloring pages, full palette and seven tools, bucket fill, sizes, undo/redo, stamps, downloads, tracing coverage, vocabulary and matching; artwork bound to approved profile and stored on host in IndexedDB. Browser QA recorded in CREATIVITY-CENTER.md |
+| Creativity hardware QA / further illustration packs | IN PROGRESS | Real iPad Pencil/touch and Safari storage QA remain; expandable sheet manifest, more Bible/seasonal illustrations can be added |
 | Railroad + train rides | PLANNED | Shared crossing barriers/signals, traffic waiting, station, camera views |
 | School bus | PLANNED | Boarding, NPC riders, connected route |
 | School / early learning center | PLANNED | Physical manipulatives; speech-first toddler mode; preschool progression |

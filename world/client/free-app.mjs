@@ -4,8 +4,9 @@ import { Sound } from './audio.mjs';
 import { LOCATIONS } from './locations.mjs';
 import { drawPortrait, drawFamily, CHARACTER_ART } from './characters.mjs';
 import { routeTo, updateRoute, guidedInput, routeDots } from './routes.mjs';
-import { FamilyRoom } from './room.mjs';
+import { FamilyRoom } from './room.mjs?v=creativity-1';
 const room=new FamilyRoom();
+let artCenter=null,artOpening=false,pendingArt=new URLSearchParams(location.search).get('activity')==='art';
 const $=id=>document.getElementById(id),renderer=new Renderer($('world')),sound=new Sound();
 let route=null,assist=false;
 let me=null,data=null,bubbles=[],snapshot={players:[],npcs:[],cut:[],tag:{}},events=null,role='',profiles=[],online=false,busy=false,lastIt=null,input={gas:0,brake:0,steer:0},inputBusy=false;
@@ -14,7 +15,9 @@ drawFamily($('family-welcome'));
 async function api(path,body){return room.request(path,body);}
 function show(id){['welcome','profiles','play'].forEach(x=>$(x).classList.toggle('hidden',x!==id));}
 async function load(){try{const r=await api('me');role=r.role;profiles=r.profiles;$('room-lobby').classList.toggle('hidden',!room.host);if(r.selected){const resumed=await api('resume',{});me=resumed.player;data=resumed.data;bubbles=resumed.bubbles;sound.mute(data.preferences.sound);$('parent').classList.toggle('hidden',!room.host);$('back').textContent='Profiles';$('room-lobby').classList.toggle('hidden',!room.host);show('play');updateUI();connect();return;}show('profiles');$('profile-list').replaceChildren();for(const p of profiles){const b=document.createElement('button');b.className='profile';b.setAttribute('aria-label','Play as '+p.name);const portrait=document.createElement(CHARACTER_ART[p.id]?'canvas':'span');portrait.className='portrait';if(CHARACTER_ART[p.id]){portrait.width=240;portrait.height=300;drawPortrait(portrait,p.id);}else portrait.textContent=p.name[0].toUpperCase();const n=document.createElement('b');n.textContent=p.name.toUpperCase();const a=document.createElement('small');a.textContent=p.mode==='toddler'?'TOUCH & EXPLORE':p.mode==='preschool'?'PLAY & DISCOVER':p.mode==='adult'?'FAMILY ADVENTURES':'EXPLORE TOGETHER';b.append(portrait,n,a);b.onclick=()=>select(p.id);$('profile-list').append(b);}}catch{show('welcome');}}
-$('create-room').onclick=async()=>{try{sound.unlock();$('login-error').textContent='Starting your family room…';await room.create();await load();$('lobby-code').textContent='Room code: '+room.code;}catch(e){$('login-error').textContent=e.message;}};
+async function createRoom(){try{sound.unlock();$('login-error').textContent='Starting your family room…';await room.create();await load();$('lobby-code').textContent='Room code: '+room.code;}catch(e){$('login-error').textContent=e.message;}};
+$('create-room').onclick=()=>{pendingArt=false;createRoom();};
+$('start-art').onclick=()=>{pendingArt=true;createRoom();};
 $('join-profile').onchange=()=>$('join-guest').classList.toggle('hidden',$('join-profile').value!=='guest');
 $('join-room').onsubmit=async e=>{e.preventDefault();const button=e.submitter;button.disabled=true;try{sound.unlock();$('login-error').textContent='Connecting…';await room.join($('room-code').value,$('join-profile').value,$('join-guest').value);await load();}catch(e){$('login-error').textContent=e.message;}finally{button.disabled=false;}};
 if(location.hash.startsWith('#room=')){$('room-code').value=location.hash.slice(6);$('join-details').open=true;history.replaceState(null,'',location.pathname+location.search);}
@@ -23,10 +26,10 @@ room.addEventListener('ready',()=>{$('lobby-code').textContent='Room code: '+roo
 room.addEventListener('requests',()=>{renderRequests();if(room.host&&room.pending.size&&!$('admin').open)$('admin').showModal();});
 room.addEventListener('lost',e=>{stop();show('welcome');$('login-error').textContent=e.detail;});
 
-function stop(){events=null;me=null;online=false;input={gas:0,brake:0,steer:0};sound.motor(null);}
+function stop(){artCenter?.dispose();artCenter=null;artOpening=false;events=null;me=null;online=false;input={gas:0,brake:0,steer:0};sound.motor(null);}
 async function logout(){stop();await api('logout',{});$('admin').close();$('classic-frame-panel').classList.add('hidden');$('classic-frame').src='about:blank';show('welcome');}
 $('profile-logout').onclick=logout;$('back').onclick=()=>{if(room.host&&room.game.players.has('host'))room.game.request('host','input',{gas:0,brake:1,steer:0});me=null;input={gas:0,brake:0,steer:0};sound.motor(null);room.selected=null;load();};
-async function select(id){try{sound.unlock();const r=await api('select',{profile:id});me=r.player;data=r.data;bubbles=r.bubbles;route=null;assist=me.mode==='toddler';role=room.host?'parent':'device';sound.mute(data.preferences.sound);$('parent').classList.toggle('hidden',!room.host);$('back').textContent='Profiles';$('room-lobby').classList.toggle('hidden',!room.host);show('play');updateUI();connect();sound.say('Welcome to our world. Tap Where to, choose a place, then hold Go to travel.',true);}catch(e){$('profile-error').textContent=e.message;}}
+async function select(id){try{sound.unlock();const r=await api('select',{profile:id});me=r.player;data=r.data;bubbles=r.bubbles;route=null;assist=me.mode==='toddler';role=room.host?'parent':'device';sound.mute(data.preferences.sound);$('parent').classList.toggle('hidden',!room.host);$('back').textContent='Profiles';$('room-lobby').classList.toggle('hidden',!room.host);show('play');updateUI();connect();if(pendingArt){pendingArt=false;openArt();return;}sound.say('Welcome to our world. Tap Where to, choose a place, then hold Go to travel.',true);}catch(e){$('profile-error').textContent=e.message;}}
 function connect(){online=room.connected;}
 room.addEventListener('snapshot',e=>{snapshot=e.detail;online=room.connected;$('connection').textContent=`${snapshot.players.length} family player${snapshot.players.length===1?'':'s'} · code ${room.code}`;const p=snapshot.players.find(p=>p.id===me?.id);if(p){me=p;updateUI();}if(snapshot.tag.active&&snapshot.tag.it!==lastIt){lastIt=snapshot.tag.it;sound.tone(650);sound.say(lastIt===me?.id?'You’re it!':'Run! You’re playing tag.',true);navigator.vibrate?.(30);}});
 
@@ -48,9 +51,9 @@ function pedal(id,key){const el=$(id);el.onpointerdown=e=>{e.preventDefault();el
 const wheel=$('wheel');let steering=false;function steer(e){const r=wheel.getBoundingClientRect();input.steer=Math.max(-1,Math.min(1,(e.clientX-r.left-r.width/2)/(r.width*.42)));wheel.setAttribute('aria-valuenow',Math.round(input.steer*100));wheel.querySelector('svg').style.transform=`rotate(${input.steer*80}deg)`;}
 wheel.onpointerdown=e=>{e.preventDefault();steering=true;wheel.setPointerCapture(e.pointerId);steer(e);};wheel.onpointermove=e=>{if(steering)steer(e);};wheel.onpointerup=wheel.onpointercancel=()=>{steering=false;input.steer=0;wheel.querySelector('svg').style.transform='';};
 const keySet=new Set();function keys(){input.gas=keySet.has('ArrowUp')||keySet.has('w')?1:0;input.brake=keySet.has('ArrowDown')||keySet.has('s')?1:0;input.steer=(keySet.has('ArrowRight')||keySet.has('d')?1:0)-(keySet.has('ArrowLeft')||keySet.has('a')?1:0);}
-addEventListener('keydown',e=>{if(!me||e.target.matches('input,textarea,select'))return;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d'].includes(e.key)){e.preventDefault();keySet.add(e.key);keys();}});addEventListener('keyup',e=>{keySet.delete(e.key);keys();});
+addEventListener('keydown',e=>{if(!me||artCenter||artOpening||e.target.matches('input,textarea,select'))return;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d'].includes(e.key)){e.preventDefault();keySet.add(e.key);keys();}});addEventListener('keyup',e=>{keySet.delete(e.key);keys();});
 function release(){keySet.clear();input={gas:0,brake:0,steer:0};sound.motor(null);}addEventListener('blur',release);document.addEventListener('visibilitychange',()=>{if(document.hidden)release();});
-setInterval(async()=>{if(!me||!online||inputBusy)return;inputBusy=true;try{await api('input',document.hidden||renderer.playable===false?{gas:0,brake:1,steer:0}:guidedInput(me,input,route,assist));}catch{online=false;}finally{inputBusy=false;}},100);
+setInterval(async()=>{if(!me||!online||inputBusy)return;inputBusy=true;try{await api('input',document.hidden||artCenter||artOpening||renderer.playable===false?{gas:0,brake:1,steer:0}:guidedInput(me,input,route,assist));}catch{online=false;}finally{inputBusy=false;}},100);
 $('world').onpointerdown=async e=>{if(me?.scene!=='bubbles'||busy)return;const r=$('world').getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;const b=renderer.bubbleHits.find(b=>Math.hypot(x-b.x,y-b.y)<b.r);if(!b)return;const count=data.pops;await action('pop',{id:b.id});if(data.pops===count)return;renderer.pop(x,y);sound.tone(500+Math.random()*300);navigator.vibrate?.(15);if(data.pops<15)sound.prompt();else if(data.pops<30)sound.say(['Pink.','Blue.','Yellow.','Green.'][b.color]);else sound.say(['Ball. Roll a ball.','Car. Vroom, vroom!','Baby. Say baby.','More. Say more.'][b.color]);};
 function renderRequests(){
  $('join-requests').replaceChildren();for(const request of room.pendingList()){const row=document.createElement('div'),name=document.createElement('b');name.textContent=request.name+' wants to join';const approve=document.createElement('button'),decline=document.createElement('button');approve.textContent='Approve';decline.textContent='Decline';approve.onclick=()=>{room.approve(request.id);devices();};decline.onclick=()=>room.deny(request.id);row.append(name,approve,decline);$('join-requests').append(row);}if(!room.pending.size)$('join-requests').textContent='No one is waiting to join.';
@@ -64,9 +67,17 @@ async function share(){try{await navigator.clipboard.writeText(new URL('./',loca
 $('copy-invite').onclick=share;$('lobby-share').onclick=share;
 $('reset-yard').onclick=()=>{room.game.cut.clear();room.game.save();$('admin-status').textContent='Fresh grass is ready for mowing.';};
 $('save-backup').onclick=()=>{room.game.save();const state={version:1,progress:room.game.progress,cut:[...room.game.cut],guests:room.game.profiles.filter(p=>p.id.startsWith('guest-'))},blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a'),url=URL.createObjectURL(blob);a.href=url;a.download='jace-halli-progress.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+async function openArt(){
+ if(artCenter||artOpening||!me)return;artOpening=true;release();sound.unlock();sound.motor(null);
+ try{const r=await api('action',{action:'creativity'});me=r.player;data=r.data;const {CreativityCenter}=await import('./creativity/center.mjs?v=1');
+ if(!document.getElementById('art-style')){const link=document.createElement('link');link.id='art-style';link.rel='stylesheet';link.href=new URL('./creativity/center.css?v=1',import.meta.url).href;document.head.append(link);await new Promise(resolve=>{link.onload=link.onerror=resolve;});}
+ artCenter=new CreativityCenter({parent:$('play'),room,sound,player:me,onClose:async()=>{artCenter=null;await action('art-exit');},onSoundChange:enabled=>action('preferences',{sound:enabled})});
+ }catch(e){$('hint').textContent=e.message;if(me?.scene==='creativity')await action('art-exit');}finally{artOpening=false;}
+}
+$('create-art').onclick=openArt;$('classic-creativity').onclick=openArt;
 function openClassic(file){$('classic-frame-panel').classList.remove('hidden');$('classic-frame').src=new URL('../../'+file,import.meta.url).href;input={gas:0,brake:1,steer:0};sound.motor(null);}
 $('classic-open').onclick=()=>openClassic('classic-home.html');$('classic-whiteboard').onclick=()=>openClassic('whiteboard.html');$('classic-books').onclick=()=>openClassic('family-library.html');
 $('close-classic').onclick=()=>{$('classic-frame-panel').classList.add('hidden');$('classic-frame').src='about:blank';updateUI();};
 $('classic-frame').onload=()=>{try{const doc=$('classic-frame').contentDocument;if(!doc)return;doc.querySelectorAll('a[href]').forEach(a=>{const u=new URL(a.href);if(u.origin===location.origin&&u.pathname.endsWith('/index.html'))a.href=new URL('../../classic-home.html',import.meta.url).href;else if(u.origin!==location.origin)a.target='_blank';});doc.querySelectorAll('[onclick]').forEach(el=>{const v=el.getAttribute('onclick');if(v.includes("'index.html'"))el.setAttribute('onclick',v.replaceAll("'index.html'","'classic-home.html'"));});}catch{}};
 addEventListener('pagehide',()=>{if(room.host)room.game?.save();});
-addEventListener('resize',()=>renderer.resize());function loop(t){renderer.draw(snapshot,me,bubbles,data,t);requestAnimationFrame(loop);}requestAnimationFrame(loop);show('welcome');
+addEventListener('resize',()=>renderer.resize());function loop(t){if(!artCenter&&!artOpening)renderer.draw(snapshot,me,bubbles,data,t);requestAnimationFrame(loop);}requestAnimationFrame(loop);show('welcome');
