@@ -31,12 +31,13 @@ export class RaceEngine{
   if(this.phase==='countdown'){const previous=Math.ceil(this.countdown);this.countdown-=dt;if(Math.ceil(this.countdown)!==previous&&this.countdown>0)this.emit('count',{value:Math.ceil(this.countdown)});if(this.countdown<=0){this.phase='racing';this.emit('go');}return;}
   const oldElapsed=this.elapsed;this.elapsed+=dt;
   for(const r of this.racers){
-   const controls=r.player&&r.finishTime===null?input:this.ai(r);const gas=clamp(Number(controls.gas)||0,0,1),brake=clamp(Number(controls.brake)||0,0,1),steer=clamp(Number(controls.steer)||0,-1,1);
+   const controlled=this.shared?r.human&&!r.autopilot:r.player;
+   const controls=controlled&&r.finishTime===null?(this.shared?input[r.id]||{}:input):this.ai(r);const gas=clamp(Number(controls.gas)||0,0,1),brake=clamp(Number(controls.brake)||0,0,1),steer=clamp(Number(controls.steer)||0,-1,1);
    r.hit=Math.max(0,r.hit-dt);r.braking=brake>.1;r.steer+=(steer-r.steer)*Math.min(1,dt*8);
    const road=roadAt(this.track,r.s),slope=(roadAt(this.track,r.s+3).elevation-road.elevation)/3;
    const offroad=Math.abs(r.x)>this.track.halfWidth-.3,drag=1.4+r.v*r.v*.00072+(offroad?9:0);
    r.v=clamp(r.v+(gas*r.car.accel*(1-.35*r.v/r.car.max)-brake*28-drag-slope*3.5)*dt,0,r.car.max);
-   const gain=(.01+.038/(1+r.v/20))*r.car.handling,assistance=!r.player||this.assist;
+   const gain=(.01+.038/(1+r.v/20))*r.car.handling,assistance=this.shared?(!r.human||r.assist):(!r.player||this.assist);
    r.heading+=(r.v/2.8*Math.tan(r.steer*gain)-road.curvature*r.v*(assistance?.2:1))*dt;
    r.heading*=Math.exp(-dt*(assistance?1.8:.7)*(1-Math.abs(r.steer)*.45));r.heading=clamp(r.heading,-.6,.6);
    const oldS=r.s;r.x+=Math.sin(r.heading)*r.v*dt;r.s+=Math.max(0,Math.cos(r.heading))*r.v*dt;
