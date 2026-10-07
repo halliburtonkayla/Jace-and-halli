@@ -43,4 +43,4 @@ function clearCanvas(remote=false){strokes=[];px.fillStyle='#fff';px.fillRect(0,
 function broadcastAction(data){if(isHost)send(data);else if(conns[0]?.open)conns[0].send(data)}
 function receive(data,from){if(!data)return;if(data.type==='full'){fourState=data.four;matchState=data.match;strokes=data.strokes||[];renderFour();renderMatch();px.fillStyle='#fff';px.fillRect(0,0,900,560);strokes.forEach(drawSeg);return}
 if(data.type==='four'){fourState=data.state;renderFour();if(fourState.over&&fourState.winner)setTimeout(()=>celebrateWinner(fourState.winner),250);else document.getElementById('winnerPop').classList.remove('show')}if(data.type==='match'){matchState=data.state;renderMatch()}if(data.type==='stroke'){drawSeg(data.s);strokes.push(data.s)}if(data.type==='clear')clearCanvas(true);if(isHost)send(data,from)}
-</script></body></html>
+</script><script src="world/client/game-deeplink.js?v=1"></script></body></html>
