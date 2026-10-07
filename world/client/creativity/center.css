@@ -5,3 +5,5 @@
 .studio-controls[hidden]{display:none!important}
 
 .art-page-heading [hidden],.art-tools [hidden]{display:none!important}
+
+.art-page-heading #art-title{touch-action:pan-y;user-select:none}
