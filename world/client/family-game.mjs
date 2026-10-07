@@ -1,6 +1,7 @@
 import { makePlayer, step, cutGrass, nearby, publicPlayer, clamp } from '../server/simulation.mjs?v=illustrated-1';
 import {TOWN_PLACES,VISIT_IDS} from './town-destinations.mjs?v=illustrated-1';
 import {BowlingLane} from './bowling-physics.mjs?v=illustrated-1';
+import {RaceSession} from './racing/session.mjs?v=family-race-1';
 export const FAMILY = [
   { id: 'jace', name: 'Jace', mode: 'preschool' },
   { id: 'halli', name: 'Halli', mode: 'toddler' },
@@ -19,6 +20,11 @@ export class FamilyGame {
     this.tag = { active: false, it: null, cooldown: 0 };
     this.clock = 0;
     this.bowling = new BowlingLane();
+    this.racing = new RaceSession((r,g,serial)=>{
+      const p=this.players.get(r.id);if(!p||p.profile!==r.profile)return;
+      p.data.racing ||= {};const old=p.data.racing[g.track.id];
+      p.data.racing[g.track.id]={bestLap:Math.min(old?.bestLap||Infinity,...r.lapTimes),bestRace:Math.min(old?.bestRace||Infinity,r.finishTime),races:(old?.races||0)+1,lastId:'family-'+serial+'-'+Date.now(),lastCar:r.car.id,lastPosition:g.order().findIndex(o=>o.id===r.id)+1};this.save();
+    });
     this.npcs = [
       { id: 'npc-pip', name: 'Pip · computer', x: 90, y: 60, angle: 0, vehicle: 'walk', scene: 'world', npc: true },
       { id: 'npc-rosie', name: 'Rosie · computer', x: -90, y: 60, angle: 0, vehicle: 'walk', scene: 'world', npc: true },
@@ -41,6 +47,7 @@ export class FamilyGame {
     if (!profile) throw Error('Choose an approved profile.');
     if ([...this.players.entries()].some(([other, p]) => other !== id && p.profile === profileId)) throw Error('That profile is already playing.');
     const old = this.players.get(id);
+    this.racing.leave(id);
     if(old?.scene==='bowling')this.bowling.leave(id);
     if (old) this.progress[old.profile] = old.data;
     const p = makePlayer(id, profile, this.progress[profile.id] || fresh());
@@ -49,6 +56,7 @@ export class FamilyGame {
     return this.reply(p);
   }
   leave(id) {
+    this.racing.leave(id);
     this.bowling.leave(id);
     const p = this.players.get(id);
     if (p) this.progress[p.profile] = p.data;
@@ -63,6 +71,7 @@ export class FamilyGame {
     const p = this.players.get(id);
     if (!p) throw Error('Choose a profile first.');
     p.lastSeen = Date.now();
+    if(path==='race')return this.racing.request(p,body);
     if (path === 'resume') { if(p.scene==='bowling')this.bowling.leave(id);p.scene = 'world';p.destination=null; return this.reply(p); }
     if (path === 'input') {
       p.input = { gas: clamp(Number(body.gas) || 0, 0, 1), brake: clamp(Number(body.brake) || 0, 0, 1), steer: clamp(Number(body.steer) || 0, -1, 1) };
@@ -114,6 +123,7 @@ export class FamilyGame {
   bubble(p) { return { id: uid(), x: .12 + Math.random() * .76, y: .15 + Math.random() * .62, r: p.mode === 'toddler' ? .13 : .085, color: Math.floor(Math.random() * 4) }; }
   makeBubbles(p) { p.bubbles = Array.from({ length: p.mode === 'toddler' ? 5 : 8 }, () => this.bubble(p)); }
   tick(dt, now = Date.now()) {
+    this.racing.tick(dt);
     this.clock++;
     this.bowling.tick(Math.min(.05,dt));
     let changed = false;
@@ -141,5 +151,5 @@ export class FamilyGame {
     }
     if (changed) this.save();
   }
-  snapshot() { return { players: [...this.players.values()].map(publicPlayer), npcs: this.npcs, cut: [...this.cut], tag: this.tag, clock: this.clock, bowling:this.bowling.snapshot() }; }
+  snapshot() { return { players: [...this.players.values()].map(publicPlayer), npcs: this.npcs, cut: [...this.cut], tag: this.tag, clock: this.clock, bowling:this.bowling.snapshot(), racing:this.racing.snapshot() }; }
 }

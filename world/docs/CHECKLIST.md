@@ -1,5 +1,9 @@
 # Development checklist
 
+## Family racing update — October 7
+
+COMPLETE (code + 42 automated checks): approved-room race lobby, eight shared racers, continuous independent human inputs, AI fill, host-owned countdown/collisions/laps/results, per-profile records, smooth snapshot interpolation, pit-stop helper and departure handling. Solo racing and world navigation remain intact. IN PROGRESS: live two-browser and phone-layout verification; physical iPad/Safari network/performance testing. See the family racing section of `RACING.md`. This supersedes the earlier planned multiplayer status below.
+
 ## Current racing upgrade — October 7
 
 Only the existing Neon City Racers tab in `arcade-new.html` is rebuilt. COMPLETE: one moving pseudo-3D chase-camera engine, continuous held steering/gas/brake, 8 simulated racers, 3 laps, actual crossing times/results, 4 cars, 5 circuits, audio, personal profile records and preserved world return. All 36 automated tests pass; original skee-ball and Stop the Light code is unchanged. A published 390×740 browser run completed all three laps with Jace 2nd at 2:06.45 and eight real results; no racing-page scroll. Actual pointer holds, collisions, the corrected 844×390 garage, car/track changes and return to the unchanged family room were checked. IN PROGRESS: physical Safari-device performance and two-finger touch checks. NEEDS ASSET: optional recorded engines and richer authored car art. PLANNED: human-versus-human racing. See `RACING.md` for architecture, preservation and precise validation scope. Other world status remains as recorded below.

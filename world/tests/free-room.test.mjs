@@ -23,6 +23,17 @@ class FakePeer extends Events {
 }
 const once = (target, type) => new Promise(resolve => target.addEventListener(type, e => resolve(e.detail), { once: true }));
 const memory = () => { const values = new Map(); return { setItem: (k,v) => values.set(k,v), getItem: k => values.get(k) }; };
+test('family race crosses independent approved connections with shared state and isolated controls',async()=>{
+ const host=new FamilyRoom({PeerClass:FakePeer,storage:memory()}),child=new FamilyRoom({PeerClass:FakePeer,storage:memory()});
+ try{
+  await host.create();await host.request('select',{profile:'jace'});const waiting=once(host,'requests'),joining=child.join(host.code,'halli');await waiting;host.approve(host.pendingList()[0].id);await joining;await child.request('select',{profile:'halli'});clearInterval(host.timer);
+  await host.request('race',{op:'join',car:'comet'});await child.request('race',{op:'join',car:'monster'});await host.request('race',{op:'ready',ready:true});await child.request('race',{op:'ready',ready:true});await assert.rejects(child.request('race',{op:'start'}),/leader/);await host.request('race',{op:'start'});
+  const race=host.game.racing;for(let i=0;i<65;i++)race.tick(.05);
+  await host.request('race',{op:'input',race:race.serial,seq:1,gas:1});await child.request('race',{op:'input',race:race.serial,seq:1,brake:1});for(let i=0;i<10;i++)race.tick(.05);
+  const next=once(child,'snapshot');host.broadcast();const state=(await next).racing;assert.equal(state.racers.filter(r=>r.human).length,2);assert.equal(state.racers[0].name,'Jace');assert.equal(state.racers[1].name,'Halli');assert.ok(state.racers[0].v>state.racers[1].v);assert.deepEqual(state,JSON.parse(JSON.stringify({...host.game.racing.snapshot(),seq:state.seq})));
+  child.close();assert.equal(race.engine.racers[1].withdrawn,true);assert.equal(race.members.size,1);
+ }finally{child.close();host.close();}
+});
 test('room codes are generated, not hardcoded access passwords', () => { const codes = new Set(Array.from({ length: 50 }, newCode)); assert.equal(codes.size, 50); assert.ok([...codes].every(code => /^[A-Z2-9]{10}$/.test(code))); assert.equal(normalizeCode('ab cd-234567'), 'ABCD234567'); });
 test('bubble progression validates hits and keeps a fixed population, then persists', () => { let saved; const game = new FamilyGame({}, state => saved = structuredClone(state)); game.select('device','halli'); const p = game.players.get('device'); assert.throws(() => game.request('device','action',{ action: 'pop', id: 'fake' })); p.x = 280; p.y = -125; game.request('device','action',{ action: 'enter' }); assert.equal(p.bubbles.length,5); const id=p.bubbles[0].id; game.request('device','action',{ action:'pop',id }); assert.equal(p.bubbles.length,5); assert.equal(p.data.pops,1); assert.throws(()=>game.request('device','action',{ action:'pop',id })); game.leave('device'); const restored=new FamilyGame(saved); assert.equal(restored.select('next','halli').data.pops,1); });
 test('host approves joining devices, locks profiles and broadcasts actual shared state', async () => {

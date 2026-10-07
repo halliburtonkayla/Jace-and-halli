@@ -6,11 +6,15 @@ import { Sound } from './audio.mjs';
 import { LOCATIONS } from './locations.mjs';
 import { drawPortrait, drawFamily, CHARACTER_ART } from './characters.mjs';
 import { routeTo, updateRoute, guidedInput, routeDots } from './routes.mjs';
-import { FamilyRoom } from './room.mjs?v=race-1';
+import { FamilyRoom } from './room.mjs?v=family-race-1';
 import {TownView} from './town-view.mjs?v=illustrated-2';
 import {BowlingView} from './bowling-view.mjs?v=illustrated-2';
 import {SCENES} from './town-destinations.mjs?v=illustrated-1';
 const room=new FamilyRoom();
+let pendingFamilyRace=new URLSearchParams(location.search).get('race')==='family',racingOpen=false;
+function sendRacing(body){if(racingOpen)$('classic-frame').contentWindow?.postMessage({channel:'jhw-racing',...body},location.origin);}
+room.addEventListener('snapshot',e=>sendRacing({type:'race-state',state:e.detail.racing}));
+room.addEventListener('lost',()=>sendRacing({type:'race-lost'}));
 let artCenter=null,artOpening=false,pendingArt=new URLSearchParams(location.search).get('activity')==='art';
 const $=id=>document.getElementById(id),renderer=new Renderer($('world')),sound=new Sound();
 document.body.classList.toggle('illustrated',illustrated);
@@ -37,7 +41,7 @@ room.addEventListener('lost',e=>{stop();show('welcome');$('login-error').textCon
 function stop(){artCenter?.dispose();artCenter=null;artOpening=false;events=null;me=null;online=false;input={gas:0,brake:0,steer:0};sound.motor(null);}
 async function logout(){stop();await api('logout',{});$('admin').close();$('classic-frame-panel').classList.add('hidden');$('classic-frame').src='about:blank';show('welcome');}
 $('profile-logout').onclick=logout;$('back').onclick=()=>{if(room.host&&room.game.players.has('host'))room.game.request('host','input',{gas:0,brake:1,steer:0});me=null;input={gas:0,brake:0,steer:0};sound.motor(null);room.selected=null;load();};
-async function select(id){try{sound.unlock();const r=await api('select',{profile:id});me=r.player;data=r.data;bubbles=r.bubbles;route=null;assist=me.mode==='toddler';role=room.host?'parent':'device';sound.mute(data.preferences.sound);$('parent').classList.toggle('hidden',!room.host);$('back').textContent='Profiles';$('room-lobby').classList.toggle('hidden',!room.host);show('play');renderer.resize();updateUI();connect();if(pendingArt){pendingArt=false;openArt();return;}sound.say(illustrated?'Welcome to our world. Tap a glowing sign to play.':'Welcome to our world. Tap Where to, choose a place, then hold Go to travel.',true);}catch(e){$('profile-error').textContent=e.message;}}
+async function select(id){try{sound.unlock();const r=await api('select',{profile:id});me=r.player;data=r.data;bubbles=r.bubbles;route=null;assist=me.mode==='toddler';role=room.host?'parent':'device';sound.mute(data.preferences.sound);$('parent').classList.toggle('hidden',!room.host);$('back').textContent='Profiles';$('room-lobby').classList.toggle('hidden',!room.host);show('play');renderer.resize();updateUI();connect();if(pendingFamilyRace){pendingFamilyRace=false;openClassic('arcade-new.html#family');return;}if(pendingArt){pendingArt=false;openArt();return;}sound.say(illustrated?'Welcome to our world. Tap a glowing sign to play.':'Welcome to our world. Tap Where to, choose a place, then hold Go to travel.',true);}catch(e){$('profile-error').textContent=e.message;}}
 function connect(){online=room.connected;}
 room.addEventListener('snapshot',e=>{snapshot=e.detail;online=room.connected;$('connection').textContent=`${snapshot.players.length} family player${snapshot.players.length===1?'':'s'} · code ${room.code}`;const p=snapshot.players.find(p=>p.id===me?.id);if(p){me=p;updateUI();}if(snapshot.tag.active&&snapshot.tag.it!==lastIt){lastIt=snapshot.tag.it;sound.tone(650);sound.say(lastIt===me?.id?'You’re it!':'Run! You’re playing tag.',true);navigator.vibrate?.(30);}});
 
@@ -90,7 +94,7 @@ function devices(){
 }
 function openRoom(){if(!room.host)return;$('share-code').value=room.code;renderRequests();devices();$('admin').showModal();}
 $('parent').onclick=openRoom;$('lobby-controls').onclick=openRoom;
-async function share(){try{await navigator.clipboard.writeText(new URL('./',location.href).href+'#room='+room.code);$('admin-status').textContent='Room link copied. Open it on the other approved device.';}catch{$('share-code').value=room.code;$('share-code').select();$('admin-status').textContent='Share room code '+room.code;}}
+async function share(){try{await navigator.clipboard.writeText(new URL('./',location.href).href+(racingOpen?'?race=family':'')+'#room='+room.code);$('admin-status').textContent='Room link copied. Open it on the other approved device.';}catch{$('share-code').value=room.code;$('share-code').select();$('admin-status').textContent='Share room code '+room.code;}}
 $('copy-invite').onclick=share;$('lobby-share').onclick=share;
 $('reset-yard').onclick=()=>{room.game.cut.clear();room.game.save();$('admin-status').textContent='Fresh grass is ready for mowing.';};
 $('save-backup').onclick=()=>{room.game.save();const state={version:1,progress:room.game.progress,cut:[...room.game.cut],guests:room.game.profiles.filter(p=>p.id.startsWith('guest-'))},blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a'),url=URL.createObjectURL(blob);a.href=url;a.download='jace-halli-progress.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
@@ -105,13 +109,15 @@ async function openArt(station='coloring'){
 $('create-art').onclick=openArt;$('classic-creativity').onclick=openArt;
 function openClassic(file){$('classic-frame-panel').classList.remove('hidden');$('classic-frame').src=new URL('../../'+file,import.meta.url).href;input={gas:0,brake:1,steer:0};sound.motor(null);}
 $('classic-open').onclick=()=>openClassic('classic-home.html');$('classic-whiteboard').onclick=()=>openClassic('whiteboard.html');$('classic-books').onclick=()=>openClassic('family-library.html');
-function racingFrame(active){$('classic-frame-panel').style.paddingTop=active?'0':'';$('close-classic').hidden=active;}
-$('close-classic').onclick=()=>{racingFrame(false);$('classic-frame-panel').classList.add('hidden');$('classic-frame').src='about:blank';updateUI();};
+function racingFrame(active){racingOpen=active;$('classic-frame-panel').style.paddingTop=active?'0':'';$('close-classic').hidden=active;}
+$('close-classic').onclick=()=>{if(me&&room.connected)api('race',{op:'leave'}).catch(()=>{});racingFrame(false);$('classic-frame-panel').classList.add('hidden');$('classic-frame').src='about:blank';updateUI();};
 window.addEventListener('message',async e=>{
  if(e.origin!==location.origin||e.source!==$('classic-frame').contentWindow||e.data?.channel!=='jhw-racing'||!new URL($('classic-frame').src,location.href).pathname.endsWith('/arcade-new.html')||!me)return;
  const message=e.data,send=body=>e.source.postMessage({channel:'jhw-racing',...body},location.origin);
- if(message.type==='context')send({type:'context',profile:me.profile,name:me.name,mode:me.mode,sound:data.preferences.sound,records:data.racing||{}});
- if(message.type==='active'&&typeof message.active==='boolean')racingFrame(message.active);
+ if(message.type==='context')send({type:'context',profile:me.profile,name:me.name,mode:me.mode,sound:data.preferences.sound,records:data.racing||{},playerId:me.id,roomCode:room.code,isHost:room.host});
+ if(message.type==='active'&&typeof message.active==='boolean'){racingFrame(message.active);if(!message.active)api('race',{op:'leave'}).catch(()=>{});}
+ if(message.type==='room')openRoom();
+ if(message.type==='race-command'&&typeof message.requestId==='string'&&message.requestId.length<80){try{const result=await api('race',message.body);send({type:'race-reply',requestId:message.requestId,result});}catch(error){send({type:'race-reply',requestId:message.requestId,error:error.message});}}
  if(message.type==='exit')$('close-classic').click();
  if(message.type==='sound'&&typeof message.enabled==='boolean'){sound.mute(message.enabled);await action('preferences',{sound:message.enabled});}
  if(message.type==='result'){try{const r=await api('action',{...message.result,action:'race-result'});data=r.data;send({type:'saved',ok:true});}catch{send({type:'saved',ok:false});}}

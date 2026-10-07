@@ -37,4 +37,16 @@ The existing `arcade-new.html` racing tab is upgraded in place. Skee-ball and St
 ## NEEDS ASSET / PLANNED
 
 - Optional recorded vehicle audio and richer authored vehicle/environment art; current feedback is synthesized and current cars/scenery are procedural arcade artwork.
-- Human-versus-human synchronized racing, motorcycle riding, jumps and unlockable content are future features. Existing family multiplayer continues elsewhere in the world; this race explicitly uses seven computer opponents.
+- Motorcycle riding, jumps and unlockable content are future features.
+
+## Family racing — October 7 update
+
+COMPLETE (implementation and automated validation): The same racer now offers Solo and Race with Family. Open `index.html?race=family` to create/join an approved family room and go straight to racing. Each device selects its own profile and car. Everyone taps Ready; the first racer leads track selection and starts the shared countdown. Eight seats include computers for unoccupied places. Approval and profile locking remain enforced by FamilyRoom; no public matchmaking or new paid service is added.
+
+`racing/session.mjs` owns one race on the existing hosting device, reusing solo physics at 60 Hz substeps. Snapshots travel at 10 Hz. Children submit bounded input, a race ID and monotonic sequence; the host determines positions, laps, collisions and finish times. `network.mjs` interpolates with a 100 ms buffer for each device's own chase camera. The source/origin-checked iframe bridge never accepts another player's identity from the racer.
+
+Missed controls brake after 800 ms; after three seconds an indicated computer helper drives until input resumes. Pit Stop uses the helper while the race continues. Leaving transfers leadership and converts the departed car to a computer; that profile earns no subsequent record. Late entrants wait for the next lobby. At six minutes remaining cars are marked DNF without invented times. The leader opens Next Race after all cars finish. Human records are saved once by the host, separately per profile; clients do not submit multiplayer results.
+
+42 automated checks pass, including two approved transport endpoints, independent controls, leader permissions, ready resets, packet ordering/race-ID rejection, collisions, full-length shared three-lap finishes, profile records, departure/helper behavior, interpolation and prior solo/world checks.
+
+IN PROGRESS: Live two-browser race and phone layout verification. Physical iPads and school-network WebRTC reachability require device testing. Keep the host open and awake; closing it ends the room. Existing free PeerJS signaling is reused without a newly configured relay, so networks blocking peer connections may prevent joining. Room codes remain session invitations, not secure authentication for the public website.

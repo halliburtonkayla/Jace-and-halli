@@ -1,5 +1,5 @@
 import { GalleryService } from './creativity/gallery.mjs?v=studio-1';
-import { FAMILY, FamilyGame } from './family-game.mjs?v=race-1';
+import { FAMILY, FamilyGame } from './family-game.mjs?v=family-race-1';
 const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 export function newCode() { const bytes = new Uint8Array(10); crypto.getRandomValues(bytes); return [...bytes].map(v => alphabet[v % alphabet.length]).join(''); }
 export function normalizeCode(value) { return String(value || '').toUpperCase().replace(/[\s-]/g, ''); }
@@ -13,7 +13,8 @@ export class FamilyRoom extends EventTarget {
   read() { try { const value = JSON.parse(this.storage?.getItem(storageKey) || '{}'); return value.version === 1 ? value : {}; } catch { return {}; } }
   async create() {
     this.close(); this.closing = false; this.host = true; this.code = newCode(); this.game = new FamilyGame(this.read(), state => this.save(state)); this.connected = true;
-    this.timer = setInterval(() => { this.game.tick(.05); if (this.game.clock % 2 === 0) this.broadcast(); }, 50);
+    let tickAt=performance.now();
+    this.timer = setInterval(() => { const now=performance.now(),dt=Math.min(.25,(now-tickAt)/1000);tickAt=now;this.game.tick(dt);if(this.game.clock%2===0)this.broadcast(); }, 50);
     if (!this.PeerClass) { this.emit('status', 'One-device play is ready. Multiplayer library could not load; reconnect to the internet to open a shared room.'); return this.me(); }
     this.peer = new this.PeerClass('jh-world-' + this.code.toLowerCase(), { secure: true, debug: 0 });
     this.peer.on('connection', connection => this.receiveGuest(connection));
@@ -50,7 +51,7 @@ export class FamilyRoom extends EventTarget {
     });
   }
   receiveGuest(conn) {
-    if (this.connections.size + this.pending.size >= 8) { conn.close(); return; }
+    if (this.connections.size >= 7) { conn.close(); return; }
     const record = { conn, approved: false, profile: null, requested: null, lastRequest: 0, requestCount: 0, lastWindow: Date.now() };
     this.connections.set(conn.peer, record);
     const expire = setTimeout(() => { if (!record.approved) this.deny(conn.peer); }, 40000);
@@ -70,7 +71,7 @@ export class FamilyRoom extends EventTarget {
       if (Date.now() - record.lastWindow > 1000) { record.lastWindow = Date.now(); record.requestCount = 0; }
       if (++record.requestCount > 35) return;
       try {
-        if (!['select', 'input', 'action', 'resume','art-list','art-read','art-begin','art-part','art-finish'].includes(message.path)) throw Error('Unknown room request.');
+        if (!['select', 'input', 'action', 'resume','race','art-list','art-read','art-begin','art-part','art-finish'].includes(message.path)) throw Error('Unknown room request.');
         if (message.path === 'select' && message.body?.profile !== record.profile.id) throw Error('Use the profile Mommy approved.');
         const result = message.path.startsWith('art-') ? await this.galleryService.request(conn.peer,this.game.players.get(conn.peer)?.profile,message.path,message.body) : this.game.request(conn.peer, message.path, message.body);
         conn.send({ type: 'reply', id: message.id, result });
