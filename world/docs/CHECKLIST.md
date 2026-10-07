@@ -19,6 +19,8 @@ This table supersedes the older renderer/default/attraction status entries below
 
 ## Earlier foundation history
 
+Live release checks (October 7): Start playing → Jace opened the exact approved town; arcade entered the approved interior; an actual pointer swipe produced a strike and a computer turn; a bubble tap changed 0 pops to 1; powered mower movement visibly changed 0% to 3%; the art table opened the actual coloring editor and preserved the pre-existing Dinosaur Friends, Monster Truck Adventure and Trace A gallery records; Town Driving opened in the preserved iframe and returned to the same room. No application console errors were observed. A second live browser join timed out before an approval request reached the host, so real WebRTC joining is still unverified here. Passing transport tests are not a claim of successful separate-iPad play. Phone/tablet Safari hardware and final visual acceptance remain pending.
+
 COMPLETE means the stated foundation implementation exists and its listed checks pass. It does not mean the final requested world is finished. Free GitHub Pages room-code play supersedes mandatory paid server hosting at the user’s request.
 
 | System | Status | Evidence / next step |

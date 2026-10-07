@@ -31,7 +31,7 @@ export class TownView{
   this.observer=new ResizeObserver(()=>this.layout());this.observer.observe(this.viewport);
  }
  button(label,symbol,fn){const b=document.createElement('button');b.innerHTML=icon(symbol);const span=document.createElement('span');span.textContent=label;b.append(span);b.setAttribute('aria-label',label);b.onclick=fn;return b;}
- layout(){if(!this.ratio||!this.viewport.clientWidth)return;const w=this.viewport.clientWidth,h=this.viewport.clientHeight;const width=this.fitted?Math.min(w,h*this.ratio):Math.max(w,h*this.ratio);this.picture.style.width=width+'px';this.picture.style.height=width/this.ratio+'px';this.picture.style.margin=this.fitted?'auto':'0 auto';this.fitButton.textContent=this.fitted?'Look closer':'See whole '+(this.key==='world'?'town':'room');if(this.recenter){this.viewport.scrollLeft=(width-w)/2;this.recenter=false;}}
+ layout(){if(!this.ratio||!this.viewport.clientWidth)return;const w=this.viewport.clientWidth,h=this.viewport.clientHeight;const width=this.fitted?Math.min(w,h*this.ratio):Math.max(w,h*this.ratio);this.root.dataset.fitted=String(Boolean(this.fitted));this.picture.style.width=width+'px';this.picture.style.height=width/this.ratio+'px';this.picture.style.margin=this.fitted?'auto':'0 auto';this.fitButton.textContent=this.fitted?'Look closer':'See whole '+(this.key==='world'?'town':'room');if(this.recenter){this.viewport.scrollLeft=(width-w)/2;this.recenter=false;}}
  update(snapshot,me){
   const shown=me&&['world','home','arcade','arena','school','garage','classic'].includes(me.scene)&&me.vehicle!=='mower';this.root.hidden=!shown;if(!shown)return;
   const key=me.scene;if(this.key!==key){this.key=key;this.playersKey='';this.fitted=false;this.recenter=true;
