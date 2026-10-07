@@ -151,3 +151,18 @@ window.addEventListener('message',async e=>{
  if(e.data.type==='sound'&&typeof e.data.enabled==='boolean'){sound.mute(e.data.enabled);await action('preferences',{sound:e.data.enabled});}
  if(e.data.type==='exit'){$('close-classic').click();await action('exit');}
 });
+
+// One-tap entrance to the movie library from the illustrated theater lobby.
+const theaterWatchButton=document.createElement('button');
+theaterWatchButton.id='theater-watch-movie';
+theaterWatchButton.type='button';
+theaterWatchButton.textContent='🎬 NOW SHOWING · WATCH MOVIE';
+theaterWatchButton.setAttribute('aria-label','Open the movie theater and watch Jace and Halli’s World');
+theaterWatchButton.style.cssText='position:absolute;z-index:35;top:76px;left:50%;transform:translateX(-50%);width:min(88vw,430px);min-height:62px;padding:12px 20px;border:3px solid #fff;border-radius:22px;background:#ffe16c;color:#342044;font-size:clamp(16px,3vw,23px);font-weight:900;box-shadow:0 8px 20px #0008;cursor:pointer;touch-action:manipulation;';
+theaterWatchButton.hidden=true;
+$('play').append(theaterWatchButton);
+theaterWatchButton.onclick=()=>{if(me)openClassic('theater.html');};
+function updateTheaterWatchButton(){const place=$('place').textContent.toLowerCase();theaterWatchButton.hidden=!me||!$('classic-frame-panel').classList.contains('hidden')||!/(movie theater|movie theatre|cinema)/.test(place);}
+new MutationObserver(updateTheaterWatchButton).observe($('place'),{childList:true,subtree:true,characterData:true});
+new MutationObserver(updateTheaterWatchButton).observe($('classic-frame-panel'),{attributes:true,attributeFilter:['class']});
+updateTheaterWatchButton();
