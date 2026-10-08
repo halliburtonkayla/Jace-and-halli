@@ -1,6 +1,7 @@
 // Every existing game page and individual arcade/co-op game.
 export const GAME_PAGES = [
  {label:'Halli’s Bubble Garden: buddy, blowing, foam & drawing',file:'bubble-garden.html',icon:'bubbles',image:'bubbles'},
+ {label:'Train Station: tickets, rides, driving & storytime',file:'train-station.html',icon:'car',image:'home'},
  {label:'Church of Christ: Bible lessons, songs & prayer',file:'church.html',icon:'book',image:'home'},
  {label:'School Playground: solo recess adventures (in development)',file:'school-playground.html',icon:'game',image:'school'},
  {label:'School Playground video tours',file:'school-playground-tours.html',icon:'game',image:'school'},

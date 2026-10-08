@@ -1,0 +1,9 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {createTrip,tickTrip} from '../client/train/engine.mjs';
+import {DESTINATIONS,BOOK,LESSON} from '../client/train/data.mjs';
+test('train acceleration, coasting and braking respond to controls',()=>{const s=createTrip(DESTINATIONS[0]);for(let i=0;i<100;i++)tickTrip(s,{gas:true},.02);assert(s.speed>40);const start=s.speed;for(let i=0;i<20;i++)tickTrip(s,{brake:true},.02);assert(s.speed<start/2);for(let i=0;i<100;i++)tickTrip(s,{brake:true},.02);assert.equal(s.speed,0);});
+test('red signal holds the train, then clears; driver finishes without overshoot',()=>{const s=createTrip(DESTINATIONS[0]);let redFrames=0;for(let i=0;i<8000&&!s.arrived;i++){tickTrip(s,{gas:true},.02);if(s.atRed){redFrames++;assert.equal(s.speed,0);assert.equal(s.distance,s.signalAt);}}assert(redFrames>=130);assert(s.signalClear);assert(s.arrived);assert.equal(s.distance,s.length);assert.equal(s.speed,0);});
+test('every passenger and toddler route can finish with assisted signal and station stops',()=>{for(const d of DESTINATIONS)for(const [mode,halli] of [['ride',false],['drive',true]]){const s=createTrip(d,mode,halli);for(let i=0;i<12000&&!s.arrived;i++)tickTrip(s,{gas:true},.02);assert(s.arrived,`${d.id} ${mode}`);assert(s.signalClear);assert(s.stoppedCleanly);}});
+test('all ten story pages and five station lesson steps have actual decodable image assets',()=>{assert.equal(BOOK.length,10);assert.equal(LESSON.length,5);for(const asset of new Set([...BOOK,...LESSON,...DESTINATIONS].map(x=>x.image).concat(['engine','station','family-carriage']))){const data=readFileSync(new URL('../assets/train/'+asset+'.webp',import.meta.url));assert.equal(data.subarray(0,4).toString(),'RIFF',asset);assert.equal(data.subarray(8,12).toString(),'WEBP',asset);assert(data.length>10000,asset);}});

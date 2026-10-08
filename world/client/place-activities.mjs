@@ -1,5 +1,5 @@
 import {TOWN_PLACES} from './town-destinations.mjs?v=zoo-tour-1';
-import {GAME_PAGES} from './game-catalog.mjs?v=church-1';
+import {GAME_PAGES} from './game-catalog.mjs?v=train-1';
 export const PLACE_LINKS=[...TOWN_PLACES,
  {id:'train',name:'Train station',icon:'car',x:83,y:77},
  {id:'circus',name:'Circus',icon:'game',x:94,y:20},
@@ -16,10 +16,10 @@ const groups={
  arena:['monster-truck-drive.html','monster-trucks.html'],
  school:['school-playground.html','school-playground-tours.html','learning.html','learning-tent.html','halli-abc.html','halli-counting.html','clicky-computer.html','whiteboard.html','art.html','blocks.html','halli-colors.html'],
  garage:['town-driving.html','tractor-farm.html','construction-drive.html','driving.html'],
- zoo:['zoo.html','halli-animals.html','dinosaurs.html'],train:[],
+ zoo:['zoo.html','halli-animals.html','dinosaurs.html'],train:['train-station.html'],
  circus:['halli-balloons.html','halli-peekaboo.html','halli-music.html','halli-stars.html'],
  candy:['little-chef.html','halli-kitchen.html'],store:['halli-baby.html','halli-playroom.html','blocks.html','toolbox.html'],
  church:['church.html'],park:['halli-garden.html','halli-bubbles.html','together.html#four','together.html#match'],
 };
-export const PLACE_NOTES={train:'The train station is on our map. A train ride game has not been built yet.',church:'Sing, pray, and listen together in our Church of Christ.',candy:'Play in the kitchens here. A candy shop game has not been built yet.'};
+export const PLACE_NOTES={train:'Buy a ticket, ride or drive the train, and read our train story.',church:'Sing, pray, and listen together in our Church of Christ.',candy:'Play in the kitchens here. A candy shop game has not been built yet.'};
 export function activitiesForPlace(id){return (groups[id]||[]).map(file=>GAME_PAGES.find(g=>g.file===file));}
