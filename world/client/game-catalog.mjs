@@ -1,5 +1,6 @@
 // Every existing game page and individual arcade/co-op game.
 export const GAME_PAGES = [
+ {label:'Zoo & Aquarium Tour',file:'zoo.html',icon:'heart',image:'zoo'},
  {
   "label": "Jace & Halli Arcade - New",
   "file": "arcade-new.html",
