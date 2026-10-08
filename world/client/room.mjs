@@ -13,7 +13,7 @@ export class FamilyRoom extends EventTarget {
   read() { try { const value = JSON.parse(this.storage?.getItem(storageKey) || '{}'); return value.version === 1 ? value : {}; } catch { return {}; } }
   async create() {
     this.close(); this.closing = false; this.host = true; this.code = newCode(); this.game = new FamilyGame(this.read(), state => this.save(state)); this.connected = true;
-    if(typeof location!=='undefined'){try{const response=await fetch(new URL('./theater/movies.json',import.meta.url));if(response.ok)this.game.cinema.configure((await response.json()).movies||[]);}catch{this.emit('status','The shared movie library could not load. Other games are ready.');}}
+    if(typeof location!=='undefined'){try{const response=await fetch(new URL('./theater/movies.json?v=halloween-1',import.meta.url));if(response.ok)this.game.cinema.configure((await response.json()).movies||[]);}catch{this.emit('status','The shared movie library could not load. Other games are ready.');}}
     let tickAt=performance.now();
     this.timer = setInterval(() => { const now=performance.now(),dt=Math.min(.25,(now-tickAt)/1000);tickAt=now;this.game.tick(dt);if(this.game.clock%2===0)this.broadcast(); }, 50);
     if (!this.PeerClass) { this.emit('status', 'One-device play is ready. Multiplayer library could not load; reconnect to the internet to open a shared room.'); return this.me(); }
