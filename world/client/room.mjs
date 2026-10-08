@@ -1,5 +1,5 @@
 import { GalleryService } from './creativity/gallery.mjs?v=studio-1';
-import { FAMILY, FamilyGame } from './family-game.mjs?v=zoo-1';
+import { FAMILY, FamilyGame } from './family-game.mjs?v=family-2';
 const alphabet = '0123456789';
 export function newCode() { const bytes = new Uint8Array(4); crypto.getRandomValues(bytes); return [...bytes].map(v => alphabet[v % alphabet.length]).join(''); }
 export function normalizeCode(value) { return String(value || '').toUpperCase().replace(/[\s-]/g, ''); }
@@ -13,6 +13,7 @@ export class FamilyRoom extends EventTarget {
   read() { try { const value = JSON.parse(this.storage?.getItem(storageKey) || '{}'); return value.version === 1 ? value : {}; } catch { return {}; } }
   async create() {
     this.close(); this.closing = false; this.host = true; this.code = newCode(); this.game = new FamilyGame(this.read(), state => this.save(state)); this.connected = true;
+    if(typeof location!=='undefined'){try{const response=await fetch(new URL('./theater/movies.json',import.meta.url));if(response.ok)this.game.cinema.configure((await response.json()).movies||[]);}catch{this.emit('status','The shared movie library could not load. Other games are ready.');}}
     let tickAt=performance.now();
     this.timer = setInterval(() => { const now=performance.now(),dt=Math.min(.25,(now-tickAt)/1000);tickAt=now;this.game.tick(dt);if(this.game.clock%2===0)this.broadcast(); }, 50);
     if (!this.PeerClass) { this.emit('status', 'One-device play is ready. Multiplayer library could not load; reconnect to the internet to open a shared room.'); return this.me(); }
@@ -26,7 +27,7 @@ export class FamilyRoom extends EventTarget {
   async join(code, profile, guestName = '') {
     this.close(); this.closing = false; this.code = normalizeCode(code); this.host = false;
     if (!/^[0-9]{4}$/.test(this.code)) throw Error('Enter the 4-digit family room code.');
-    if (!FAMILY.some(p => p.id === profile && p.id !== 'mommy') && profile !== 'guest') throw Error('Choose Jace, Halli, Unique, or an approved guest.');
+    if (!FAMILY.some(p => p.id === profile) && profile !== 'guest') throw Error('Choose Jace, Halli, Mommy, Unique, or a guest.');
     if (profile === 'guest' && (!guestName.trim() || guestName.length > 24)) throw Error('Enter the guest’s first name.');
     if (!this.PeerClass) throw Error('The multiplayer library could not load. Check your internet connection.');
     // Temporary routing ID, not a profile or an access credential. Avoid an extra
@@ -63,7 +64,7 @@ export class FamilyRoom extends EventTarget {
       try { if (JSON.stringify(message).length > 4096) { this.deny(conn.peer); return; } } catch { this.deny(conn.peer); return; }
       if (!record.approved) {
         if (message.type !== 'hello' || record.requested) return;
-        const family = FAMILY.find(p => p.id === message.profile && p.id !== 'mommy');
+        const family = FAMILY.find(p => p.id === message.profile);
         if (!family && message.profile !== 'guest') { this.deny(conn.peer); return; }
         const name = message.profile === 'guest' && typeof message.guestName === 'string' ? message.guestName.trim().slice(0, 24) : family?.name;
         if (!name) { this.deny(conn.peer); return; }
@@ -74,7 +75,7 @@ export class FamilyRoom extends EventTarget {
       if (Date.now() - record.lastWindow > 1000) { record.lastWindow = Date.now(); record.requestCount = 0; }
       if (++record.requestCount > 35) return;
       try {
-        if (!['select', 'input', 'action', 'resume','race','art-list','art-read','art-begin','art-part','art-finish'].includes(message.path)) throw Error('Unknown room request.');
+        if (!['select', 'input', 'action', 'resume','race','cinema','together','art-list','art-read','art-begin','art-part','art-finish'].includes(message.path)) throw Error('Unknown room request.');
         if (message.path === 'select' && message.body?.profile !== record.profile.id) throw Error('Use the profile selected when joining.');
         const result = message.path.startsWith('art-') ? await this.galleryService.request(conn.peer,this.game.players.get(conn.peer)?.profile,message.path,message.body) : this.game.request(conn.peer, message.path, message.body);
         conn.send({ type: 'reply', id: message.id, result });

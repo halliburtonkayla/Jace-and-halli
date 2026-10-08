@@ -6,9 +6,9 @@ import { Sound } from './audio.mjs';
 import { LOCATIONS } from './locations.mjs';
 import { drawPortrait, drawFamily, CHARACTER_ART } from './characters.mjs';
 import { routeTo, updateRoute, guidedInput, routeDots } from './routes.mjs';
-import { FamilyRoom } from './room.mjs?v=zoo-tour-1';
+import { FamilyRoom } from './room.mjs?v=family-2';
 import {TownView} from './town-view.mjs?v=zoo-tour-1';
-import {BowlingView} from './bowling-view.mjs?v=illustrated-2';
+import {BowlingView} from './bowling-view.mjs?v=family-2';
 import {SCENES} from './town-destinations.mjs?v=zoo-tour-1';
 import {PLACES as DRIVE_PLACES} from './driving/world.mjs?v=drive-1';
 const room=new FamilyRoom();
@@ -39,7 +39,7 @@ if(location.hash.startsWith('#room=')){$('room-code').value=location.hash.slice(
 room.addEventListener('status',e=>{$('login-error').textContent=e.detail;$('room-status').textContent=e.detail;});
 room.addEventListener('ready',()=>{$('lobby-code').textContent='Room code: '+room.code;$('share-code').value=room.code;});
 room.addEventListener('requests',()=>{renderRequests();if(room.host&&room.pending.size&&!$('admin').open)$('admin').showModal();});
-room.addEventListener('lost',e=>{stop();show('welcome');$('login-error').textContent=e.detail;});
+room.addEventListener('lost',e=>{stop();theaterOpen=false;togetherOpen=false;$('classic-frame-panel').classList.add('hidden');$('classic-frame').src='about:blank';sharedMenu.close();show('welcome');$('login-error').textContent=e.detail;});
 
 function stop(){artCenter?.dispose();artCenter=null;artOpening=false;events=null;me=null;online=false;input={gas:0,brake:0,steer:0};sound.motor(null);}
 async function logout(){stop();await api('logout',{});$('admin').close();$('classic-frame-panel').classList.add('hidden');$('classic-frame').src='about:blank';show('welcome');}
@@ -110,11 +110,11 @@ async function openArt(station='coloring'){
  }catch(e){$('hint').textContent=e.message;if(me?.scene==='creativity')await action('art-exit');}finally{$('art-loader')?.remove();artOpening=false;}
 }
 $('create-art').onclick=openArt;$('classic-creativity').onclick=openArt;
-function openClassic(file){$('classic-frame-panel').classList.remove('hidden');const url=new URL('../../'+file,import.meta.url);if(url.pathname.endsWith('/arcade-new.html'))url.searchParams.set('v','all-games-1');if(url.pathname.endsWith('/theater.html'))url.searchParams.set('v','cinema-1');if(/\/(town-driving|tractor-farm)\.html$/.test(url.pathname))url.searchParams.set('v','drive-1');if(url.pathname.endsWith('/zoo.html')){url.searchParams.set('v','zoo-tour-1');url.searchParams.set('profile',me?.profile||'guest');}$('classic-frame').src=url.href;input={gas:0,brake:1,steer:0};sound.motor(null);}
+function openClassic(file){if(togetherOpen){togetherOpen=false;api('together',{op:'leave'}).catch(()=>{});}if(theaterOpen){theaterOpen=false;api('cinema',{op:'leave'}).catch(()=>{});}$('classic-frame-panel').classList.remove('hidden');const url=new URL('../../'+file,import.meta.url);if(url.pathname.endsWith('/arcade-new.html'))url.searchParams.set('v','all-games-1');if(url.pathname.endsWith('/together.html'))url.searchParams.set('v','family-2');if(url.pathname.endsWith('/theater.html'))url.searchParams.set('v','family-2');if(/\/(town-driving|tractor-farm)\.html$/.test(url.pathname))url.searchParams.set('v','drive-1');if(url.pathname.endsWith('/zoo.html')){url.searchParams.set('v','zoo-tour-1');url.searchParams.set('profile',me?.profile||'guest');}$('classic-frame').src=url.href;input={gas:0,brake:1,steer:0};sound.motor(null);}
 $('classic-open').onclick=()=>openClassic('classic-home.html');$('classic-whiteboard').onclick=()=>openClassic('whiteboard.html');$('classic-books').onclick=()=>openClassic('family-library.html');
 
 function racingFrame(active){racingOpen=active;$('classic-frame-panel').style.paddingTop=active?'0':'';$('close-classic').hidden=active;}
-$('close-classic').onclick=()=>{if(me&&room.connected)api('race',{op:'leave'}).catch(()=>{});racingFrame(false);$('classic-frame-panel').classList.add('hidden');$('classic-frame').src='about:blank';updateUI();};
+$('close-classic').onclick=()=>{if(togetherOpen){togetherOpen=false;api('together',{op:'leave'}).catch(()=>{});}if(theaterOpen){theaterOpen=false;api('cinema',{op:'leave'}).catch(()=>{});}if(me&&room.connected)api('race',{op:'leave'}).catch(()=>{});racingFrame(false);$('classic-frame-panel').classList.add('hidden');$('classic-frame').src='about:blank';updateUI();};
 window.addEventListener('message',async e=>{
  if(e.origin!==location.origin||e.source!==$('classic-frame').contentWindow||e.data?.channel!=='jhw-racing'||!new URL($('classic-frame').src,location.href).pathname.endsWith('/arcade-new.html')||!me)return;
  const message=e.data,send=body=>e.source.postMessage({channel:'jhw-racing',...body},location.origin);
@@ -148,7 +148,8 @@ addEventListener('resize',()=>renderer.resize());$('create-room').disabled=false
 
 window.addEventListener('message',async e=>{
  if(e.origin!==location.origin||e.source!==$('classic-frame').contentWindow||e.data?.channel!=='jhw-theater'||!new URL($('classic-frame').src,location.href).pathname.endsWith('/theater.html')||!me)return;
- if(e.data.type==='context')e.source.postMessage({channel:'jhw-theater',type:'context',sound:data.preferences.sound},location.origin);
+ if(e.data.type==='context'){try{const state=await api('cinema',{op:'join'});theaterOpen=true;e.source.postMessage({channel:'jhw-theater',type:'context',sound:data.preferences.sound,state},location.origin);}catch(error){e.source.postMessage({channel:'jhw-theater',type:'movie-error',error:error.message},location.origin);}}
+ if(e.data.type==='command'&&theaterOpen){try{const state=await api('cinema',e.data.body);e.source.postMessage({channel:'jhw-theater',type:'movie-state',state},location.origin);}catch(error){e.source.postMessage({channel:'jhw-theater',type:'movie-error',error:error.message},location.origin);}}
  if(e.data.type==='sound'&&typeof e.data.enabled==='boolean'){sound.mute(e.data.enabled);await action('preferences',{sound:e.data.enabled});}
  if(e.data.type==='exit'){$('close-classic').click();await action('exit');}
 });
@@ -169,3 +170,22 @@ new MutationObserver(updateTheaterWatchButton).observe($('classic-frame-panel'),
 updateTheaterWatchButton();
 
 window.addEventListener('message',e=>{if(e.origin!==location.origin||e.source!==$('classic-frame').contentWindow||e.data?.channel!=='jhw-zoo'||!new URL($('classic-frame').src,location.href).pathname.endsWith('/zoo.html'))return;if(e.data.type==='active'){$('classic-frame-panel').style.paddingTop='0';$('close-classic').hidden=true;}if(e.data.type==='exit')$('close-classic').click();});
+
+let theaterOpen=false;
+room.addEventListener('snapshot',e=>{if(theaterOpen)$('classic-frame').contentWindow?.postMessage({channel:'jhw-theater',type:'movie-state',state:e.detail.cinema},location.origin);updateTogether(e.detail);});
+room.addEventListener('lost',()=>{if(theaterOpen)$('classic-frame').contentWindow?.postMessage({channel:'jhw-theater',type:'room-lost'},location.origin);});
+let togetherOpen=false;
+window.addEventListener('message',async e=>{
+ if(e.origin!==location.origin||e.source!==$('classic-frame').contentWindow||e.data?.channel!=='jhw-together'||!new URL($('classic-frame').src,location.href).pathname.endsWith('/together.html')||!me)return;
+ try{if(e.data.type==='context'){const state=await api('together',{op:'join'});togetherOpen=true;e.source.postMessage({channel:'jhw-together',type:'context',id:me.id,state},location.origin);}else if(e.data.type==='command'&&togetherOpen){const state=await api('together',e.data.body);e.source.postMessage({channel:'jhw-together',type:'state',state},location.origin);}}
+ catch(error){e.source.postMessage({channel:'jhw-together',type:'error',error:error.message},location.origin);}
+});
+room.addEventListener('snapshot',e=>{if(togetherOpen)$('classic-frame').contentWindow?.postMessage({channel:'jhw-together',type:'state',state:e.detail.together},location.origin);});
+room.addEventListener('lost',()=>{if(togetherOpen)$('classic-frame').contentWindow?.postMessage({channel:'jhw-together',type:'lost'},location.origin);});
+const sharedMenu=document.createElement('dialog');sharedMenu.className='town-all-games';sharedMenu.setAttribute('aria-label','Play Together');sharedMenu.innerHTML='<form method="dialog"><button>Close</button></form><h2>Play Together</h2><p class="family-share-code"></p><p class="family-now"></p><div class="shared-options"></div><p>Join this family room on the other phone, iPad or computer. Keep the device that started the room open.</p>';document.body.append(sharedMenu);
+const sharedChoices=[['Bowling','Take turns on the same lane.','bowling'],['Family racing','Race each other on the same track.','arcade-new.html#family'],['Connect Four','Two players, one shared board.','together.html#four'],['Matching','Find pairs together.','together.html#match'],['Color Together','Draw on the same page.','together.html#color'],['Watch Together','Join the family movie at its current spot.','theater.html']];
+for(const [name,detail,target]of sharedChoices){const b=document.createElement('button');b.textContent=name;const small=document.createElement('small');small.textContent=detail;b.append(small);b.onclick=async()=>{sharedMenu.close();if(target==='bowling'){if(!$('classic-frame-panel').classList.contains('hidden'))$('close-classic').click();await action('visit',{destination:'bowling'});}else openClassic(target);};sharedMenu.querySelector('.shared-options').append(b);}
+const sharedShortcut=document.createElement('button');sharedShortcut.id='play-together-shortcut';sharedShortcut.textContent='Play Together';sharedShortcut.onclick=()=>{updateTogether(snapshot);sharedMenu.showModal();};
+(townView?.root.querySelector('.dock-toolbar')||$('play')).append(sharedShortcut);
+function updateTogether(state){sharedMenu.querySelector('.family-share-code').textContent='Family code: '+room.code;const watching=state.cinema?.members||[],bowling=state.bowling?.members.filter(p=>!p.npc)||[];sharedMenu.querySelector('.family-now').textContent=[watching.length?'At the movies: '+watching.map(p=>p.name).join(', '):'',bowling.length?'Bowling: '+bowling.map(p=>p.name).join(', '):''].filter(Boolean).join(' · ')||'Pick an activity, then have everyone open the same choice.';}
+const sharedStyle=document.createElement('style');sharedStyle.textContent='#play-together-shortcut{background:#f9d477;color:#183d35;border:2px solid #fff4c3;font-weight:900;min-height:44px;padding:8px 12px;border-radius:14px;white-space:nowrap}.shared-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.shared-options button{padding:16px;background:#fff0c9;color:#183d35;border:2px solid #d3b571;border-radius:16px;font:800 18px system-ui;min-height:95px}.shared-options small{display:block;font:13px/1.4 system-ui;margin-top:6px}.family-share-code{font-size:23px;font-weight:bold}.family-now{font-size:14px}@media(max-width:600px){.dock-toolbar .town-tip{display:none}#play-together-shortcut{font-size:12px}.shared-options button{font-size:15px;padding:10px}}';document.head.append(sharedStyle);
