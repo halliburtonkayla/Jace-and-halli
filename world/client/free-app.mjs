@@ -7,7 +7,7 @@ import { LOCATIONS } from './locations.mjs';
 import { drawPortrait, drawFamily, CHARACTER_ART } from './characters.mjs';
 import { routeTo, updateRoute, guidedInput, routeDots } from './routes.mjs';
 import { FamilyRoom } from './room.mjs?v=halloween-1';
-import {TownView} from './town-view.mjs?v=recess-1';
+import {TownView} from './town-view.mjs?v=church-1';
 import {BowlingView} from './bowling-view.mjs?v=family-3';
 import {SCENES} from './town-destinations.mjs?v=zoo-tour-1';
 import {PLACES as DRIVE_PLACES} from './driving/world.mjs?v=drive-1';
@@ -110,11 +110,12 @@ async function openArt(station='coloring'){
  }catch(e){$('hint').textContent=e.message;if(me?.scene==='creativity')await action('art-exit');}finally{$('art-loader')?.remove();artOpening=false;}
 }
 $('create-art').onclick=openArt;$('classic-creativity').onclick=openArt;
-function openClassic(file){leavePark();if(togetherOpen){togetherOpen=false;api('together',{op:'leave'}).catch(()=>{});}if(theaterOpen){theaterOpen=false;api('cinema',{op:'leave'}).catch(()=>{});}$('classic-frame-panel').classList.remove('hidden');const url=new URL('../../'+file,import.meta.url);if(url.pathname.endsWith('/family-playpark.html'))url.searchParams.set('v','hide-2');if(url.pathname.endsWith('/arcade-new.html'))url.searchParams.set('v','all-games-1');if(url.pathname.endsWith('/together.html'))url.searchParams.set('v','family-3');if(url.pathname.endsWith('/theater.html'))url.searchParams.set('v','halloween-1');if(/\/(town-driving|tractor-farm)\.html$/.test(url.pathname))url.searchParams.set('v','drive-1');if(url.pathname.endsWith('/zoo.html')){url.searchParams.set('v','zoo-tour-1');url.searchParams.set('profile',me?.profile||'guest');}$('classic-frame').src=url.href;input={gas:0,brake:1,steer:0};sound.motor(null);}
+function openClassic(file){if(file.startsWith('church.html'))sound.mute(false);leavePark();if(togetherOpen){togetherOpen=false;api('together',{op:'leave'}).catch(()=>{});}if(theaterOpen){theaterOpen=false;api('cinema',{op:'leave'}).catch(()=>{});}$('classic-frame-panel').classList.remove('hidden');const url=new URL('../../'+file,import.meta.url);if(url.pathname.endsWith('/family-playpark.html'))url.searchParams.set('v','hide-2');if(url.pathname.endsWith('/arcade-new.html'))url.searchParams.set('v','all-games-1');if(url.pathname.endsWith('/together.html'))url.searchParams.set('v','family-3');if(url.pathname.endsWith('/theater.html'))url.searchParams.set('v','halloween-1');if(/\/(town-driving|tractor-farm)\.html$/.test(url.pathname))url.searchParams.set('v','drive-1');if(url.pathname.endsWith('/zoo.html')){url.searchParams.set('v','zoo-tour-1');url.searchParams.set('profile',me?.profile||'guest');}if(url.pathname.endsWith('/church.html')){url.searchParams.set('v','church-1');$('classic-frame').setAttribute('allow','autoplay; fullscreen');$('classic-frame').referrerPolicy='strict-origin-when-cross-origin';}
+$('classic-frame').src=url.href;input={gas:0,brake:1,steer:0};sound.motor(null);}
 $('classic-open').onclick=()=>openClassic('classic-home.html');$('classic-whiteboard').onclick=()=>openClassic('whiteboard.html');$('classic-books').onclick=()=>openClassic('family-library.html');
 
 function racingFrame(active){racingOpen=active;$('classic-frame-panel').style.paddingTop=active?'0':'';$('close-classic').hidden=active;}
-$('close-classic').onclick=()=>{leavePark();if(togetherOpen){togetherOpen=false;api('together',{op:'leave'}).catch(()=>{});}if(theaterOpen){theaterOpen=false;api('cinema',{op:'leave'}).catch(()=>{});}if(me&&room.connected)api('race',{op:'leave'}).catch(()=>{});racingFrame(false);$('classic-frame-panel').classList.add('hidden');$('classic-frame').src='about:blank';updateUI();};
+$('close-classic').onclick=()=>{leavePark();if(togetherOpen){togetherOpen=false;api('together',{op:'leave'}).catch(()=>{});}if(theaterOpen){theaterOpen=false;api('cinema',{op:'leave'}).catch(()=>{});}if(me&&room.connected)api('race',{op:'leave'}).catch(()=>{});racingFrame(false);$('classic-frame-panel').classList.add('hidden');$('classic-frame').src='about:blank';sound.mute(data?.preferences.sound??true);updateUI();};
 window.addEventListener('message',async e=>{
  if(e.origin!==location.origin||e.source!==$('classic-frame').contentWindow||e.data?.channel!=='jhw-racing'||!new URL($('classic-frame').src,location.href).pathname.endsWith('/arcade-new.html')||!me)return;
  const message=e.data,send=body=>e.source.postMessage({channel:'jhw-racing',...body},location.origin);
@@ -199,3 +200,6 @@ window.addEventListener('message',async e=>{
 });
 room.addEventListener('snapshot',e=>{if(playparkOpen)$('classic-frame').contentWindow?.postMessage({channel:'jhw-playpark',type:'state',state:e.detail.playpark},location.origin);});
 room.addEventListener('lost',()=>{playparkOpen=false;});
+
+// Church stays inside the existing activity frame and returns to the same family room.
+window.addEventListener('message',e=>{if(e.origin!==location.origin||e.source!==$('classic-frame').contentWindow||e.data?.channel!=='jhw-church')return;if(e.data.type==='exit')$('close-classic').click();});

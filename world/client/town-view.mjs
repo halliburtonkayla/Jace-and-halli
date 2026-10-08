@@ -1,5 +1,5 @@
-import {PLACE_LINKS,PLACE_NOTES,activitiesForPlace} from './place-activities.mjs?v=recess-1';
-import {GAME_PAGES} from './game-catalog.mjs?v=recess-1';
+import {PLACE_LINKS,PLACE_NOTES,activitiesForPlace} from './place-activities.mjs?v=church-1';
+import {GAME_PAGES} from './game-catalog.mjs?v=church-1';
 import {TOWN_PLACES,SCENES} from './town-destinations.mjs?v=zoo-tour-1';
 import {drawPortrait} from './characters.mjs';
 const paths={
@@ -58,6 +58,7 @@ export class TownView{
  launch(entry){if(entry.place){this.openPlace(entry.place);return;}this.say(entry.label);if(entry.visit)this.visit(entry.visit);else if(entry.art)this.art(entry.art);else this.classic(entry.file);}
  openPlace(id){
   const place=PLACE_LINKS.find(p=>p.id===id);this.say(place.name);
+  if(id==='church'){this.classic('church.html');return;}
   if(id==='zoo'){this.visit('zoo');this.classic('zoo.html');return;}
   if(id==='theater'){this.visit('theater');this.classic('theater.html');return;}
   if(place.scene&&!['world','bubbles'].includes(place.scene))this.visit(id);
@@ -81,6 +82,7 @@ export class TownView{
    b.className='dock-item';if(entry.place)b.dataset.destination=entry.place;
    const thumb=document.createElement('img');thumb.alt='';thumb.draggable=false;
    thumb.src=entry.scene||entry.image?new URL('../assets/scenes/'+(entry.image?entry.image+'-v1.webp':entry.scene.asset||entry.scene.image+'-v1.webp'),import.meta.url):new URL('../assets/town/approved-world-v1.webp',import.meta.url);
+   if(entry.place==='church')thumb.src=new URL('../assets/church/sanctuary.webp',import.meta.url);
    if(!entry.scene&&!entry.image)thumb.style.objectPosition=entry.x+'% '+entry.y+'%';
    b.prepend(thumb);const tooltip=document.createElement('span');tooltip.className='dock-tooltip';tooltip.textContent=entry.label;tooltip.setAttribute('aria-hidden','true');b.append(tooltip);this.dock.append(b);
   }
