@@ -16,18 +16,18 @@ function wait(ms,t=token){return new Promise(resolve=>{let left=ms,last=performa
 function speak(text,t=token){return new Promise(resolve=>{
  if(t!==token)return resolve(false);if(!preferences.sound)return wait(Math.max(1300,text.split(/\s+/).length*360),t).then(resolve);
  if(!('speechSynthesis'in window)){status('Read these words together. Tap Continue when you are ready.');return wait(Math.max(2000,text.split(/\s+/).length*400),t).then(resolve);}
- let done=false,started=false,elapsed=0,last=performance.now();const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=.83;u.pitch=.93;
+ let done=false,started=false,failed=false,elapsed=0,last=performance.now();const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=.83;u.pitch=.93;
  const voices=speechSynthesis.getVoices().filter(v=>/^en[-_]/i.test(v.lang));u.voice=voices.find(v=>/Alex|Daniel|David|Mark|Tom|Aaron|Fred|Gordon|Arthur/i.test(v.name))||voices.find(v=>v.lang==='en-US')||voices[0]||null;
  const finish=()=>{if(done)return;done=true;clearInterval(watch);timers.delete(watch);cancellers.delete(cancel);if(currentSpeech===u)currentSpeech=null;resolve(t===token);};const cancel=()=>{speechSynthesis.cancel();finish();};
- u.onstart=()=>started=true;u.onend=finish;u.onerror=()=>{if(t===token)status('Voice is unavailable on this device. The words stay on screen.');finish();};
- const watch=setInterval(()=>{const now=performance.now();if(!paused)elapsed+=now-last;last=now;if(t!==token)return cancel();if(!started&&elapsed>5000){status('Tap Hear again if the device voice did not start.');cancel();}if(elapsed>Math.max(20000,text.length*150))cancel();},200);
+ const fallback=()=>{if(done||failed)return;failed=true;clearInterval(watch);timers.delete(watch);currentSpeech=null;if(t!==token)return finish();status('Voice is unavailable here. Read together, or use Hear again.');wait(Math.max(2500,text.split(/\s+/).length*430),t).then(finish);};u.onstart=()=>started=true;u.onend=()=>{if(!failed)finish();};u.onerror=()=>fallback();
+ const watch=setInterval(()=>{const now=performance.now();if(!paused)elapsed+=now-last;last=now;if(t!==token)return cancel();if(!started&&elapsed>5000){fallback();speechSynthesis.cancel();}if(elapsed>Math.max(20000,text.length*150)){fallback();speechSynthesis.cancel();}},200);
  timers.add(watch);cancellers.add(cancel);currentSpeech=u;speechSynthesis.speak(u);
  });}
 async function recording(src,start,end,text,t=token){
  if(!preferences.sound)return speak(text,t);
  const ok=await new Promise(resolve=>{let done=false,playing=false;const finish=good=>{if(done)return;done=true;clearTimeout(fail);recorded.pause();recorded.onended=null;recorded.onerror=null;recorded.ontimeupdate=null;recorded.onloadedmetadata=null;cancellers.delete(cancel);currentAudio=null;resolve(good&&t===token);};const cancel=()=>finish(false);cancellers.add(cancel);
  recorded.src=src;recorded.muted=!preferences.sound;currentAudio=recorded;
- const begin=()=>{if(done||t!==token)return;try{recorded.currentTime=start;}catch{}recorded.play().then(()=>playing=true).catch(()=>finish(false));};
+ const begin=()=>{if(done||t!==token)return;try{recorded.currentTime=start;}catch{}if(paused)return;recorded.play().then(()=>playing=true).catch(()=>finish(false));};
  recorded.onloadedmetadata=begin;recorded.onended=()=>finish(true);recorded.onerror=()=>finish(false);recorded.ontimeupdate=()=>{if(recorded.currentTime>=end)finish(true);};
  const fail=setTimeout(()=>{if(!playing)finish(false);},4500);recorded.load();
  });
@@ -77,7 +77,7 @@ $('local-mode').checked=preferences.local;$('local-mode').onchange=e=>{preferenc
 $('leave').onclick=()=>{stop();if(window.parent!==window){window.parent.postMessage({channel:'jhw-church',type:'exit'},location.origin);}else location.href='./index.html';};
 for(const l of LESSONS){const o=document.createElement('option');o.value=l.id;o.textContent=l.title;$('lesson-choice').append(o);}
 $('sources').innerHTML=[...LESSONS.map(l=>({...l.video,title:l.title})),...Object.values(SONGS)].map(v=>`<p><strong>${esc(v.title)}</strong><br><a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/watch?v=${v.id}">${esc(v.label)}</a>${v.start?` · story segment ${Math.floor(v.start/60)}:${String(v.start%60).padStart(2,'0')}–${Math.floor(v.end/60)}:${String(v.end%60).padStart(2,'0')}`:''}</p>`).join('');
-document.addEventListener('visibilitychange',()=>{if(document.hidden){if(step>0&&step<7)pause();else{chatter.pause();recorded.pause();window.speechSynthesis?.cancel();}}});window.addEventListener('pagehide',stop);window.addEventListener('message',e=>{if(e.source!==parent||e.origin!==location.origin)return;if(e.data?.channel==='jhw-church'&&e.data.type==='stop')stop();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){if((step>0&&step<7)||$('enter-church')?.disabled)pause();else{chatter.pause();recorded.pause();window.speechSynthesis?.cancel();}}});window.addEventListener('pagehide',stop);window.addEventListener('message',e=>{if(e.source!==parent||e.origin!==location.origin)return;if(e.data?.channel==='jhw-church'&&e.data.type==='stop')stop();});
 selectLesson();setSound(preferences.sound);renderWelcome();
 
 for(const [id,title] of [...LESSONS.map(l=>[l.id,l.title]),['song-opening','Yes, Jesus Loves Me'],['song-closing','This Little Light of Mine']]){const o=document.createElement('option');o.value=id;o.textContent=title;$('media-slot').append(o);}
