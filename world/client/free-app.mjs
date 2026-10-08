@@ -7,7 +7,7 @@ import { LOCATIONS } from './locations.mjs';
 import { drawPortrait, drawFamily, CHARACTER_ART } from './characters.mjs';
 import { routeTo, updateRoute, guidedInput, routeDots } from './routes.mjs';
 import { FamilyRoom } from './room.mjs?v=halloween-1';
-import {TownView} from './town-view.mjs?v=church-1';
+import {TownView} from './town-view.mjs?v=bubble-1';
 import {BowlingView} from './bowling-view.mjs?v=family-3';
 import {SCENES} from './town-destinations.mjs?v=zoo-tour-1';
 import {PLACES as DRIVE_PLACES} from './driving/world.mjs?v=drive-1';
@@ -110,7 +110,7 @@ async function openArt(station='coloring'){
  }catch(e){$('hint').textContent=e.message;if(me?.scene==='creativity')await action('art-exit');}finally{$('art-loader')?.remove();artOpening=false;}
 }
 $('create-art').onclick=openArt;$('classic-creativity').onclick=openArt;
-function openClassic(file){if(file.startsWith('church.html'))sound.mute(false);leavePark();if(togetherOpen){togetherOpen=false;api('together',{op:'leave'}).catch(()=>{});}if(theaterOpen){theaterOpen=false;api('cinema',{op:'leave'}).catch(()=>{});}$('classic-frame-panel').classList.remove('hidden');const url=new URL('../../'+file,import.meta.url);if(url.pathname.endsWith('/family-playpark.html'))url.searchParams.set('v','hide-2');if(url.pathname.endsWith('/arcade-new.html'))url.searchParams.set('v','all-games-1');if(url.pathname.endsWith('/together.html'))url.searchParams.set('v','family-3');if(url.pathname.endsWith('/theater.html'))url.searchParams.set('v','halloween-1');if(/\/(town-driving|tractor-farm)\.html$/.test(url.pathname))url.searchParams.set('v','drive-1');if(url.pathname.endsWith('/zoo.html')){url.searchParams.set('v','zoo-tour-1');url.searchParams.set('profile',me?.profile||'guest');}if(url.pathname.endsWith('/church.html')){url.searchParams.set('v','church-7');$('classic-frame').setAttribute('allow','autoplay; fullscreen');$('classic-frame').referrerPolicy='strict-origin-when-cross-origin';}
+function openClassic(file){if(file.startsWith('church.html')||file.startsWith('bubble-garden.html'))sound.mute(false);leavePark();if(togetherOpen){togetherOpen=false;api('together',{op:'leave'}).catch(()=>{});}if(theaterOpen){theaterOpen=false;api('cinema',{op:'leave'}).catch(()=>{});}$('classic-frame-panel').classList.remove('hidden');const url=new URL('../../'+file,import.meta.url);if(url.pathname.endsWith('/family-playpark.html'))url.searchParams.set('v','hide-2');if(url.pathname.endsWith('/arcade-new.html'))url.searchParams.set('v','all-games-1');if(url.pathname.endsWith('/together.html'))url.searchParams.set('v','family-3');if(url.pathname.endsWith('/theater.html'))url.searchParams.set('v','halloween-1');if(/\/(town-driving|tractor-farm)\.html$/.test(url.pathname))url.searchParams.set('v','drive-1');if(url.pathname.endsWith('/zoo.html')){url.searchParams.set('v','zoo-tour-1');url.searchParams.set('profile',me?.profile||'guest');}if(url.pathname.endsWith('/bubble-garden.html'))url.searchParams.set('v','bubble-1');if(url.pathname.endsWith('/church.html')){url.searchParams.set('v','church-7');$('classic-frame').setAttribute('allow','autoplay; fullscreen');$('classic-frame').referrerPolicy='strict-origin-when-cross-origin';}
 $('classic-frame').src=url.href;input={gas:0,brake:1,steer:0};sound.motor(null);}
 $('classic-open').onclick=()=>openClassic('classic-home.html');$('classic-whiteboard').onclick=()=>openClassic('whiteboard.html');$('classic-books').onclick=()=>openClassic('family-library.html');
 
@@ -143,7 +143,7 @@ window.addEventListener('message',async e=>{
   $('close-classic').click();if(destination.art)openArt(destination.art);else await action('visit',{destination:destination.visit});
  }
 });
-$('classic-frame').onload=()=>{try{const path=$('classic-frame').contentWindow.location.pathname;if(!/\/(town-driving|tractor-farm|arcade-new|zoo)\.html$/.test(path))racingFrame(false);const doc=$('classic-frame').contentDocument;if(!doc)return;doc.querySelectorAll('a[href]').forEach(a=>{const u=new URL(a.href);if(u.origin===location.origin&&u.pathname.endsWith('/index.html'))a.href=new URL('../../classic-home.html',import.meta.url).href;else if(u.origin!==location.origin)a.target='_blank';});doc.querySelectorAll('[onclick]').forEach(el=>{const v=el.getAttribute('onclick');if(v.includes("'index.html'"))el.setAttribute('onclick',v.replaceAll("'index.html'","'classic-home.html'"));});}catch{}};
+$('classic-frame').onload=()=>{try{const path=$('classic-frame').contentWindow.location.pathname;if(!/\/(town-driving|tractor-farm|arcade-new|zoo|bubble-garden)\.html$/.test(path))racingFrame(false);const doc=$('classic-frame').contentDocument;if(!doc)return;doc.querySelectorAll('a[href]').forEach(a=>{const u=new URL(a.href);if(u.origin===location.origin&&u.pathname.endsWith('/index.html'))a.href=new URL('../../classic-home.html',import.meta.url).href;else if(u.origin!==location.origin)a.target='_blank';});doc.querySelectorAll('[onclick]').forEach(el=>{const v=el.getAttribute('onclick');if(v.includes("'index.html'"))el.setAttribute('onclick',v.replaceAll("'index.html'","'classic-home.html'"));});}catch{}};
 addEventListener('pagehide',()=>{if(room.host)room.game?.save();});
 addEventListener('resize',()=>renderer.resize());$('create-room').disabled=false;$('start-art').disabled=false;$('login-error').textContent='';function loop(t){if(!artCenter&&!artOpening){if(!illustrated||me?.scene==='bubbles'||me?.vehicle==='mower')renderer.draw(snapshot,me,bubbles,data,t);bowlingView?.draw(t);}requestAnimationFrame(loop);}requestAnimationFrame(loop);show('welcome');
 
@@ -203,3 +203,6 @@ room.addEventListener('lost',()=>{playparkOpen=false;});
 
 // Church stays inside the existing activity frame and returns to the same family room.
 window.addEventListener('message',e=>{if(e.origin!==location.origin||e.source!==$('classic-frame').contentWindow||e.data?.channel!=='jhw-church')return;if(e.data.type==='exit')$('close-classic').click();});
+
+// Halli's sensory play keeps the parent room alive; frame messages are source-checked.
+window.addEventListener('message',e=>{if(e.origin!==location.origin||e.source!==$('classic-frame').contentWindow||e.data?.channel!=='jhw-bubbles'||!new URL($('classic-frame').src,location.href).pathname.endsWith('/bubble-garden.html'))return;if(e.data.type==='active'){$('classic-frame-panel').style.paddingTop='0';$('close-classic').hidden=true;}if(e.data.type==='exit')$('close-classic').click();});

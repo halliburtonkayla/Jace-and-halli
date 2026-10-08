@@ -1,5 +1,5 @@
 import {PLACE_LINKS,PLACE_NOTES,activitiesForPlace} from './place-activities.mjs?v=church-1';
-import {GAME_PAGES} from './game-catalog.mjs?v=church-1';
+import {GAME_PAGES} from './game-catalog.mjs?v=bubble-1';
 import {TOWN_PLACES,SCENES} from './town-destinations.mjs?v=zoo-tour-1';
 import {drawPortrait} from './characters.mjs';
 const paths={
@@ -52,12 +52,14 @@ export class TownView{
  button(label,symbol,fn){const b=document.createElement('button');b.innerHTML=icon(symbol);const span=document.createElement('span');span.textContent=label;b.append(span);b.setAttribute('aria-label',label);b.onclick=fn;return b;}
  gameEntries(){
   const entries=new Map(GAME_PAGES.map(entry=>[entry.file,entry]));
+  entries.set('shared-garden',{label:'Original shared Bubble Garden',visit:'garden',icon:'bubbles'});
   for(const scene of Object.values(SCENES))for(const spot of scene.spots){if(spot.visit&&spot.visit!=='bowling')continue;entries.set(spot.file||spot.art||spot.visit,{...spot,scene});}
   return [...entries.values()].sort((a,b)=>a.label.localeCompare(b.label));
  }
  launch(entry){if(entry.place){this.openPlace(entry.place);return;}this.say(entry.label);if(entry.visit)this.visit(entry.visit);else if(entry.art)this.art(entry.art);else this.classic(entry.file);}
  openPlace(id){
   const place=PLACE_LINKS.find(p=>p.id===id);this.say(place.name);
+  if(id==='garden'){this.classic('bubble-garden.html');return;}
   if(id==='church'){this.classic('church.html');return;}
   if(id==='zoo'){this.visit('zoo');this.classic('zoo.html');return;}
   if(id==='theater'){this.visit('theater');this.classic('theater.html');return;}
