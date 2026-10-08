@@ -1,6 +1,6 @@
-import {CanvasScene} from './canvas-scene.mjs?v=arcade-2';
+import {CanvasScene} from './canvas-scene.mjs?v=hide-2';
 import {BASES,runnerPosition} from './vendor/softball.mjs';
-import {STATIONS,HEDGES} from './session.mjs?v=arcade-2';
+import {STATIONS,HEDGES} from './session.mjs?v=hide-2';
 // Animated perspective renderer for devices without WebGL. No portrait stand-ins for sports, swimming or cooking.
 export class ActivityCanvas extends CanvasScene {
  constructor(canvas,game){super(canvas,game);this.focus={x:0,z:0};}
