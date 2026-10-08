@@ -1,0 +1,45 @@
+{
+  "created": "2026-10-08",
+  "clips": [
+    {
+      "file": "dismissal-v1.mp4",
+      "source": "OpenArt Wan 3.0",
+      "duration": 15.022993,
+      "bytes": 4062217,
+      "sha256": "aaf0d102275da6de50938fb2adf6b9b990eee06d0dbf1f68c4b597ea4e8e57f9",
+      "hasAudio": true
+    },
+    {
+      "file": "breakfast-v1.mp4",
+      "source": "OpenArt Wan 3.0",
+      "duration": 12.028005,
+      "bytes": 1850159,
+      "sha256": "b0b2b0e42371da02800b07890d3ef7ecac81b8ec5cacf87de379713b4afff93f",
+      "hasAudio": true
+    },
+    {
+      "file": "bathroom-v1.mp4",
+      "source": "OpenArt Wan 3.0",
+      "duration": 30.022993,
+      "bytes": 3509019,
+      "sha256": "cae5289a529f89050cb744ea97a5ac34d0e50a54a0447abbbee4df062d22e2ff",
+      "hasAudio": true
+    },
+    {
+      "file": "lunch-v1.mp4",
+      "source": "OpenArt Wan 3.0",
+      "duration": 20.039002,
+      "bytes": 3407942,
+      "sha256": "185deaa19136cb26c2cec4313485d00b7bc634340082b1cf4bd6a2087aeb0efb",
+      "hasAudio": true
+    },
+    {
+      "file": "bus-v1.mp4",
+      "source": "OpenArt Wan 3.0",
+      "duration": 30.022993,
+      "bytes": 6104038,
+      "sha256": "b66dc1ae0dfe91534a90d7d7e74f996459c594fc6026bdf90f01d3902fc7a002",
+      "hasAudio": true
+    }
+  ]
+}

@@ -7,9 +7,9 @@ import { LOCATIONS } from './locations.mjs';
 import { drawPortrait, drawFamily, CHARACTER_ART } from './characters.mjs';
 import { routeTo, updateRoute, guidedInput, routeDots } from './routes.mjs';
 import { FamilyRoom } from './room.mjs?v=halloween-1';
-import {TownView} from './town-view.mjs?v=train-1';
+import {TownView} from './town-view.mjs?v=school-1';
 import {BowlingView} from './bowling-view.mjs?v=family-3';
-import {SCENES} from './town-destinations.mjs?v=zoo-tour-1';
+import {SCENES} from './town-destinations.mjs?v=school-1';
 import {PLACES as DRIVE_PLACES} from './driving/world.mjs?v=drive-1';
 const room=new FamilyRoom();
 let pendingTheater=new URLSearchParams(location.search).get('activity')==='theater';
@@ -112,6 +112,7 @@ async function openArt(station='coloring'){
 $('create-art').onclick=openArt;$('classic-creativity').onclick=openArt;
 function openClassic(file){if(file.startsWith('church.html')||file.startsWith('bubble-garden.html')||file.startsWith('train-station.html'))sound.mute(false);leavePark();if(togetherOpen){togetherOpen=false;api('together',{op:'leave'}).catch(()=>{});}if(theaterOpen){theaterOpen=false;api('cinema',{op:'leave'}).catch(()=>{});}$('classic-frame-panel').classList.remove('hidden');const url=new URL('../../'+file,import.meta.url);if(url.pathname.endsWith('/family-playpark.html'))url.searchParams.set('v','hide-2');if(url.pathname.endsWith('/arcade-new.html'))url.searchParams.set('v','all-games-1');if(url.pathname.endsWith('/together.html'))url.searchParams.set('v','family-3');if(url.pathname.endsWith('/theater.html'))url.searchParams.set('v','halloween-1');if(/\/(town-driving|tractor-farm)\.html$/.test(url.pathname))url.searchParams.set('v','drive-1');if(url.pathname.endsWith('/zoo.html')){url.searchParams.set('v','zoo-tour-1');url.searchParams.set('profile',me?.profile||'guest');}if(url.pathname.endsWith('/bubble-garden.html'))url.searchParams.set('v','bubble-1');if(url.pathname.endsWith('/church.html')){url.searchParams.set('v','church-7');$('classic-frame').setAttribute('allow','autoplay; fullscreen');$('classic-frame').referrerPolicy='strict-origin-when-cross-origin';}
 if(url.pathname.endsWith('/train-station.html')){url.searchParams.set('v','train-1');url.searchParams.set('profile',me?.profile||'jace');$('classic-frame').setAttribute('allow','autoplay; fullscreen');$('classic-frame').referrerPolicy='strict-origin-when-cross-origin';}
+if(url.pathname.endsWith('/school.html')){url.searchParams.set('v','school-1');url.searchParams.set('profile',me?.profile||'guest');$('classic-frame').setAttribute('allow','autoplay; fullscreen');}
 $('classic-frame').src=url.href;input={gas:0,brake:1,steer:0};sound.motor(null);}
 $('classic-open').onclick=()=>openClassic('classic-home.html');$('classic-whiteboard').onclick=()=>openClassic('whiteboard.html');$('classic-books').onclick=()=>openClassic('family-library.html');
 
@@ -209,3 +210,10 @@ window.addEventListener('message',e=>{if(e.origin!==location.origin||e.source!==
 window.addEventListener('message',e=>{if(e.origin!==location.origin||e.source!==$('classic-frame').contentWindow||e.data?.channel!=='jhw-bubbles'||!new URL($('classic-frame').src,location.href).pathname.endsWith('/bubble-garden.html'))return;if(e.data.type==='active'){$('classic-frame-panel').style.paddingTop='0';$('close-classic').hidden=true;}if(e.data.type==='exit')$('close-classic').click();});
 // Train stays in the current room; only allowlisted destination pages can be opened.
 window.addEventListener('message',e=>{if(e.origin!==location.origin||e.source!==$('classic-frame').contentWindow||e.data?.channel!=='jhw-train'||!new URL($('classic-frame').src,location.href).pathname.endsWith('/train-station.html'))return;if(e.data.type==='active'){$('classic-frame-panel').style.paddingTop='0';$('close-classic').hidden=true;}if(e.data.type==='exit')$('close-classic').click();if(e.data.type==='visit'){const file={zoo:'zoo.html',park:'school-playground.html'}[e.data.destination];if(file){racingFrame(false);openClassic(file);}else if(e.data.destination==='city')$('close-classic').click();}});
+// School uses the existing profile and keeps the hosting room alive.
+window.addEventListener('message',e=>{
+ if(e.origin!==location.origin||e.source!==$('classic-frame').contentWindow||e.data?.channel!=='jhw-school'||!new URL($('classic-frame').src,location.href).pathname.endsWith('/school.html')||!me)return;
+ if(e.data.type==='context')e.source.postMessage({channel:'jhw-school',type:'context',profile:me.profile,sound:data.preferences.sound},location.origin);
+ if(e.data.type==='active'){$('classic-frame-panel').style.paddingTop='0';$('close-classic').hidden=true;}
+ if(e.data.type==='exit')$('close-classic').click();
+});

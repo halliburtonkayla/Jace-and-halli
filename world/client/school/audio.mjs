@@ -1,0 +1,11 @@
+export class TeacherAudio{
+ constructor(){this.enabled=true;this.voice='';this.context=null;this.seq=0;this.timers=new Set();this.last='';}
+ unlock(){try{this.context ||= new (window.AudioContext||window.webkitAudioContext)();this.context.resume();}catch{}}
+ stop(){this.seq++;window.speechSynthesis?.cancel();for(const timer of this.timers)clearTimeout(timer);this.timers.clear();}
+ say(text,{after=null,rate=.84}={}){this.stop();this.last=text;if(!this.enabled){after?.();return;}if(!('speechSynthesis'in window)){after?.();return;}const token=this.seq,u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=rate;u.pitch=1.07;const voices=speechSynthesis.getVoices();u.voice=voices.find(v=>v.voiceURI===this.voice)||voices.find(v=>/^en-US/.test(v.lang)&&/Samantha|Aria|Jenny|Ava|female/i.test(v.name))||voices.find(v=>/^en/.test(v.lang))||null;u.onend=()=>{if(token===this.seq)after?.();};u.onerror=()=>{if(token===this.seq)after?.();};speechSynthesis.speak(u);}
+ later(fn,ms){const token=this.seq,t=setTimeout(()=>{this.timers.delete(t);if(token===this.seq)fn();},ms);this.timers.add(t);return t;}
+ tone(freq=660,d=.16,type='sine'){if(!this.enabled)return;this.unlock();if(!this.context)return;const t=this.context.currentTime,o=this.context.createOscillator(),g=this.context.createGain();o.type=type;o.frequency.setValueAtTime(freq,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.085,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(this.context.destination);o.start(t);o.stop(t+d+.03);}
+ cheer(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>this.tone(f,.15),i*130));}
+ roar(){if(!this.enabled)return;this.unlock();if(!this.context)return;const t=this.context.currentTime,o=this.context.createOscillator(),g=this.context.createGain(),f=this.context.createBiquadFilter();o.type='sawtooth';o.frequency.setValueAtTime(72,t);o.frequency.exponentialRampToValueAtTime(39,t+.75);f.type='lowpass';f.frequency.value=450;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.09,t+.12);g.gain.exponentialRampToValueAtTime(.0001,t+.85);o.connect(f);f.connect(g);g.connect(this.context.destination);o.start(t);o.stop(t+.9);}
+ tune(notes){this.unlock();for(let i=0;i<notes.length;i++){const [f,d]=notes[i];this.later(()=>this.tone(f,d*.88,'triangle'),notes.slice(0,i).reduce((s,x)=>s+x[1]*1000,0),);}}
+}

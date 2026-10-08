@@ -34,7 +34,7 @@ export const SCENES = {
   {x:73,y:72,label:'Truck collection',icon:'truck',file:'monster-trucks.html'},
  ]},
  school:{title:'Our classroom',image:'school',ratio:1.5,hint:'Draw, build, and explore together.',spots:[
-  {x:50,y:43,label:'Whiteboard',icon:'pencil',art:'whiteboard'},
+  {x:50,y:43,label:'Visit our school',icon:'book',file:'school.html'},
   {x:23,y:72,label:'Blocks',icon:'game',file:'blocks.html'},
   {x:73,y:75,label:'Learning games',icon:'book',file:'learning.html'},
  ]},

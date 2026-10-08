@@ -1,0 +1,44 @@
+{
+  "hallway": {
+    "file": "hallway-v1.webp",
+    "source": "27_School_Hallway.png",
+    "sourceSHA256": "dafcd8fb314e80303935f4458be162c970dc6132c9667fbbc2857bac79c9338c",
+    "width": 1536,
+    "height": 1024
+  },
+  "jace-classroom": {
+    "file": "jace-classroom-v1.webp",
+    "source": "28_Jace_Classroom.png",
+    "sourceSHA256": "12be0776decf5ff76a68b5d93c961d79a77d83fa6f3dafc2933cfd270ab3134f",
+    "width": 1536,
+    "height": 1024
+  },
+  "halli-classroom": {
+    "file": "halli-classroom-v1.webp",
+    "source": "29_Halli_Classroom.png",
+    "sourceSHA256": "937f3db717c66ced5df7acac34350a3dd8e46da1a133c119fa534276114f80fb",
+    "width": 1536,
+    "height": 1024
+  },
+  "cafeteria": {
+    "file": "cafeteria-v1.webp",
+    "source": "30_School_Cafeteria.png",
+    "sourceSHA256": "61828690f6a8be528cc85a1950f955bc83250c96ea234d7e75b05d4202c8ef85",
+    "width": 1536,
+    "height": 1024
+  },
+  "bus-outside": {
+    "file": "bus-outside-v1.webp",
+    "source": "32_School_Bus_Exterior.png",
+    "sourceSHA256": "c081e72dc3dcd7c984889a7658eef2701bd5b04950fc4cd27b4013f6cdb3f488",
+    "width": 1536,
+    "height": 1024
+  },
+  "bus-inside": {
+    "file": "bus-inside-v1.webp",
+    "source": "33_School_Bus_Interior_APPROVED.png",
+    "sourceSHA256": "0dd9ca1f15755ca2c924c7539de2fe5d4feebd3b613ea1c99b512b6119f21515",
+    "width": 1536,
+    "height": 1024
+  }
+}

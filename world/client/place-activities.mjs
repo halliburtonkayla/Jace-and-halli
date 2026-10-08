@@ -1,5 +1,5 @@
-import {TOWN_PLACES} from './town-destinations.mjs?v=zoo-tour-1';
-import {GAME_PAGES} from './game-catalog.mjs?v=train-1';
+import {TOWN_PLACES} from './town-destinations.mjs?v=school-1';
+import {GAME_PAGES} from './game-catalog.mjs?v=school-1';
 export const PLACE_LINKS=[...TOWN_PLACES,
  {id:'train',name:'Train station',icon:'car',x:83,y:77},
  {id:'circus',name:'Circus',icon:'game',x:94,y:20},
@@ -14,7 +14,7 @@ const groups={
  garden:['halli-bubbles.html','bubbles.html','halli-balloons.html','halli-garden.html','halli-lights.html'],
  arcade:['arcade-new.html#moto','arcade-new.html#skee','arcade-new.html#light','arcade.html#moto','arcade.html#skee','arcade.html#light','together.html#four','together.html#match','together.html#color'],
  arena:['monster-truck-drive.html','monster-trucks.html'],
- school:['school-playground.html','school-playground-tours.html','learning.html','learning-tent.html','halli-abc.html','halli-counting.html','clicky-computer.html','whiteboard.html','art.html','blocks.html','halli-colors.html'],
+ school:['school.html','school-playground.html','school-playground-tours.html','learning.html','learning-tent.html','halli-abc.html','halli-counting.html','clicky-computer.html','whiteboard.html','art.html','blocks.html','halli-colors.html'],
  garage:['town-driving.html','tractor-farm.html','construction-drive.html','driving.html'],
  zoo:['zoo.html','halli-animals.html','dinosaurs.html'],train:['train-station.html'],
  circus:['halli-balloons.html','halli-peekaboo.html','halli-music.html','halli-stars.html'],

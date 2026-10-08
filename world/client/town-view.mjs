@@ -1,6 +1,6 @@
-import {PLACE_LINKS,PLACE_NOTES,activitiesForPlace} from './place-activities.mjs?v=train-1';
-import {GAME_PAGES} from './game-catalog.mjs?v=train-1';
-import {TOWN_PLACES,SCENES} from './town-destinations.mjs?v=zoo-tour-1';
+import {PLACE_LINKS,PLACE_NOTES,activitiesForPlace} from './place-activities.mjs?v=school-1';
+import {GAME_PAGES} from './game-catalog.mjs?v=school-1';
+import {TOWN_PLACES,SCENES} from './town-destinations.mjs?v=school-1';
 import {drawPortrait} from './characters.mjs';
 const paths={
  film:'M3 5h20v16H3ZM8 5v16M18 5v16M3 10h5M3 16h5M18 10h5M18 16h5',
@@ -61,6 +61,7 @@ export class TownView{
   const place=PLACE_LINKS.find(p=>p.id===id);this.say(place.name);
   if(id==='garden'){this.classic('bubble-garden.html');return;}
   if(id==='train'){this.classic('train-station.html');return;}
+  if(id==='school'){this.visit('school');this.classic('school.html');return;}
   if(id==='church'){this.classic('church.html');return;}
   if(id==='zoo'){this.visit('zoo');this.classic('zoo.html');return;}
   if(id==='theater'){this.visit('theater');this.classic('theater.html');return;}
