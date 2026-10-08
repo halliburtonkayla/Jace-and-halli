@@ -1,9 +1,9 @@
-import {ActivityActor} from './actors.mjs?v=arcade-1';
+import {ActivityActor} from './actors.mjs?v=arcade-2';
 import * as T from './vendor/three.mjs';
 import {SoftballScene} from './vendor/softball-scene.mjs';
 import {drawBasketball} from './vendor/basketball.mjs?v=park-3';
 import {CHARACTER_ART,loadCharacter} from '../characters.mjs';
-import {SPOTS,STATIONS,HEDGES} from './session.mjs?v=arcade-1';
+import {SPOTS,STATIONS,HEDGES} from './session.mjs?v=arcade-2';
 const palette=['#74d4ea','#ffba70','#e3a9ed','#ffe98d'];
 export class ParkScene {
  constructor(canvas,game){this.canvas=canvas;this.game=game;this.art={};this.avatars=new Map();this.actors=new Map();this.textures={};this.dynamic=[];this.mats=new Map();for(const id of Object.keys(CHARACTER_ART))loadCharacter(id).then(im=>{if(!im)return;this.art[id]=im;this.textures[id]=CHARACTER_ART[id].frames.map(([x,y,w,h])=>{const c=document.createElement('canvas');c.width=256;c.height=512;const ctx=c.getContext('2d');ctx.drawImage(im,x,y,w,h,128-256*w/h,0,512*w/h,512);const tex=new T.CanvasTexture(c);tex.colorSpace=T.SRGBColorSpace;return tex;});});
@@ -52,7 +52,7 @@ export class ParkScene {
   this.box(-.85,1.35,-3.8,.9,.045,.7,0xc89660);this.knife=this.box(-.8,1.46,-3.8,.07,.05,.65,0xc5d1cd);this.bowl.material=this.mat(0x619ea5);
   for(const x of [-1,.1,1.1]){this.box(x,.65,-3.22,.85,.9,.08,0x6b9d8a);this.box(x,.98,-3.1,.32,.045,.05,0xd9d5b8);}
   for(let i=0;i<4;i++)this.cylinder(5,1.4+i*.05,4,.45,.035,0xfff8e7);this.cylinder(6,1.4,4,.18,.12,0xe4bd68);
-  this.ingredients=[];for(let i=0;i<12;i++)this.ingredients.push(this.sphere(-6.9+(i%4)*.5,1.48+Math.floor(i/4)*.15,-4+(i%2)*.3,.12,[0xe5b267,0xdf755e,0x7ca85e][i%3]));
+  this.breakfast=new T.Group();this.scene.add(this.breakfast);this.box(-6.8,1.65,-4,.38,.6,.3,0xf2e6c8,this.breakfast);this.box(-6,1.65,-4,.35,.65,.3,0xe7eee3,this.breakfast);this.box(-6,1.62,-3.84,.35,.16,.025,0x70afc2,this.breakfast);for(let i=0;i<3;i++)this.sphere(-5.5+i*.18,1.48,-4,.10,0xf9edce,this.breakfast).scale.y=1.3;this.ingredients=[];for(let i=0;i<12;i++)this.ingredients.push(this.sphere(-6.9+(i%4)*.5,1.48+Math.floor(i/4)*.15,-4+(i%2)*.3,.12,[0xe5b267,0xdf755e,0x7ca85e][i%3]));
  }
 
  activityActor(p,index){let a=this.actors.get(p.id);if(!a){a=new ActivityActor(this.scene,index,this.game==='swim'?'swimmer':'chef');a.label=this.label(p.name,0,0,0,1.6);this.actors.set(p.id,a);}a.update(p,this.current.time);a.label.position.set(p.x,this.game==='swim'?.8:2.55,p.z);a.label.quaternion.copy(this.camera.quaternion);a.label.visible=true;return a;}
@@ -67,7 +67,7 @@ export class ParkScene {
   const present=new Set(s.members.map(p=>p.id));for(const [key,a]of this.avatars)if(!present.has(key)){a.mesh.visible=false;a.label.visible=false;}if(['swim','cook'].includes(this.game)){for(const [key,a]of this.actors)if(!present.has(key)){a.root.visible=false;a.label.visible=false;}s.members.forEach((p,i)=>this.activityActor(p,i));}else s.members.forEach((p,i)=>this.avatar(p,i));
   if(this.game==='seesaw'){this.plank.rotation.z=s.state.angle;this.starOrbs.forEach((o,i)=>o.material=this.mat(i<s.state.stars?0xffd960:0xb6b2a1));}
   if(this.game==='swim'){this.poolRipples.forEach((o,i)=>{o.scale.setScalar(1+Math.sin(s.time*2+i)*.3);o.position.x+=Math.sin(s.time+i)*.001;});this.collectibles.forEach((o,i)=>{const r=s.state.rings[i];o.visible=Boolean(r);if(r){o.position.set(r.x,.22+Math.sin(s.time*2+i)*.07,r.z);o.rotation.z=Math.sin(s.time+i)*.15;}});}
-  if(this.game==='cook'){this.knife.position.y=1.46+(s.members.some(p=>(p.actionUntil||0)>s.time)?Math.abs(Math.sin(s.time*15))*.18:0);this.food.material=this.mat(s.state.heat>2.5?0xc39345:0xf1d681);this.ingredients.forEach((o,i)=>o.visible=i>=s.state.step*3);this.bowl.scale.y=.55+Math.sin(s.state.work)*.03;this.food.visible=s.state.step>=4;this.steam.forEach((o,i)=>{o.visible=s.state.heat>0&&s.state.step===4;o.position.y=1.8+(s.time*.6+i*.2)%1.2;});}
+  if(this.game==='cook'){this.knife.position.y=1.46+(s.members.some(p=>(p.actionUntil||0)>s.time)?Math.abs(Math.sin(s.time*15))*.18:0);this.food.material=this.mat(s.state.heat>2.5?0xc39345:0xf1d681);this.breakfast.visible=s.state.recipe===0;this.ingredients.forEach((o,i)=>o.visible=s.state.recipe!==0&&i>=s.state.step*3);this.bowl.scale.y=.55+Math.sin(s.state.work)*.03;this.food.visible=s.state.step>=4;this.steam.forEach((o,i)=>{o.visible=s.state.heat>0&&s.state.step===4;o.position.y=1.8+(s.time*.6+i*.2)%1.2;});}
   if(this.game==='fishing'){for(const [key,b]of this.bobbers)if(!present.has(key))b.root.visible=false;s.members.forEach((p,i)=>{let b=this.bobbers.get(p.id);if(!b){const root=new T.Group();this.scene.add(root);const float=this.sphere(0,0,0,.17,i===0?0xee786e:0xf3cc65,root);const line=new T.Line(new T.BufferGeometry(),new T.LineBasicMaterial({color:0xfff3d2}));this.scene.add(line);const rod=this.cylinder(0,0,0,.04,3,0x85593e);b={root,float,line,rod};this.bobbers.set(p.id,b);}const f=p.fish,active=['cast','waiting','bite','fight'].includes(f.phase);b.root.visible=active;b.line.visible=active;b.rod.position.set(p.x+.45,1.5,p.z-1);b.rod.rotation.x=-.7;const t=f.phase==='cast'?Math.min(1,f.t/.8):1,x=p.x+(f.x-p.x)*t,z=p.z+(f.z-p.z)*t,y=f.phase==='cast'?Math.sin(t*Math.PI)*3:.1+Math.sin(s.time*(f.phase==='bite'?18:3))*.07;b.root.position.set(x,y,z);if(active){b.line.geometry.dispose();b.line.geometry=new T.BufferGeometry().setFromPoints([new T.Vector3(p.x+.45,2.65,p.z-2),new T.Vector3(x,y,z)]);}});this.ripples.forEach((r,i)=>r.scale.setScalar(1+Math.sin(s.time+i)*.15));}
   this.renderer.render(this.scene,this.camera);
  }

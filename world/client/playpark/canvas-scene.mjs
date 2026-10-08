@@ -1,6 +1,6 @@
 // Perspective Canvas fallback: same host simulation and inputs when WebGL is unavailable.
 import {CHARACTER_ART,loadCharacter} from '../characters.mjs';
-import {SPOTS,STATIONS,HEDGES} from './session.mjs?v=arcade-1';
+import {SPOTS,STATIONS,HEDGES} from './session.mjs?v=arcade-2';
 import {BASES,runnerPosition} from './vendor/softball.mjs';
 export class CanvasScene {
  constructor(canvas,game){this.canvas=canvas;this.c=canvas.getContext('2d');this.game=game;this.art={};this.camera={x:0,z:0};for(const id of Object.keys(CHARACTER_ART))loadCharacter(id).then(im=>this.art[id]=im);this.resize();}
