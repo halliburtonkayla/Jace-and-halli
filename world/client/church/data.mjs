@@ -4,8 +4,8 @@ export const CLOSING_PRAYER = "Dear God, thank you for our Bible lesson. Help us
 export const PRAYER_PROMPT = 'Prayer is talking to God. Jace and Halli, bow your heads, close your eyes, and fold your hands. You can pray along with me.';
 export const DISMISSAL = 'Church is over. Thank you for learning, singing, and praying with us! Walk with Mommy. Now we can say hello to our church friends.';
 export const AUDIO = {
- welcome:'https://resource2.heygen.ai/text_to_speech/783155dd0848415e80d42750c61f95e3/02f211a5ef524caea2ad8447e72b218c/id=39d86d90-d6ac-4804-b4b0-7c03d96312a0.wav',
- prayers:'https://resource2.heygen.ai/text_to_speech/783155dd0848415e80d42750c61f95e3/02f211a5ef524caea2ad8447e72b218c/id=3b7a7303-fca5-4f70-ab28-71f9df19ad25.wav'
+ welcome:'world/assets/church/welcome.mp3',
+ prayers:'world/assets/church/prayers.mp3'
 };
 // YouTube videos are played by the official embedded player; never downloaded/rehosted.
 // The Noah item is a complete 1:48 story, bounded inside the publisher's Jr compilation.

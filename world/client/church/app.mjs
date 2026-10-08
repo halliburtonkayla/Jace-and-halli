@@ -1,5 +1,5 @@
 import {readMedia,saveMedia,removeMedia,checkMedia} from './media-store.mjs?v=church-1';
-import {WELCOME,OPENING_PRAYER,CLOSING_PRAYER,PRAYER_PROMPT,DISMISSAL,AUDIO,LESSONS,SONGS,SERVICE_STEPS,nextLesson} from './data.mjs?v=church-1';
+import {WELCOME,OPENING_PRAYER,CLOSING_PRAYER,PRAYER_PROMPT,DISMISSAL,AUDIO,LESSONS,SONGS,SERVICE_STEPS,nextLesson} from './data.mjs?v=church-4';
 const $=id=>document.getElementById(id), stage=$('stage');
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const get=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback;}catch{return fallback;}};
