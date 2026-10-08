@@ -1,3 +1,17 @@
+# October 8 visual correction
+
+The owner clarified that attractive illustrated gameplay is the goal; real-time 3D is not required. The default playground now uses a Canvas renderer with detailed transparent equipment artwork, approved directional Jace artwork, new distinct NPC sprites, animated footsteps, depth sorting, shadows and a following camera. It does not require WebGL. The prior experimental mesh renderer is preserved, but is no longer loaded by the game.
+
+Movement, AI, contact tagging, safe base, physical balls and equipment simulation are unchanged. Hidden NPCs are omitted until discovered, and no opponent names or minimap markers reveal them. Wide/closer views replace the old first-person control. Final art approval, recorded laughter and physical iPad Safari testing remain incomplete.
+
+Generated assets: `world/assets/playground/props-v1.webp` and `friends-v1.webp`, built-in image generation; transparency retained in WebP delivery copies. Prompts: detailed dimensional wooden jungle gym, red slide, blue playhouse, swings, tunnel, seesaw, tree, bush, bench, hoop and goal isolated as transparent game sprites; three distinct school children in teal/mustard, blue/tan and purple/mint clothing, front/back full-body transparent sprites. Jace's existing approved atlas is reused unchanged. Artwork is a rendering layer over the live simulation, not a substitute for gameplay.
+
+Validation: all 83 existing simulation/regression tests pass; CPU Canvas render inspected. Browser/mobile-layout checks recorded after deployment. Safari hardware QA is pending.
+
+---
+
+## Previous implementation record (superseded visual layer)
+
 # School playground — development status
 
 This is an IN PROGRESS playable implementation, **not an accepted commercial-quality release**. The owner explicitly rejects button-only, emoji, flat-paper, or block-placeholder games. Existing school video tours remain at school-playground-tours.html; their game buttons now lead to the actual playground. Existing multiplayer hide-and-seek remains unchanged.
