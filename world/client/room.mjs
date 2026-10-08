@@ -1,5 +1,5 @@
 import { GalleryService } from './creativity/gallery.mjs?v=studio-1';
-import { FAMILY, FamilyGame } from './family-game.mjs?v=family-3';
+import { FAMILY, FamilyGame } from './family-game.mjs?v=park-1';
 const alphabet = '0123456789';
 export function newCode() { const bytes = new Uint8Array(4); crypto.getRandomValues(bytes); return [...bytes].map(v => alphabet[v % alphabet.length]).join(''); }
 export function normalizeCode(value) { return String(value || '').toUpperCase().replace(/[\s-]/g, ''); }
@@ -75,7 +75,7 @@ export class FamilyRoom extends EventTarget {
       if (Date.now() - record.lastWindow > 1000) { record.lastWindow = Date.now(); record.requestCount = 0; }
       if (++record.requestCount > 35) return;
       try {
-        if (!['select', 'input', 'action', 'resume','race','cinema','together','art-list','art-read','art-begin','art-part','art-finish'].includes(message.path)) throw Error('Unknown room request.');
+        if (!['select', 'input', 'action', 'resume','race','cinema','together','playpark','art-list','art-read','art-begin','art-part','art-finish'].includes(message.path)) throw Error('Unknown room request.');
         if (message.path === 'select' && message.body?.profile !== record.profile.id) throw Error('Use the profile selected when joining.');
         const result = message.path.startsWith('art-') ? await this.galleryService.request(conn.peer,this.game.players.get(conn.peer)?.profile,message.path,message.body) : this.game.request(conn.peer, message.path, message.body);
         conn.send({ type: 'reply', id: message.id, result });
@@ -102,7 +102,7 @@ export class FamilyRoom extends EventTarget {
   }
   broadcast() {
     const state = this.game.snapshot(); if(this.lastTogetherRevision===state.together.revision)state.together={revision:state.together.revision,members:state.together.members};else this.lastTogetherRevision=state.together.revision;this.emit('snapshot', state);
-    for (const record of this.connections.values()) if (record.approved && record.conn.open && (record.conn.dataChannel?.bufferedAmount || 0) < 64000) record.conn.send({ type: 'snapshot', state });
+    for (const record of this.connections.values()) if (record.approved && record.conn.open && (record.conn.dataChannel?.bufferedAmount || 0) < 64000) record.conn.send({ type: 'snapshot', state:{...state,playpark:this.game.playpark.snapshot(record.conn.peer)} });
   }
   close() {
     this.closing = true; this.lastTogetherRevision=null;this.galleryService.uploads.clear(); clearInterval(this.timer); this.timer = null; this.game?.save(); this.connected = false;

@@ -1,3 +1,4 @@
+import {ParkSession} from './playpark/session.mjs?v=park-1';
 import {TogetherSession} from './together-session.mjs?v=family-3';
 import {MovieSession} from './theater/session.mjs?v=family-3';
 import { makePlayer, step, cutGrass, nearby, publicPlayer, clamp } from '../server/simulation.mjs?v=illustrated-1';
@@ -21,7 +22,7 @@ export class FamilyGame {
     this.saveCallback = save;
     this.tag = { active: false, it: null, cooldown: 0 };
     this.clock = 0;
-    this.bowling = new BowlingLane();this.cinema=new MovieSession();this.together=new TogetherSession();
+    this.bowling = new BowlingLane();this.cinema=new MovieSession();this.together=new TogetherSession();this.playpark=new ParkSession();
     this.racing = new RaceSession((r,g,serial)=>{
       const p=this.players.get(r.id);if(!p||p.profile!==r.profile)return;
       p.data.racing ||= {};const old=p.data.racing[g.track.id];
@@ -49,7 +50,7 @@ export class FamilyGame {
     if (!profile) throw Error('Choose an approved profile.');
     if ([...this.players.entries()].some(([other, p]) => other !== id && p.profile === profileId)) throw Error('That profile is already playing.');
     const old = this.players.get(id);
-    this.racing.leave(id);this.cinema.leave(id);this.together.leave(id);
+    this.racing.leave(id);this.cinema.leave(id);this.together.leave(id);this.playpark.leave(id);
     if(old?.scene==='bowling')this.bowling.leave(id);
     if (old) this.progress[old.profile] = old.data;
     const p = makePlayer(id, profile, this.progress[profile.id] || fresh());
@@ -58,7 +59,7 @@ export class FamilyGame {
     return this.reply(p);
   }
   leave(id) {
-    this.racing.leave(id);this.cinema.leave(id);this.together.leave(id);
+    this.racing.leave(id);this.cinema.leave(id);this.together.leave(id);this.playpark.leave(id);
     this.bowling.leave(id);
     const p = this.players.get(id);
     if (p) this.progress[p.profile] = p.data;
@@ -73,6 +74,7 @@ export class FamilyGame {
     const p = this.players.get(id);
     if (!p) throw Error('Choose a profile first.');
     p.lastSeen = Date.now();
+    if(path==='playpark')return this.playpark.request(p,body);
     if(path==='together')return this.together.request(p,body);
     if(path==='cinema')return this.cinema.request(p,body);
     if(path==='race')return this.racing.request(p,body);
@@ -128,7 +130,7 @@ export class FamilyGame {
   bubble(p) { return { id: uid(), x: .12 + Math.random() * .76, y: .15 + Math.random() * .62, r: p.mode === 'toddler' ? .13 : .085, color: Math.floor(Math.random() * 4) }; }
   makeBubbles(p) { p.bubbles = Array.from({ length: p.mode === 'toddler' ? 5 : 8 }, () => this.bubble(p)); }
   tick(dt, now = Date.now()) {
-    this.racing.tick(dt);
+    this.racing.tick(dt);this.playpark.tick(dt);
     this.clock++;
     this.bowling.tick(Math.min(.05,dt));
     let changed = false;
@@ -156,5 +158,5 @@ export class FamilyGame {
     }
     if (changed) this.save();
   }
-  snapshot() { return { players: [...this.players.values()].map(publicPlayer), npcs: this.npcs, cut: [...this.cut], tag: this.tag, clock: this.clock, together:this.together.snapshot(),cinema:this.cinema.snapshot(),bowling:this.bowling.snapshot(), racing:this.racing.snapshot() }; }
+  snapshot(viewer="host") { return { playpark:this.playpark.snapshot(viewer), players: [...this.players.values()].map(publicPlayer), npcs: this.npcs, cut: [...this.cut], tag: this.tag, clock: this.clock, together:this.together.snapshot(),cinema:this.cinema.snapshot(),bowling:this.bowling.snapshot(), racing:this.racing.snapshot() }; }
 }
