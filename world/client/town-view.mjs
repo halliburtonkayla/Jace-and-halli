@@ -1,5 +1,5 @@
-import {PLACE_LINKS,PLACE_NOTES,activitiesForPlace} from './place-activities.mjs?v=zoo-tour-1';
-import {GAME_PAGES} from './game-catalog.mjs?v=all-games-1';
+import {PLACE_LINKS,PLACE_NOTES,activitiesForPlace} from './place-activities.mjs?v=recess-1';
+import {GAME_PAGES} from './game-catalog.mjs?v=recess-1';
 import {TOWN_PLACES,SCENES} from './town-destinations.mjs?v=zoo-tour-1';
 import {drawPortrait} from './characters.mjs';
 const paths={
