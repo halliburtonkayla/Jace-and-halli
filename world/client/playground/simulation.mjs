@@ -21,7 +21,7 @@ export class Playground {
  const s=this.seesaw;s.cool-=dt;s.partner-=dt;if(this.player.state==='seated'){if(s.partner<=0&&s.angle<.05){s.velocity+=.9;s.partner=.8;}s.velocity+=(-s.angle*2.4-s.velocity*.6)*dt;s.angle=clamp(s.angle+s.velocity*dt,-.42,.42);if(Math.abs(s.angle)>=.42)s.velocity*=-.3;this.player.y=1.15-2.5*Math.sin(s.angle);this.children[0].y=1.15+2.5*Math.sin(s.angle);if(s.energy>=1){s.energy-=1;s.stars++;this.emit('A star for teamwork!','win');}}
  }
  hideTick(dt){const p=this.player;
- if(['count','hide'].includes(this.phase)){this.left-=dt;const count=Math.ceil(this.left);if(count>0&&count!==this.lastCount){this.lastCount=count;this.events.push({kind:'count',text:String(11-count)});}if(this.left<=0){this.phase='search';this.left=this.easy?180:120;this.emit('Ready or not, here we come!');if(this.role==='hider')this.children.forEach(c=>{c.state='search';c.searchAt=0;});}}
+ if(['count','hide'].includes(this.phase)){this.left-=dt;const count=Math.ceil(this.left);if(count>0&&count!==this.lastCount){this.lastCount=count;this.events.push({kind:'count',text:String(count)});}if(this.left<=0){this.phase='search';this.left=this.easy?180:120;this.emit('Ready or not, here we come!');if(this.role==='hider')this.children.forEach(c=>{c.state='search';c.searchAt=0;});}}
  if(this.phase==='done')return;
  for(const c of this.children){c.anim=Math.max(0,c.anim-dt);if(this.role==='seeker'){
   if(c.state==='scatter'){this.move(c,dt,7.2);if(!c.path.length){c.state='hidden';c.hidden=c.spot.id;c.crouch=true;if(['house','tunnel'].includes(c.spot.kind)){c.x=c.spot.cover.x;c.z=c.spot.cover.z;}}}
