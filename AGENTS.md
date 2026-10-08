@@ -1,5 +1,10 @@
 # Jace & Halli's World project instructions
 
+## Latest activity correction — October 8, 2026
+
+The owner authorizes distinct animated activity avatars in softball, swimming and cooking; family portraits must not replace articulated game characters or hide equipment. Keep approved family artwork in hide-and-seek. These four activities must be actual games with visible equipment, movement and physical environments; preserve the town and shared-room systems.
+
+
 ## Latest owner decision — October 7, 2026
 
 The owner approved an interactive illustrated town made from the exact approved scene artwork, with tappable destinations leading to real games, like the Transition Town approach: “Yes that was the point the whole time.” This supersedes the earlier requirement for a free-roaming WebGL town as the primary experience. Use the supplied master town as the actual navigation surface after profile selection, not only as a welcome/overview image. Do not return children to the rejected primitive 3D neighborhood. Keep the experimental renderers and working systems preserved. Do not call scenic pictures playable attractions; active destinations must lead to real interactions. Family identity, preservation, room approval, zero additional cost, and honest development status requirements remain in force.
