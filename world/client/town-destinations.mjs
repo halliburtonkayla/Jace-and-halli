@@ -29,9 +29,9 @@ export const SCENES = {
   {x:10,y:56,label:'Racing & skee-ball',icon:'car',file:'arcade-new.html'},
   {x:34,y:56,label:'Classic arcade',icon:'game',file:'arcade.html'},
  ]},
- arena:{title:'Monster truck arena',image:'arena',ratio:1.5,hint:'The original driving games are ready to play.',spots:[
+ arena:{title:'Monster truck arena',image:'arena',ratio:1.5,hint:'Design your truck, choose a track and race together.',spots:[
   {x:35,y:74,label:'Drive a monster truck',icon:'truck',file:'monster-truck-drive.html'},
-  {x:73,y:72,label:'Truck collection',icon:'truck',file:'monster-trucks.html'},
+  {x:73,y:72,label:'Truck garage',icon:'truck',file:'monster-trucks.html'},
  ]},
  school:{title:'Our classroom',image:'school',ratio:1.5,hint:'Draw, build, and explore together.',spots:[
   {x:50,y:43,label:'Visit our school',icon:'book',file:'school.html'},

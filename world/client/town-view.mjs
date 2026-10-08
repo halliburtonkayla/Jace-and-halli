@@ -1,5 +1,5 @@
-import {PLACE_LINKS,PLACE_NOTES,activitiesForPlace} from './place-activities.mjs?v=school-1';
-import {GAME_PAGES} from './game-catalog.mjs?v=school-1';
+import {PLACE_LINKS,PLACE_NOTES,activitiesForPlace} from './place-activities.mjs?v=monster-park-1';
+import {GAME_PAGES} from './game-catalog.mjs?v=monster-park-1';
 import {TOWN_PLACES,SCENES} from './town-destinations.mjs?v=school-1';
 import {drawPortrait} from './characters.mjs';
 const paths={

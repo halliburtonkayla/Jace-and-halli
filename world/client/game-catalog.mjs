@@ -1,5 +1,6 @@
 // Every existing game page and individual arcade/co-op game.
 export const GAME_PAGES = [
+ {label:"Our Park: Jace & Halli’s adventures",file:"park.html",icon:"leaf",image:"backyard"},
  {label:'Halli’s Bubble Garden: buddy, blowing, foam & drawing',file:'bubble-garden.html',icon:'bubbles',image:'bubbles'},
  {label:'Train Station: tickets, rides, driving & storytime',file:'train-station.html',icon:'car',image:'home'},
  {label:"Our School: Jace & Halli’s classrooms",file:"school.html",icon:"book",image:"school"},
@@ -213,13 +214,13 @@ export const GAME_PAGES = [
   "image": "home"
  },
  {
-  "label": "Monster Truck",
+  "label": "Monster Truck Rally: design, drive & race",
   "file": "monster-truck-drive.html",
   "icon": "game",
   "image": "backyard"
  },
  {
-  "label": "Truck collection",
+  "label": "Monster Truck Garage",
   "file": "monster-trucks.html",
   "icon": "game",
   "image": "home"

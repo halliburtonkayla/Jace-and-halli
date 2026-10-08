@@ -7,7 +7,7 @@ import { LOCATIONS } from './locations.mjs';
 import { drawPortrait, drawFamily, CHARACTER_ART } from './characters.mjs';
 import { routeTo, updateRoute, guidedInput, routeDots } from './routes.mjs';
 import { FamilyRoom } from './room.mjs?v=halloween-1';
-import {TownView} from './town-view.mjs?v=school-1';
+import {TownView} from './town-view.mjs?v=monster-park-1';
 import {BowlingView} from './bowling-view.mjs?v=family-3';
 import {SCENES} from './town-destinations.mjs?v=school-1';
 import {PLACES as DRIVE_PLACES} from './driving/world.mjs?v=drive-1';
@@ -209,7 +209,7 @@ window.addEventListener('message',e=>{if(e.origin!==location.origin||e.source!==
 // Halli's sensory play keeps the parent room alive; frame messages are source-checked.
 window.addEventListener('message',e=>{if(e.origin!==location.origin||e.source!==$('classic-frame').contentWindow||e.data?.channel!=='jhw-bubbles'||!new URL($('classic-frame').src,location.href).pathname.endsWith('/bubble-garden.html'))return;if(e.data.type==='active'){$('classic-frame-panel').style.paddingTop='0';$('close-classic').hidden=true;}if(e.data.type==='exit')$('close-classic').click();});
 // Train stays in the current room; only allowlisted destination pages can be opened.
-window.addEventListener('message',e=>{if(e.origin!==location.origin||e.source!==$('classic-frame').contentWindow||e.data?.channel!=='jhw-train'||!new URL($('classic-frame').src,location.href).pathname.endsWith('/train-station.html'))return;if(e.data.type==='active'){$('classic-frame-panel').style.paddingTop='0';$('close-classic').hidden=true;}if(e.data.type==='exit')$('close-classic').click();if(e.data.type==='visit'){const file={zoo:'zoo.html',park:'school-playground.html'}[e.data.destination];if(file){racingFrame(false);openClassic(file);}else if(e.data.destination==='city')$('close-classic').click();}});
+window.addEventListener('message',e=>{if(e.origin!==location.origin||e.source!==$('classic-frame').contentWindow||e.data?.channel!=='jhw-train'||!new URL($('classic-frame').src,location.href).pathname.endsWith('/train-station.html'))return;if(e.data.type==='active'){$('classic-frame-panel').style.paddingTop='0';$('close-classic').hidden=true;}if(e.data.type==='exit')$('close-classic').click();if(e.data.type==='visit'){const file={zoo:'zoo.html',park:'park.html'}[e.data.destination];if(file){racingFrame(false);openClassic(file);}else if(e.data.destination==='city')$('close-classic').click();}});
 // School uses the existing profile and keeps the hosting room alive.
 window.addEventListener('message',e=>{
  if(e.origin!==location.origin||e.source!==$('classic-frame').contentWindow||e.data?.channel!=='jhw-school'||!new URL($('classic-frame').src,location.href).pathname.endsWith('/school.html')||!me)return;
@@ -217,3 +217,5 @@ window.addEventListener('message',e=>{
  if(e.data.type==='active'){$('classic-frame-panel').style.paddingTop='0';$('close-classic').hidden=true;}
  if(e.data.type==='exit')$('close-classic').click();
 });
+
+window.addEventListener('message',e=>{if(e.origin!==location.origin||e.source!==$('classic-frame').contentWindow)return;const allowed={'jhw-monster':'monster-truck-drive.html','jhw-park':'park.html'};const file=allowed[e.data?.channel];if(file&&new URL($('classic-frame').src,location.href).pathname.endsWith('/'+file)&&e.data.type==='exit')$('close-classic').click();});

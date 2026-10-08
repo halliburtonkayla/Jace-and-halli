@@ -1,0 +1,212 @@
+[
+  {
+    "id": "climb",
+    "title": "Climb with Jace",
+    "src": "world/assets/park/climb.mp4",
+    "poster": "world/assets/park/climb.jpg",
+    "stops": [
+      8,
+      17,
+      27
+    ],
+    "prompts": [
+      "Climb up!",
+      "Keep climbing!",
+      "To the top!"
+    ],
+    "source": "Family park movie",
+    "start": 112,
+    "duration": 27
+  },
+  {
+    "id": "slide",
+    "title": "Slide with Jace",
+    "src": "world/assets/park/slide.mp4",
+    "poster": "world/assets/park/slide.jpg",
+    "stops": [
+      4,
+      8,
+      13
+    ],
+    "prompts": [
+      "Ready?",
+      "Set\u2026",
+      "Slide!"
+    ],
+    "source": "Family park movie",
+    "start": 150,
+    "duration": 13
+  },
+  {
+    "id": "monkey",
+    "title": "Monkey bars with Jace",
+    "src": "world/assets/park/monkey.mp4",
+    "poster": "world/assets/park/monkey.jpg",
+    "stops": [
+      2.5,
+      5,
+      8
+    ],
+    "prompts": [
+      "Reach!",
+      "Hold on!",
+      "One more!"
+    ],
+    "source": "Family park movie",
+    "start": 342,
+    "duration": 8
+  },
+  {
+    "id": "car",
+    "title": "The green car",
+    "src": "world/assets/park/car.mp4",
+    "poster": "world/assets/park/car.jpg",
+    "stops": [
+      3,
+      6,
+      10
+    ],
+    "prompts": [
+      "Hop in!",
+      "Turn the wheel!",
+      "Let\u2019s go!"
+    ],
+    "source": "Family park movie",
+    "start": 310,
+    "duration": 10
+  },
+  {
+    "id": "train",
+    "title": "The big red train",
+    "src": "world/assets/park/train.mp4",
+    "poster": "world/assets/park/train.jpg",
+    "stops": [
+      5,
+      10,
+      16
+    ],
+    "prompts": [
+      "Step aboard!",
+      "Look around!",
+      "Choo choo!"
+    ],
+    "source": "Family park movie",
+    "start": 228,
+    "duration": 16
+  },
+  {
+    "id": "halli",
+    "title": "Halli\u2019s playground",
+    "src": "world/assets/park/halli.mp4",
+    "poster": "world/assets/park/halli.jpg",
+    "stops": [
+      4,
+      8,
+      12
+    ],
+    "prompts": [
+      "Let\u2019s explore!",
+      "Keep going!",
+      "We did it!"
+    ],
+    "source": "Family park movie",
+    "start": 327,
+    "duration": 12
+  },
+  {
+    "id": "swings",
+    "title": "Swing at school",
+    "src": "https://cdn.openart.ai/openart-ai/production/2026-10/create-video/eaAOCMZTpfoxUqb0JFm7/2bd52d5f-e401-4ee8-a892-d045a33d6fe1_seed1517276683_1791428554954_8f0c8155.mp4",
+    "source": "School recess",
+    "prompts": [
+      "Push the swing!",
+      "Push the swing!",
+      "We did it!"
+    ],
+    "fractionalStops": [
+      0.33,
+      0.66,
+      1
+    ]
+  },
+  {
+    "id": "bridge",
+    "title": "Cross the bridge",
+    "src": "https://cdn.openart.ai/openart-ai/production/2026-10/create-video/eaAOCMZTpfoxUqb0JFm7/86618dd6-bec8-4fd2-9ebc-9fd3a6addd68_seed782150483_1791428383373_2d6d5d42.mp4",
+    "source": "School recess",
+    "prompts": [
+      "Take a step!",
+      "Take a step!",
+      "We did it!"
+    ],
+    "fractionalStops": [
+      0.33,
+      0.66,
+      1
+    ]
+  },
+  {
+    "id": "rock",
+    "title": "Climb the rock",
+    "src": "https://cdn.openart.ai/openart-ai/production/2026-10/create-video/eaAOCMZTpfoxUqb0JFm7/aaa6c9e8-9e93-4b23-a66a-b05e0cba484f_seed611669833_1791428462084_e9c90065.mp4",
+    "source": "School recess",
+    "prompts": [
+      "Reach up!",
+      "Reach up!",
+      "We did it!"
+    ],
+    "fractionalStops": [
+      0.33,
+      0.66,
+      1
+    ]
+  },
+  {
+    "id": "tunnel",
+    "title": "Crawl through the tunnel",
+    "src": "https://cdn.openart.ai/openart-ai/production/2026-10/create-video/eaAOCMZTpfoxUqb0JFm7/0aeb3bef-9384-4dbf-974b-1245a54ecf87_seed1491338169_1791428596014_89d01d24.mp4",
+    "source": "School recess",
+    "prompts": [
+      "Keep crawling!",
+      "Keep crawling!",
+      "We did it!"
+    ],
+    "fractionalStops": [
+      0.33,
+      0.66,
+      1
+    ]
+  },
+  {
+    "id": "redslide",
+    "title": "Red tunnel slide",
+    "src": "https://cdn.openart.ai/openart-ai/production/2026-10/create-video/eaAOCMZTpfoxUqb0JFm7/488bbd7e-c0d6-427a-9be3-3af732adad03_seed2018588916_1791428398022_15f341e9.mp4",
+    "source": "School recess",
+    "prompts": [
+      "Ready to slide!",
+      "Ready to slide!",
+      "We did it!"
+    ],
+    "fractionalStops": [
+      0.33,
+      0.66,
+      1
+    ]
+  },
+  {
+    "id": "net",
+    "title": "Climb the rope net",
+    "src": "https://cdn.openart.ai/openart-ai/production/2026-10/create-video/eaAOCMZTpfoxUqb0JFm7/d536f940-9caa-4cad-98b8-253b6b909c18_seed119541266_1791428650328_ae2d995c.mp4",
+    "source": "School recess",
+    "prompts": [
+      "Climb higher!",
+      "Climb higher!",
+      "We did it!"
+    ],
+    "fractionalStops": [
+      0.33,
+      0.66,
+      1
+    ]
+  }
+]

@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {MonsterRace,CIRCUITS,PAINTS} from '../client/monster/engine.mjs';
+import {normalizeInput} from '../client/monster/network.mjs';
+const idle={gas:0,brake:1,steer:0};
+test('independent players use their own steering, paint and gas',()=>{const g=new MonsterRace({players:2,paints:[PAINTS[3],PAINTS[2]],designs:[2,1]});g.phase='racing';for(let i=0;i<150;i++)g.tick(1/60,{'truck-0':{gas:1,steer:.7},'truck-1':idle});assert(g.racers[0].s>20);assert.equal(g.racers[1].v,0);assert(g.racers[0].x>0);assert.equal(g.racers[0].car.color,PAINTS[3]);assert.equal(g.racers[1].car.design,1);assert(g.racers.every(r=>r.car.kind==='truck'));assert(g.view(1).racers.find(r=>r.player).id==='truck-1');});
+test('ramps launch only trucks that reach them, land and count once',()=>{const g=new MonsterRace();g.phase='racing';const p=g.racers[0],ramp=g.track.ramps[0];Object.assign(p,{s:ramp.s-.1,x:ramp.x,v:40});g.tick(1/60,{'truck-0':{gas:1}});assert(p.jump>0);assert.equal(p.jumps,1);for(let i=0;i<100;i++)g.tick(1/60,{'truck-0':idle});assert.equal(p.jump,0);assert.equal(p.jumps,1);});
+test('all four circuits complete three laps with actual crossing times',()=>{for(const track of CIRCUITS){const g=new MonsterRace({track:track.id,players:2});for(const r of g.racers)r.autopilot=true;for(let i=0;i<25000&&g.phase!=='complete';i++)g.tick(1/60,{});assert.equal(g.phase,'complete',track.id);for(const r of g.racers){assert.equal(r.lapTimes.length,3);assert(r.finishTime>60&&r.finishTime<350);}}});
+test('free driving never reaches a finish line',()=>{const g=new MonsterRace({cruise:true});g.phase='racing';g.racers[0].s=g.track.length*10;g.racers[0].v=40;g.tick(1/60,{'truck-0':{gas:1}});assert.equal(g.racers[0].finishTime,null);});
+test('remote inputs are bounded and cannot carry positions',()=>{assert.deepEqual(normalizeInput({gas:Infinity,steer:-999,brake:'no',s:999999}),{gas:1,brake:0,steer:-1});});

@@ -1,0 +1,20 @@
+# Monster trucks and interactive park — October 8, 2026
+
+Implemented in the existing site at `monster-truck-drive.html` and `park.html`; `monster-trucks.html` opens the same garage. Preserve the school, train, church, Neon City Racers and family rooms.
+
+Monster trucks: existing RaceEngine/RaceRenderer driving foundation, truck-specific paint/designs, four dirt circuits, physical ramp launches and landing, eight moving trucks, three laps with real finish times, free drive, simultaneous independent touch/keyboard controls, same-screen two players. A separate two-device PeerJS room uses a four-digit code. Host owns positions, collision and finish state; guest sends clamped sequential inputs only. Lost input brakes after 600ms; host helper takes over after 3 seconds. Local customization and best time use new keys, without modifying existing profile saves. Synthesized optional engine feedback starts muted. The two-device option requires a real reachable PeerJS connection; do not describe it as verified on iPads until a hardware test succeeds.
+
+Artwork: approved park and arena originals from the supplied `Jace_Halli_World_MASTER_Clean_Approved_For_Work(2).zip`, downscaled to WebP without changing composition. Generated rear-truck sprite `world/assets/park/truck-rear-v1.png` made with the built-in image generation tool: one transparent blue monster pickup, direct rear chase-camera view, sculpted tires, chrome suspension, glossy curved body, warm roof lights, no people, text or decals. Runtime paint changes preserve shading; user design is overlaid. Original generated PNG is preserved. This remains an arcade perspective renderer with sprite vehicles; it is not claimed to be a fully modeled 3D simulation.
+
+Park release: six short silent family clips plus six existing school recess clips, with the approved park artwork. Family clip source offsets, durations and three tap-to-continue checkpoints are recorded in the manifest. Straight-through playback, replay, completion count and optional spoken prompts are included.
+
+The owner explicitly approved publishing this update, including the six family clips, to the public halliburtonkayla/Jace-and-halli website in this conversation on October 8, 2026. This resolves the earlier publication approval block.
+
+
+Real trucks: embedded selections from the official Monster Jam channel: Sparkle Smash (`ofxeS2cIKjQ`), Megalodon (`f7LMEsxo0tA`, linked by https://www.monsterjam.com/en-gb/truck/megalodon/), and Grave Digger Nashville freestyle (`b5UFznClHo4`). YouTube owns availability, advertisements and recommendations. No open video search or arbitrary child-submitted URL entry is provided. Full video content has not been independently screened end to end; parent co-viewing is indicated.
+
+Validation: 19 targeted simulation/input/racing tests pass, including all four monster tracks finishing three laps, real independent controls, airborne ramp behavior and free drive. Browser and release verification are recorded below when completed. Physical iPad touch, performance and separate-device networking remain separate acceptance checks.
+
+Browser verification: WebKit at 1024×768, 844×390 and 390×740 loaded all local assets without HTTP errors or application exceptions. Solo acceleration/steering/pause, same-screen independent WASD and arrow-key driving, visible touch controls, garage customization and three-step real-video playback were exercised. The monkey-bars clip advanced through all three checkpoints and saved its completion. The external school swings clip loaded its 5.042-second metadata. All six family clips fully decoded with ffmpeg. 24 targeted monster/racing/town tests passed after merging the latest school/train work.
+
+Two independent WebKit views attempted a real four-digit PeerJS join. Signaling did not establish a peer connection before the timeout; this is explicitly NOT a successful cross-device test. The option is labeled beta, with same-screen two-player racing verified as above. Physical iPads and end-to-end YouTube playback still need checking.
