@@ -1,8 +1,8 @@
-import {TogetherSession} from './together-session.mjs?v=family-2';
-import {MovieSession} from './theater/session.mjs?v=family-2';
+import {TogetherSession} from './together-session.mjs?v=family-3';
+import {MovieSession} from './theater/session.mjs?v=family-3';
 import { makePlayer, step, cutGrass, nearby, publicPlayer, clamp } from '../server/simulation.mjs?v=illustrated-1';
 import {TOWN_PLACES,VISIT_IDS} from './town-destinations.mjs?v=zoo-1';
-import {BowlingLane} from './bowling-physics.mjs?v=family-2';
+import {BowlingLane} from './bowling-physics.mjs?v=family-3';
 import {RaceSession} from './racing/session.mjs?v=family-race-1';
 export const FAMILY = [
   { id: 'jace', name: 'Jace', mode: 'preschool' },

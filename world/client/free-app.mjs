@@ -6,9 +6,9 @@ import { Sound } from './audio.mjs';
 import { LOCATIONS } from './locations.mjs';
 import { drawPortrait, drawFamily, CHARACTER_ART } from './characters.mjs';
 import { routeTo, updateRoute, guidedInput, routeDots } from './routes.mjs';
-import { FamilyRoom } from './room.mjs?v=family-2';
+import { FamilyRoom } from './room.mjs?v=family-3';
 import {TownView} from './town-view.mjs?v=zoo-tour-1';
-import {BowlingView} from './bowling-view.mjs?v=family-2';
+import {BowlingView} from './bowling-view.mjs?v=family-3';
 import {SCENES} from './town-destinations.mjs?v=zoo-tour-1';
 import {PLACES as DRIVE_PLACES} from './driving/world.mjs?v=drive-1';
 const room=new FamilyRoom();
@@ -110,7 +110,7 @@ async function openArt(station='coloring'){
  }catch(e){$('hint').textContent=e.message;if(me?.scene==='creativity')await action('art-exit');}finally{$('art-loader')?.remove();artOpening=false;}
 }
 $('create-art').onclick=openArt;$('classic-creativity').onclick=openArt;
-function openClassic(file){if(togetherOpen){togetherOpen=false;api('together',{op:'leave'}).catch(()=>{});}if(theaterOpen){theaterOpen=false;api('cinema',{op:'leave'}).catch(()=>{});}$('classic-frame-panel').classList.remove('hidden');const url=new URL('../../'+file,import.meta.url);if(url.pathname.endsWith('/arcade-new.html'))url.searchParams.set('v','all-games-1');if(url.pathname.endsWith('/together.html'))url.searchParams.set('v','family-2');if(url.pathname.endsWith('/theater.html'))url.searchParams.set('v','family-2');if(/\/(town-driving|tractor-farm)\.html$/.test(url.pathname))url.searchParams.set('v','drive-1');if(url.pathname.endsWith('/zoo.html')){url.searchParams.set('v','zoo-tour-1');url.searchParams.set('profile',me?.profile||'guest');}$('classic-frame').src=url.href;input={gas:0,brake:1,steer:0};sound.motor(null);}
+function openClassic(file){if(togetherOpen){togetherOpen=false;api('together',{op:'leave'}).catch(()=>{});}if(theaterOpen){theaterOpen=false;api('cinema',{op:'leave'}).catch(()=>{});}$('classic-frame-panel').classList.remove('hidden');const url=new URL('../../'+file,import.meta.url);if(url.pathname.endsWith('/arcade-new.html'))url.searchParams.set('v','all-games-1');if(url.pathname.endsWith('/together.html'))url.searchParams.set('v','family-3');if(url.pathname.endsWith('/theater.html'))url.searchParams.set('v','family-3');if(/\/(town-driving|tractor-farm)\.html$/.test(url.pathname))url.searchParams.set('v','drive-1');if(url.pathname.endsWith('/zoo.html')){url.searchParams.set('v','zoo-tour-1');url.searchParams.set('profile',me?.profile||'guest');}$('classic-frame').src=url.href;input={gas:0,brake:1,steer:0};sound.motor(null);}
 $('classic-open').onclick=()=>openClassic('classic-home.html');$('classic-whiteboard').onclick=()=>openClassic('whiteboard.html');$('classic-books').onclick=()=>openClassic('family-library.html');
 
 function racingFrame(active){racingOpen=active;$('classic-frame-panel').style.paddingTop=active?'0':'';$('close-classic').hidden=active;}
