@@ -7,3 +7,5 @@ Basketball and softball simulations and their court/field presentation are adapt
 Two-player activities: basketball, softball, seesaw. Fishing, swimming, cooking and hide-and-seek also allow additional family room members. Hide-and-seek and seesaw need at least two real room members. Sports offer a labeled computer opponent during solo practice. No local multiplayer is represented as an internet session.
 
 Run `node --test world/tests/playpark.test.mjs world/tests/shared-family.test.mjs world/tests/game-catalog.test.mjs`. `world/tests/playpark-viewport.html` renders two actual game views against an in-page host simulation for responsive/UI checks. It is explicitly not a cross-device networking test. Existing peer connectivity and host-foreground requirements remain.
+
+Devices without WebGL use the perspective Canvas renderer against the identical simulation, controls and personalized snapshots. The cloud browser has WebGL disabled; browser verification covers this fallback, while native WebGL rendering still needs a real-device visual check.
