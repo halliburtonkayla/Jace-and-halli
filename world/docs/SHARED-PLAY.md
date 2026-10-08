@@ -1,0 +1,11 @@
+# Family play shortcut
+
+The bottom toolbar's Play Together button groups all currently integrated family activities: Bowling, Family Racing, Connect Four, Matching, Color Together, and Watch Together. It uses the existing four-digit FamilyRoom connection. Mommy is now an allowed joining profile; room management still belongs to the hosting device. Profile uniqueness remains enforced.
+
+Bowling has one host-owned lane and score table. Computer Pip steps aside when another human arrives. Racing continues to use its existing host-authoritative engine. The three Together games now use the family connection when embedded in the world, with server-validated moves, Connect Four turns, host-timed matching flips and bounded shared drawing. Standalone Together retains its existing separate-room experience. Connect Four seats are the first two people entering Together; additional family members can watch. Matching and drawing are cooperative.
+
+Cinema has one live timeline per family room. Any viewer can choose, pause, play or seek for everybody. Joining viewers load the same movie and seek to the current position. Muting is local. iOS may require tapping JOIN MOVIE to allow audio; that tap joins the current position. Returning to a visible tab catches up. Leaving the last seat pauses the room. The existing movies.json configures the allowed movie IDs and durations, including future movies. The host must stay awake with its page open; this does not add a server or background hosting.
+
+Remaining scope: legacy solo games, zoo tour, driving and tractor games have not all been converted to shared simulation. They are intentionally not presented in this shortcut as multiplayer. Each requires a gameplay-specific adapter; synchronized navigation alone is not multiplayer.
+
+Validation: shared-family.test.mjs exercises independent peer connections, Mommy joining a child host, late movie joins, shared pause, clock progression, bounds, profile isolation, Connect Four turn enforcement, full state catch-up, matching timers and invalid drawing input. Existing bowling and movie reconstruction tests also pass. Public browser QA checks actual movie playback, menu navigation, and board state across two connected tabs.
