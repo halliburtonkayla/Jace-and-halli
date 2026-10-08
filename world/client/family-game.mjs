@@ -1,4 +1,4 @@
-import {ParkSession} from './playpark/session.mjs?v=arcade-2';
+import {ParkSession} from './playpark/session.mjs?v=hide-2';
 import {TogetherSession} from './together-session.mjs?v=family-3';
 import {MovieSession} from './theater/session.mjs?v=family-3';
 import { makePlayer, step, cutGrass, nearby, publicPlayer, clamp } from '../server/simulation.mjs?v=illustrated-1';

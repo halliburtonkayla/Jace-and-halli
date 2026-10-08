@@ -2,3 +2,5 @@
 body[data-game="softball"] #banner{max-width:85%;font-size:12px}header{flex-wrap:wrap}header>div{flex:1;min-width:130px}header button{padding:8px 10px;font-size:12px;min-height:36px}body[data-game="cook"] #banner{border-left:5px solid #dc9c54;border-radius:12px}body[data-game="swim"] #arena{background:#a1d9eb}@media(max-width:550px){header{gap:5px}header small{font-size:8px;letter-spacing:.8px}header h1{font-size:18px}header button{padding:7px;min-height:34px;font-size:11px}}@media(max-height:500px){header{flex-wrap:nowrap}header button{min-height:28px;padding:3px 9px}header>div{min-width:90px}}
 
 @media(max-height:500px){body[data-game='cook'] #hint,body[data-game='hide'] #hint,body[data-game='swim'] #hint{display:block;font-size:10px;margin-bottom:3px}}
+
+#meadow-map{position:absolute;right:10px;bottom:10px;width:100px;height:114px;pointer-events:none;opacity:.95}#meadow-map[hidden]{display:none}
