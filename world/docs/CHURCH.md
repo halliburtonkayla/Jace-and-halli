@@ -19,3 +19,9 @@ Verification: 12 focused Node checks (including existing town and game-menu regr
 Browser verification: live page, welcome completion, first prayer cues, parent lesson override, read-aloud story progression, and correct answer reveal observed. Browser speech was unavailable; this exposed and prompted a fix to preserve reading time before auto-advance. An additional generated quiz voice request timed out without a usable audio result; quizzes retain device narration with explicit on-screen fallback. Phone/iPad layout checks are provided in `world/tests/church-viewport.html`.
 
 Final layout checks: 768×1024 tablet and 390×844 phone portrait fit without horizontal overflow. Pause stopped prayer playback. Physical iPad playback remains unverified.
+
+## Audio revision — October 8, 2026
+
+Replaced the previous voice with Relaxed Ray (English US), generated at 0.96 speed. Sixty-one locally hosted speech clips now cover the welcome, posture prompts, prayers, dismissal, all 15 questions and answers, five lesson introductions, and all 20 read-aloud story pages. Narration is normalized to -18 LUFS / -2 dBTP. Device speech remains a last-resort fallback; it is no longer the normal quiz/story narrator. Each prayer itself remains under 15 seconds.
+
+Replaced synthesized babble with the publicly playable CC0 recording “Indoor adult murmur, small group.wav” by SpliceSound, https://freesound.org/people/SpliceSound/sounds/260121/ (public MP3 preview; source is 26.481 seconds and loopable). The mix uses gentle 140 Hz–4.2 kHz filtering and -24 LUFS normalization. Arrival/dismissal fades in; the ambience drops to 10% of the selected chatter level beneath the preacher, then fades out before service. Grown-up includes an independent 0–100% chatter control, default 55%. No music or instruments were added.
