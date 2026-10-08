@@ -1,6 +1,6 @@
 import * as T from './vendor/three.mjs';
 import {SoftballScene} from './vendor/softball-scene.mjs';
-import {drawBasketball} from './vendor/basketball.mjs';
+import {drawBasketball} from './vendor/basketball.mjs?v=park-3';
 import {CHARACTER_ART,loadCharacter} from '../characters.mjs';
 import {SPOTS,STATIONS} from './session.mjs';
 const palette=['#74d4ea','#ffba70','#e3a9ed','#ffe98d'];

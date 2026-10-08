@@ -27,7 +27,7 @@ function court(c){
  c.strokeStyle='#e0eeeb';c.lineWidth=2;arc(c,480,270,56);arc(c,250,270,60,-Math.PI/2,Math.PI/2);arc(c,710,270,60,Math.PI/2,Math.PI*1.5);
  arc(c,120,270,245,-Math.PI*.25,Math.PI*.25);arc(c,840,270,245,Math.PI*.75,Math.PI*1.25);
  line(c,project(480,90),project(480,450),'#dfefea',2);
- text(c,'TRANSITION TOWN',480,287,18,'#d6e9df88');text(c,'P A R K   C O U R T',480,310,10,'#d6e9df99');
+ text(c,'JACE & HALLI',480,287,18,'#d6e9df88');text(c,'P A R K   C O U R T',480,310,10,'#d6e9df99');
  // Soft evening shadows, lamps and sideline seating.
  for(const x of [36,924]){line(c,{x,y:164},{x,y:30},'#35524f',5);line(c,{x,y:30},{x:x+(x<100?36:-36),y:30},'#35524f',5);ellipse(c,x+(x<100?36:-36),31,14,4,'#fff2cc');}
  for(const x of[270,620]){c.fillStyle='#b08b63';c.fillRect(x,140,70,7);c.fillRect(x,152,70,6);line(c,{x:x+7,y:154},{x:x+7,y:165},'#314f45',3);line(c,{x:x+63,y:154},{x:x+63,y:165},'#314f45',3);}
