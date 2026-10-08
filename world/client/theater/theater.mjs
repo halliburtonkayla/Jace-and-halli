@@ -1,6 +1,6 @@
 import {watchParty} from './party.mjs?v=family-2';
 import {loadMovie} from './media.mjs?v=cinema-1';
-const $=id=>document.getElementById(id),video=$('film'),manifestURL=new URL('./movies.json',import.meta.url),embedded=parent!==window;
+const $=id=>document.getElementById(id),video=$('film'),manifestURL=new URL('./movies.json?v=halloween-1',import.meta.url),embedded=parent!==window;
 let movies=[],selected=null,download=null,loaded=null,context=false,muted=false,loading=false;
 function send(type,extra={}){if(embedded)parent.postMessage({channel:'jhw-theater',type,...extra},location.origin);}
 const party=watchParty({video,choose,getMovies:()=>movies,getSelected:()=>selected,getLoaded:()=>loaded,send});
