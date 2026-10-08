@@ -5,7 +5,7 @@ import {BASES,runnerPosition} from './vendor/softball.mjs';
 export class CanvasScene {
  constructor(canvas,game){this.canvas=canvas;this.c=canvas.getContext('2d');this.game=game;this.art={};this.camera={x:0,z:0};for(const id of Object.keys(CHARACTER_ART))loadCharacter(id).then(im=>this.art[id]=im);this.resize();}
  resize(){const ratio=Math.min(devicePixelRatio||1,1.5);this.w=this.canvas.clientWidth;this.h=this.canvas.clientHeight;this.canvas.width=this.w*ratio;this.canvas.height=this.h*ratio;this.c.setTransform(ratio,0,0,ratio,0,0);}
- point(x,z,y=0){const depth=Math.max(5,26+(this.camera.z-z)),k=Math.min(this.w/20,this.h/12)*26/depth;return {x:this.w/2+(x-this.camera.x)*k,y:this.h*.52+(z-this.camera.z)*k*.46-y*k,k};}
+ point(x,z,y=0){const depth=Math.max(5,26+(this.camera.z-z)),k=Math.min(this.w/(['hide','cook'].includes(this.game)?12:18),this.h/10)*26/depth;return {x:this.w/2+(x-this.camera.x)*k,y:this.h*.52+(z-this.camera.z)*k*.46-y*k,k};}
  poly(points,fill,stroke){const c=this.c;c.beginPath();points.forEach((p,i)=>i?c.lineTo(p.x,p.y):c.moveTo(p.x,p.y));c.closePath();c.fillStyle=fill;c.fill();if(stroke){c.strokeStyle=stroke;c.lineWidth=1;c.stroke();}}
  ground(x,z,w,d,fill){this.poly([[x-w/2,z-d/2],[x+w/2,z-d/2],[x+w/2,z+d/2],[x-w/2,z+d/2]].map(([x,z])=>this.point(x,z)),fill);}
  box(x,z,w,d,h,fill,top='#ecd1a2',side='#b58e61'){const a=this.point(x-w/2,z-d/2,h),b=this.point(x+w/2,z-d/2,h),e=this.point(x+w/2,z+d/2,h),f=this.point(x-w/2,z+d/2,h);this.poly([f,e,this.point(x+w/2,z+d/2),this.point(x-w/2,z+d/2)],fill);this.poly([b,e,this.point(x+w/2,z+d/2),this.point(x+w/2,z-d/2)],side);this.poly([a,b,e,f],top);}
