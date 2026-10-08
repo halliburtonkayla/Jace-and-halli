@@ -1,5 +1,5 @@
 import {Playground} from './simulation.mjs?v=recess-3';
-import {PlaygroundScene} from './illustrated-scene.mjs?v=illustrated-1';
+import {PlaygroundScene} from './illustrated-scene.mjs?v=illustrated-2';
 import {SPOTS,BASE,EQUIPMENT,dist} from './world.mjs';
 const $=id=>document.getElementById(id),game=new Playground();let scene,muted=false,audio,last=0,acc=0,drag=null,stick={x:0,z:0},keys=new Set(),started=false;
 function say(text){if(muted||!text||!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.rate=.86;speechSynthesis.speak(u);}
