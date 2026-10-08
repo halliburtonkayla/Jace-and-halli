@@ -1,6 +1,6 @@
-import {PLACE_LINKS,PLACE_NOTES,activitiesForPlace} from './place-activities.mjs?v=zoo-1';
+import {PLACE_LINKS,PLACE_NOTES,activitiesForPlace} from './place-activities.mjs?v=zoo-tour-1';
 import {GAME_PAGES} from './game-catalog.mjs?v=all-games-1';
-import {TOWN_PLACES,SCENES} from './town-destinations.mjs?v=zoo-1';
+import {TOWN_PLACES,SCENES} from './town-destinations.mjs?v=zoo-tour-1';
 import {drawPortrait} from './characters.mjs';
 const paths={
  film:'M3 5h20v16H3ZM8 5v16M18 5v16M3 10h5M3 16h5M18 10h5M18 16h5',
@@ -58,7 +58,7 @@ export class TownView{
  launch(entry){if(entry.place){this.openPlace(entry.place);return;}this.say(entry.label);if(entry.visit)this.visit(entry.visit);else if(entry.art)this.art(entry.art);else this.classic(entry.file);}
  openPlace(id){
   const place=PLACE_LINKS.find(p=>p.id===id);this.say(place.name);
-  if(id==='zoo'){this.visit('zoo');return;}
+  if(id==='zoo'){this.visit('zoo');this.classic('zoo.html');return;}
   if(id==='theater'){this.visit('theater');this.classic('theater.html');return;}
   if(place.scene&&!['world','bubbles'].includes(place.scene))this.visit(id);
   const items=id==='classic'?this.gameEntries():activitiesForPlace(id);
