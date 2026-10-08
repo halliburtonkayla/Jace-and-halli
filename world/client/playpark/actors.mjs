@@ -1,0 +1,21 @@
+import * as T from './vendor/three.mjs';
+// Procedural articulated activity avatars, deliberately distinct from the family portraits.
+export class ActivityActor {
+ constructor(scene,index,role){this.root=new T.Group();scene.add(this.root);this.body=new T.Group();this.root.add(this.body);this.role=role;this.color=index%2?0xec8467:0x429cb7;this.skin=[0x925f42,0xc18b62,0x694532,0xe1ad83][index%4];this.materials=new Map();
+ const torso=this.mesh(new T.CapsuleGeometry(.24,.48,6,14),role==='chef'?0xfff9e6:this.color,0,1.15,0);torso.scale.z=.64;
+ this.mesh(new T.CylinderGeometry(.105,.11,.15,12),this.skin,0,1.52,0);this.mesh(new T.SphereGeometry(.18,18,14),this.skin,0,1.73,0).scale.set(.86,1.14,.95);
+ this.mesh(new T.SphereGeometry(.185,16,12,0,Math.PI*2,0,Math.PI*.6),role==='swimmer'?this.color:0x382c27,0,1.79,-.01);
+ for(const sign of [-1,1]){this.mesh(new T.SphereGeometry(.024,8,6),0xfdf9ed,sign*.067,1.755,.15);this.mesh(new T.SphereGeometry(.011,6,5),0x273b3c,sign*.067,1.755,.173);}
+ this.mesh(new T.SphereGeometry(.025,8,6),this.skin,0,1.71,.177);
+ if(role==='swimmer'){for(const sign of [-1,1]){const g=this.mesh(new T.SphereGeometry(.054,10,8),0x77cfdf,sign*.065,1.75,.165);g.scale.set(1,.65,.3);}this.mesh(new T.CylinderGeometry(.145,.145,.02,16),0x284a57,0,1.75,0).rotation.x=Math.PI/2;}
+ if(role==='chef'){this.mesh(new T.CylinderGeometry(.2,.17,.18,14),0xfffdf3,0,1.99,0);for(const x of [-.12,0,.12])this.mesh(new T.SphereGeometry(.15,12,10),0xfffdf3,x,2.1,0);this.mesh(new T.BoxGeometry(.34,.56,.04),this.color,0,1.07,.17);for(const x of [-.08,.08])for(const y of [1.1,1.27])this.mesh(new T.SphereGeometry(.018,6,5),0x415e61,x,y,.2);}
+ this.arms=[];this.legs=[];for(const sign of [-1,1]){const arm=new T.Group();arm.position.set(sign*.29,1.42,0);this.body.add(arm);this.arms.push(arm);this.mesh(new T.CapsuleGeometry(.065,.44,5,10),role==='chef'?0xfff9e6:this.skin,0,-.26,0,arm);this.mesh(new T.SphereGeometry(.07,10,8),this.skin,0,-.54,0,arm);const leg=new T.Group();leg.position.set(sign*.13,.85,0);this.body.add(leg);this.legs.push(leg);this.mesh(new T.CapsuleGeometry(.09,.58,5,12),role==='swimmer'?this.skin:0x394d58,0,-.32,0,leg);const foot=this.mesh(new T.SphereGeometry(.10,10,8),role==='swimmer'?this.skin:0xfff4dc,0,-.7,.07,leg);foot.scale.set(.85,.6,1.6);}
+ this.tool=new T.Group();this.arms[1].add(this.tool);this.tool.position.set(0,-.53,0);this.mesh(new T.CylinderGeometry(.018,.018,.4,8),0xac7a43,0,-.2,0,this.tool);this.mesh(new T.SphereGeometry(.055,10,8),0xb28352,0,-.43,0,this.tool).scale.set(1,1.6,.3);
+ this.carry=new T.Group();this.body.add(this.carry);this.carry.position.set(0,1,.53);this.mesh(new T.CylinderGeometry(.26,.23,.05,20),0xfff7df,0,0,0,this.carry);this.mesh(new T.SphereGeometry(.15,12,10),0xe9b456,0,.09,0,this.carry).scale.y=.5;
+ }
+ mesh(geo,color,x,y,z,parent=this.body){if(!this.materials.has(color))this.materials.set(color,new T.MeshStandardMaterial({color,roughness:.65}));const m=new T.Mesh(geo,this.materials.get(color));m.position.set(x,y,z);parent.add(m);return m;}
+ update(p,t){this.root.visible=true;this.root.position.set(p.x,0,p.z);this.root.rotation.y=p.heading||0;this.body.rotation.set(0,0,0);this.body.position.set(0,0,0);const walk=p.moving?Math.sin(t*10)*.55:Math.sin(t*2)*.025;this.legs.forEach((l,i)=>l.rotation.x=walk*(i?1:-1));this.arms.forEach((a,i)=>{a.rotation.set(-walk*(i?1:-1),0,(i?1:-1)*.06);});this.tool.visible=false;this.carry.visible=Boolean(p.carry);
+ if(this.role==='swimmer'){this.body.rotation.x=Math.PI/2;this.body.position.y=.08;this.body.position.z=.8;this.root.position.y=p.mode==='under'?-.75:0;const stroke=Math.sin(t*(p.moving||p.mode==='circle'?7:2.5));this.arms[0].rotation.set(stroke*1.5,0,-.7);this.arms[1].rotation.set(-stroke*1.5,0,.7);this.legs[0].rotation.x=stroke*.3;this.legs[1].rotation.x=-stroke*.3;if(p.mode==='dive'){const u=(1.5-p.animation)/1.5;this.root.position.y=.6+Math.sin(u*Math.PI)*2.3;this.body.rotation.x=Math.PI/2*(.35+u*.65);this.arms.forEach(a=>a.rotation.x=-Math.PI);}}
+ else{if(p.moving)this.body.position.y=Math.abs(Math.sin(t*10))*.035;if(p.carry)this.arms.forEach(a=>a.rotation.x=-1.1);if((p.actionUntil||0)>t){this.root.rotation.y=Math.PI;this.tool.visible=true;this.arms[1].rotation.set(-1.3+Math.sin(t*15)*.3,0,.2);this.arms[0].rotation.x=-1.1;}}
+ }
+}

@@ -11,3 +11,9 @@ Run `node --test world/tests/playpark.test.mjs world/tests/shared-family.test.mj
 Devices without WebGL use the perspective Canvas renderer against the identical simulation, controls and personalized snapshots. The cloud browser has WebGL disabled; browser verification covers this fallback, while native WebGL rendering still needs a real-device visual check.
 
 Browser checks (2026-10-08): actual Play Together menu includes all seven links and opens Family Kitchen through the host room; two independent preview views show personalized seeker countdown, touch movement (1.00 to 3.29), shared softball strike count and seesaw push meter, underwater toggle, and fishing cast. Portrait/landscape controls were inspected. All 67 repository tests passed. Separate real iPhone/iPad internet play and native WebGL visuals remain unverified in this cloud environment.
+
+## October 8 activity correction
+
+The owner permits animated game avatars in softball, pool and kitchen; approved family artwork remains in hide-and-seek. Softball now retains its articulated batter, bat, fielders, swing and pitch animations. The compatible renderer has a dedicated close batting camera and visible swinging bat instead of portraits or numbered dots. Pool uses a tiled sunken basin, coping, ladders, diving board and articulated swimmers with strokes and underwater motion. Kitchen has chefs, appliances, carried ingredients and plates, preparation animations and a turn-food cooking step. Hide-and-seek has solid hedge obstacles, barrel collision, closer follow camera and preserved per-view hidden positions. Movement is interpolated for presentation; simulation remains host-authoritative. No change to family identities, stored progress or room admission.
+
+68 tests pass, including complete two-person cooking flow, inventory/plate ownership, hedge collision and existing shared transport coverage. Native device/WebGL visual confirmation is still separate from cloud fallback checks.
