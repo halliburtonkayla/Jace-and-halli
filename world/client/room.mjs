@@ -1,5 +1,5 @@
 import { GalleryService } from './creativity/gallery.mjs?v=studio-1';
-import { FAMILY, FamilyGame } from './family-game.mjs?v=family-2';
+import { FAMILY, FamilyGame } from './family-game.mjs?v=family-3';
 const alphabet = '0123456789';
 export function newCode() { const bytes = new Uint8Array(4); crypto.getRandomValues(bytes); return [...bytes].map(v => alphabet[v % alphabet.length]).join(''); }
 export function normalizeCode(value) { return String(value || '').toUpperCase().replace(/[\s-]/g, ''); }
@@ -101,11 +101,11 @@ export class FamilyRoom extends EventTarget {
     return new Promise((resolve, reject) => { const timeout = setTimeout(() => { this.requests.delete(id); reject(Error('The host did not respond. Keep the hosting page open.')); }, 6000); this.requests.set(id, { resolve, reject, timeout }); this.connection.send({ type: 'request', id, path, body }); if (path === 'select') this.selected = body.profile; });
   }
   broadcast() {
-    const state = this.game.snapshot(); this.emit('snapshot', state);
+    const state = this.game.snapshot(); if(this.lastTogetherRevision===state.together.revision)state.together={revision:state.together.revision,members:state.together.members};else this.lastTogetherRevision=state.together.revision;this.emit('snapshot', state);
     for (const record of this.connections.values()) if (record.approved && record.conn.open && (record.conn.dataChannel?.bufferedAmount || 0) < 64000) record.conn.send({ type: 'snapshot', state });
   }
   close() {
-    this.closing = true; this.galleryService.uploads.clear(); clearInterval(this.timer); this.timer = null; this.game?.save(); this.connected = false;
+    this.closing = true; this.lastTogetherRevision=null;this.galleryService.uploads.clear(); clearInterval(this.timer); this.timer = null; this.game?.save(); this.connected = false;
     this.peer?.destroy(); this.peer = null; this.connection = null; this.connections.clear(); this.pending.clear();
     for (const r of this.requests.values()) { clearTimeout(r.timeout); r.reject(Error('Room closed.')); } this.requests.clear(); this.profile = null; this.selected = null;
   }

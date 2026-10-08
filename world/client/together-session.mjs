@@ -5,7 +5,7 @@ export class TogetherSession {
  resetMatch(){const cards=[...symbols,...symbols];for(let i=cards.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cards[i],cards[j]]=[cards[j],cards[i]];}this.match={cards,open:[],done:[]};this.hideAt=0;}
  leave(id){this.members.delete(id);this.revision++;}
  request(p,b,now=Date.now()){
-  if(b.op==='join'){this.members.set(p.id,{id:p.id,name:p.name});return this.snapshot(now);}
+  if(b.op==='join'){this.revision++;this.members.set(p.id,{id:p.id,name:p.name});return this.snapshot(now);}
   if(b.op==='leave'){this.leave(p.id);return this.snapshot(now);}
   if(!this.members.has(p.id))throw Error('Enter Play Together first.');
   if(b.op==='four'){
